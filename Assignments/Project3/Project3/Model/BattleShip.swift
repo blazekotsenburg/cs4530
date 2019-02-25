@@ -8,15 +8,16 @@
 
 class BattleShip {
     enum Token {
-        case none //where board is water
-        case p1   //marks position of player1 ship
-        case p2   //marks position of player2 ship
-        case hit  //marks a ship who has been hit
-        case ship5
-        case ship4
-        case ship3
-        case ship2A
-        case ship2B
+        case none   //where board is water
+        case p1     //marks position of player1 ship
+        case p2     //marks position of player2 ship
+        case hit    //marks a ship who has been hit
+        case miss   //marks a missed shot
+        case ship5  //marks ship of size 5
+        case ship4  //marks ship of size 4
+        case ship3  //marks ship of size 3
+        case ship2A //marks first ship of size 2
+        case ship2B //marks seconds ship of size 2
     }
     
     var winner: Token
@@ -29,7 +30,6 @@ class BattleShip {
         currentPlayer = .p1
         initBoards()
         printMaps()
-//        print(boardMap[.p1])
     }
     
     /**

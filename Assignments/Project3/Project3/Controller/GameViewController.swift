@@ -41,12 +41,16 @@ class GameViewController: UIViewController, GameViewDelegate {
             if battleShip.boardMap[.p1]![row][col] != .hit && battleShip.boardMap[.p1]![row][col] != .none {
                 print("hit a ship")
                 print(battleShip.boardMap[.p1]![row][col])
+                battleShip.shipHitPoints[battleShip.boardMap[.p1]![row][col], default: 0] -= 1
                 battleShip.boardMap[.p1]![row][col] = .hit
+                //if shipCount for ship token is == 0, sunk ship.
+                //then check if that players shipHitpoints dictionary is empty, if so game over
             }
         case .p1:
             if battleShip.boardMap[.p2]![row][col] != .hit && battleShip.boardMap[.p2]![row][col] != .none {
                 print("hit a ship")
                 print(battleShip.boardMap[.p2]![row][col])
+                battleShip.shipHitPoints[battleShip.boardMap[.p2]![row][col], default: 0] -= 1
                 battleShip.boardMap[.p2]![row][col] = .hit
             }
         default:

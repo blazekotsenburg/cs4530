@@ -76,8 +76,8 @@ class GameView: UIView {
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         let touch = touches.first?.location(in: self)
-        let row = Int((touch!.x - boardRect.origin.x) / (boardRect.width / 10.0))
-        let col = Int((touch!.y - boardRect.origin.y) / (boardRect.width / 10.0))
+        let col = Int((touch!.x - boardRect.origin.x) / (boardRect.width / 10.0))
+        let row = Int((touch!.y - boardRect.origin.y) / (boardRect.width / 10.0))
         
         delegate.gameView(self, cellTouchedAt: row, and: col)
         print(row, col)
