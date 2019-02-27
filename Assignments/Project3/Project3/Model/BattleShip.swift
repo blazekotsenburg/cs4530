@@ -264,7 +264,7 @@ class BattleShip {
         if currentPlayer == .p1 {
             if let pos = boardMap[.p2]?[row][col] {
                 if pos != .none && pos != .hit {
-                    print("ship hit at row: \(row), col: \(col)")
+                    print("P1: hit P2 ship at row: \(row), col: \(col)")
                     shipHitPoints[.p2]?[pos, default: 0] -= 1
                     if shipHitPoints[.p2]?[pos] == 0 {
                         print("ship sank!")
@@ -272,17 +272,17 @@ class BattleShip {
                     boardMap[.p2]?[row][col] = .hit
                     currentPlayer = .p2
                 }
-                else if pos == .miss {
+                else if pos == .none {
                     boardMap[.p2]?[row][col] = .miss
                     currentPlayer = .p2
-                    print("missed at row: \(row), col: \(col)")
+                    print("P1: missed P2 ship at row: \(row), col: \(col)")
                 }
             }
         }
         else {
             if let pos = boardMap[.p1]?[row][col] {
                 if pos != .none && pos != .hit {
-                    print("ship hit at row: \(row), col: \(col)")
+                    print("P2: hit P1 ship at row: \(row), col: \(col)")
                     shipHitPoints[.p1]?[pos, default: 0] -= 1
                     if shipHitPoints[.p1]?[pos] == 0 {
                         print("ship sank!")
@@ -290,13 +290,14 @@ class BattleShip {
                     boardMap[.p1]?[row][col] = .hit
                     currentPlayer = .p1
                 }
-                else if pos == .miss {
+                else if pos == .none {
                     boardMap[.p1]?[row][col] = .miss
                     currentPlayer = .p1
-                    print("missed at row: \(row), col: \(col)")
+                    print("P2: missed P1 ship at row: \(row), col: \(col)")
                 }
+                
             }
         }
-        delegate?.battleShip(self, cellChangedAt: row, and: col)
+        delegate?.battleShip(self, cellChangedAt: row, and: col) // may need to pass in the player value to determine whos board changed
     }
 }

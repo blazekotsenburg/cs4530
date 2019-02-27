@@ -41,16 +41,28 @@ class GameViewController: UIViewController, GameViewDelegate, BattleShipDelegate
     }
 
     //MARK: - GameViewDelegate Methods
-    func gameView(_ gameView: GameView, tokenFor row: Int, and col: Int) -> String{
+    func gameView(_ gameView: GameView, tokenFor row: Int, and col: Int) -> String{ //the gameView doesn't update on a turn taken fast enough. consider a way to display a hit for opponnent board and then transitioning to the other viewcontroller.
         let currPlayer = battleShip.currentPlayer
         var cell: String = ""
-        if let token = battleShip.boardMap[currPlayer]?[row][col] {
-            switch(token) {
+        if currPlayer == .p1 { // since the currPlayer gets updated after initial touch, this is updating the board for the wrong person.
+            if let token = battleShip.boardMap[.p2]?[row][col] { // this is broken still
+                switch(token) {
                 case .hit:  cell = "🔥"
                 case .miss: cell = "💧"
                 default:    cell = ""
+                }
             }
         }
+        else {
+            if let token = battleShip.boardMap[.p1]?[row][col] {
+                switch(token) {
+                case .hit:  cell = "🔥"
+                case .miss: cell = "💧"
+                default:    cell = ""
+                }
+            }
+        }
+        
         return cell
     }
     

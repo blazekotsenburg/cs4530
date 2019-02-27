@@ -78,9 +78,12 @@ class GameView: UIView {
             for col in 0 ..< 10 {
                 for row in 0 ..< 10 {
                     let cell: String = delegate.gameView(self, tokenFor: row, and: col)
-                    let point: CGPoint = CGPoint(x: boardRect.origin.x + 0.1 * boardRect.width, y: boardRect.origin.y + 0.1 * boardRect.height)
+                    //not completely updating correctly for
+                    let point: CGPoint = CGPoint(x: boardRect.origin.x + (CGFloat(col) / 10.0) * boardRect.width, y: boardRect.origin.y + (CGFloat(row) / 10) * boardRect.height)
                     (cell as NSString).draw(at: point, withAttributes: nil)
-                    print(cell)
+//                    if cell != "" {
+//                        print(cell)
+//                    }
                 }
             }
         }
