@@ -9,7 +9,7 @@
 import UIKit
 
 protocol GameViewDelegate {
-    func gameView(_ gameView: GameView, tokenFor row: Int, and col: Int) -> String
+    func gameView(_ gameView: GameView, tokenFor player: BattleShip.Token, at row: Int, and col: Int) -> BattleShip.Token
     func gameView(_ gameView: GameView, cellTouchedAt row: Int, and col: Int)
 }
 
@@ -21,7 +21,6 @@ class GameView: UIView {
     
     override init(frame: CGRect) {
         boardRect = CGRect(x: frame.width * 0.5, y: frame.height * 0.3, width: frame.width * 0.8, height: frame.width * 0.8)
-        
         super.init(frame: frame)
         
         backgroundColor = .blue
@@ -75,12 +74,15 @@ class GameView: UIView {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let touch = touches.first?.location(in: self)
-        let col = Int((touch!.x - boardRect.origin.x) / (boardRect.width / 10.0))
-        let row = Int((touch!.y - boardRect.origin.y) / (boardRect.width / 10.0))
-        
-        delegate.gameView(self, cellTouchedAt: row, and: col)
-        print(row, col)
+        if let touch = touches.first?.location(in: self) {
+            if boardRect.contains(touch) {
+                let col = Int((touch.x - boardRect.origin.x) / (boardRect.width / 10.0))
+                let row = Int((touch.y - boardRect.origin.y) / (boardRect.width / 10.0))
+                
+                delegate.gameView(self, cellTouchedAt: row, and: col)
+                print(row, col)
+            }
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {

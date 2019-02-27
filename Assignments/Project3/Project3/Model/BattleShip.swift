@@ -23,13 +23,15 @@ class BattleShip {
     var winner: Token
     var currentPlayer: Token
     var boardMap: [Token : [[Token]]] = [.p1: [], .p2: []]
-    var shipHitPoints: [Token: Int] = [.ship5: 0, .ship4: 0, .ship3: 0, .ship2A: 0, .ship2B: 0]
+    var shipHitPoints: [Token : [Token: Int]] = [.p1: [.ship5: 1, .ship4: 1, .ship3: 1, .ship2A: 1, .ship2B: 1],
+                                                 .p2: [.ship5: 1, .ship4: 1, .ship3: 1, .ship2A: 1, .ship2B: 1]]
     
     init() {
         winner = .none
         currentPlayer = .p1
         initBoards()
-        printMaps()
+//        printMaps()
+//        print(shipHitPoints)
     }
     
     /**
@@ -68,29 +70,29 @@ class BattleShip {
                                 if let token: Token = boardMap[player]?[row][col + moveTo] {
                                     if token == .none {
                                         boardMap[player]?[row][col + moveTo] = shipToken[ships.count]!
-                                        shipHitPoints[token, default: ships.first!] += 1
+                                        shipHitPoints[player]![shipToken[ships.count]!, default: 1] += 1
                                         shipCache.append((row: row, col: col + moveTo))
                                     }
-                                }
-                                else {
-                                    for ship in shipCache {
-                                        boardMap[player]?[ship.row][ship.col] = .none
+                                    else {
+                                        if let token: Token = boardMap[player]?[row][col] {
+                                            shipHitPoints[player]![token] = 1
+                                        }
+                                        for ship in shipCache {
+                                            boardMap[player]?[ship.row][ship.col] = .none
+                                        }
+                                        shipWasPlaced = false
+                                        break
                                     }
-                                    shipWasPlaced = false
-                                    if let token: Token = boardMap[player]?[row][col] {
-                                        shipHitPoints[token] = 0
-                                    }
-                                    break
                                 }
                             }
                             else{
+                                if let token: Token = boardMap[player]?[row][col] {
+                                    shipHitPoints[player]![token] = 1
+                                }
                                 for ship in shipCache {
                                     boardMap[player]?[ship.row][ship.col] = .none
                                 }
                                 shipWasPlaced = false
-                                if let token: Token = boardMap[player]?[row][col] {
-                                    shipHitPoints[token] = 0
-                                }
                                 break
                             }
                             moveTo += 1
@@ -106,29 +108,29 @@ class BattleShip {
                                 if let token = boardMap[player]?[row][col - moveTo] {
                                     if token == .none {
                                         boardMap[player]?[row][col - moveTo] = shipToken[ships.count]!
-                                        shipHitPoints[token, default: ships.first!] += 1
+                                        shipHitPoints[player]![shipToken[ships.count]!, default: 1] += 1
                                         shipCache.append((row: row, col: col - moveTo))
                                     }
-                                }
-                                else {
-                                    for ship in shipCache {
-                                        boardMap[player]?[ship.row][ship.col] = .none
+                                    else {
+                                        if let token: Token = boardMap[player]?[row][col] {
+                                            shipHitPoints[player]![token] = 1
+                                        }
+                                        for ship in shipCache {
+                                            boardMap[player]?[ship.row][ship.col] = .none
+                                        }
+                                        shipWasPlaced = false
+                                        break
                                     }
-                                    shipWasPlaced = false
-                                    if let token: Token = boardMap[player]?[row][col] {
-                                        shipHitPoints[token] = 0
-                                    }
-                                    break
                                 }
                             }
                             else{
+                                if let token: Token = boardMap[player]?[row][col] {
+                                    shipHitPoints[player]![token] = 1
+                                }
                                 for ship in shipCache {
                                     boardMap[player]?[ship.row][ship.col] = .none
                                 }
                                 shipWasPlaced = false
-                                if let token: Token = boardMap[player]?[row][col] {
-                                    shipHitPoints[token] = 0
-                                }
                                 break
                             }
                             moveTo += 1
@@ -144,28 +146,29 @@ class BattleShip {
                                 if let token: Token = boardMap[player]?[row + moveTo][col] {
                                     if token == .none {
                                         boardMap[player]?[row + moveTo][col] = shipToken[ships.count]!
+                                        shipHitPoints[player]![shipToken[ships.count]!, default: 1] += 1
                                         shipCache.append((row: row + moveTo, col: col))
                                     }
-                                }
-                                else {
-                                    for ship in shipCache {
-                                        boardMap[player]?[ship.row][ship.col] = .none
+                                    else {
+                                        if let token: Token = boardMap[player]?[row][col] {
+                                            shipHitPoints[player]![token] = 1
+                                        }
+                                        for ship in shipCache {
+                                            boardMap[player]?[ship.row][ship.col] = .none
+                                        }
+                                        shipWasPlaced = false
+                                        break
                                     }
-                                    shipWasPlaced = false
-                                    if let token: Token = boardMap[player]?[row][col] {
-                                        shipHitPoints[token] = 0
-                                    }
-                                    break
                                 }
                             }
                             else{
+                                if let token: Token = boardMap[player]?[row][col] {
+                                    shipHitPoints[player]![token] = 1
+                                }
                                 for ship in shipCache {
                                     boardMap[player]?[ship.row][ship.col] = .none
                                 }
                                 shipWasPlaced = false
-                                if let token: Token = boardMap[player]?[row][col] {
-                                    shipHitPoints[token] = 0
-                                }
                                 break
                             }
                             moveTo += 1
@@ -181,28 +184,29 @@ class BattleShip {
                                 if let token: Token = boardMap[player]?[row - moveTo][col] {
                                     if token == .none {
                                         boardMap[player]?[row - moveTo][col] = shipToken[ships.count]!
+                                        shipHitPoints[player]![shipToken[ships.count]!, default: 1] += 1
                                         shipCache.append((row: row - moveTo, col: col))
                                     }
-                                }
-                                else {
-                                    for ship in shipCache {
-                                        boardMap[player]?[ship.row][ship.col] = .none
+                                    else {
+                                        if let token: Token = boardMap[player]?[row][col] {
+                                            shipHitPoints[player]![token] = 1
+                                        }
+                                        for ship in shipCache {
+                                            boardMap[player]?[ship.row][ship.col] = .none
+                                        }
+                                        shipWasPlaced = false
+                                        break
                                     }
-                                    shipWasPlaced = false
-                                    if let token: Token = boardMap[player]?[row][col] {
-                                        shipHitPoints[token] = 0
-                                    }
-                                    break
                                 }
                             }
                             else{
+                                if let token: Token = boardMap[player]?[row][col] {
+                                    shipHitPoints[player]![token] = 1
+                                }
                                 for ship in shipCache {
                                     boardMap[player]?[ship.row][ship.col] = .none
                                 }
                                 shipWasPlaced = false
-                                if let token: Token = boardMap[player]?[row][col] {
-                                    shipHitPoints[token] = 0
-                                }
                                 break
                             }
                             moveTo += 1

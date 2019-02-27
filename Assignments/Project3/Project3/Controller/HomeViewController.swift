@@ -8,30 +8,33 @@
 
 import UIKit
 
-class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, HomeViewDelegate {
     
-//    var homeView: HomeView {
-//        return view as! HomeView
-//    }
-//    
-//    //MARK: Override functions
-//    override func loadView() {
-//        view = HomeView()
-//    }
+    var homeView: HomeView {
+        return view as! HomeView
+    }
+    
+    //MARK: Override functions
+    override func loadView() {
+        view = HomeView()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let tableView: UITableView = UITableView()
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.translatesAutoresizingMaskIntoConstraints = false
-        
-        let views: [String: Any] = ["tableView": tableView]
-        
-//        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tableView]-|", options: [], metrics: nil, views: views))
-//        view.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[tableView]-|", options: [], metrics: nil, views: views))
-        view.addSubview(tableView)
+        homeView.delegate = self
+//        print(homeView.frame)
+//        print(view.frame)
+//        let tableView: UITableView = UITableView(frame: self.view.frame)
+//        tableView.delegate = self
+//        tableView.dataSource = self
+//        tableView.translatesAutoresizingMaskIntoConstraints = false
+//        tableView.register(TableViewCell.self, forCellReuseIdentifier: String(describing: TableViewCell.self))
+//        
+//        let views: [String: Any] = ["tableView": tableView]
+//
+//        homeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tableView]-|", options: [], metrics: nil, views: views))
+//        homeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[tableView]-|", options: [], metrics: nil, views: views))
+//        homeView.addSubview(tableView)
     }
     
     //MARK: UITableView Delegate functions
@@ -52,5 +55,13 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         let color = UIColor(hue: CGFloat(indexPath.row) / 42.0, saturation: 1.0, brightness: 1.0, alpha: 1.0)
         cell.backgroundColor = color
         cell.textLabel?.text = "hello, world: \(indexPath.row)"
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 42
+    }
+    
+    func homeView(loadDataFor homeView: HomeView) {
+        
     }
 }

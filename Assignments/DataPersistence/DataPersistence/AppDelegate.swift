@@ -1,8 +1,8 @@
 //
 //  AppDelegate.swift
-//  Project3
+//  DataPersistence
 //
-//  Created by Blaze Kotsenburg on 2/20/19.
+//  Created by Blaze Kotsenburg on 2/25/19.
 //  Copyright © 2019 Blaze Kotsenburg. All rights reserved.
 //
 
@@ -12,15 +12,16 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    let viewController = ViewController()
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        window = UIWindow()
-        window?.rootViewController = GameViewController()
-//        window?.rootViewController = HomeViewController()
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window?.rootViewController = viewController
         window?.makeKeyAndVisible()
-//        window?.rootViewController?.view.backgroundColor = .lightGray
+        
+        
         return true
     }
 
@@ -32,10 +33,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+//        print(#function)
+        let docDirectory = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+//        print(docDirectory)
+        do {
+           try viewController.shoppingLists.save(to: docDirectory.appendingPathComponent(Constants.shoppingListFile))
+        } catch let error where error is ShoppingList.Error {
+            print(error)
+        } catch {
+            print(error)
+        }
+        
+        viewController.shoppingLists = []
+        let count = UserDefaults.standard.integer(forKey: "Count") + 1
+        UserDefaults.standard.set(count, forKey: "Count")
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+//        print(#function)
+        let count = UserDefaults.standard.integer(forKey: "Count")
+        print(count)
+//        print()
+        let docDirectory = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+        let jsonData = try! Data(contentsOf: docDirectory.appendingPathComponent(Constants.shoppingListFile))
+        viewController.shoppingLists = try! JSONDecoder().decode([ShoppingList].self, from: jsonData)
+        print(viewController.shoppingLists)
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
