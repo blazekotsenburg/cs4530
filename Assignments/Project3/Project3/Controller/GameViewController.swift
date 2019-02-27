@@ -8,10 +8,19 @@
 
 import UIKit
 
-class GameViewController: UIViewController, GameViewDelegate {
+class GameViewController: UIViewController, GameViewDelegate, BattleShipDelegate {
     
     //MARK: - Instance Elements
     var battleShip: BattleShip = BattleShip()
+    
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        battleShip.delegate = self
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     var gameView: GameView {
         return view as! GameView
@@ -26,51 +35,31 @@ class GameViewController: UIViewController, GameViewDelegate {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         gameView.delegate = self
+        battleShip.delegate = self
+        gameView.reloadData()
         gameView.translatesAutoresizingMaskIntoConstraints = false
     }
 
     //MARK: - GameViewDelegate Methods
-    func gameView(_ gameView: GameView, tokenFor player: BattleShip.Token, at row: Int, and col: Int) -> BattleShip.Token {
-        return battleShip.boardMap[player]![row][col]
+    func gameView(_ gameView: GameView, tokenFor row: Int, and col: Int) -> String{
+        let currPlayer = battleShip.currentPlayer
+        var cell: String = ""
+        if let token = battleShip.boardMap[currPlayer]?[row][col] {
+            switch(token) {
+                case .hit:  cell = "🔥"
+                case .miss: cell = "💧"
+                default:    cell = ""
+            }
+        }
+        return cell
     }
     
     func gameView(_ gameView: GameView, cellTouchedAt row: Int, and col: Int) {
-        let currPlayer = battleShip.currentPlayer
-        print("Entered delegate function for player ", currPlayer)
-        switch currPlayer {
-        case .p2:
-            if battleShip.boardMap[.p1]![row][col] != .hit && battleShip.boardMap[.p1]![row][col] != .none {
-                print("hit a ship")
-                print(battleShip.boardMap[.p1]![row][col])
-                battleShip.shipHitPoints[.p1]![battleShip.boardMap[.p1]![row][col], default: 0] -= 1
-                battleShip.boardMap[.p1]![row][col] = .hit
-                if let shipHP = battleShip.shipHitPoints[.p1]![battleShip.boardMap[.p1]![row][col]] {
-                    if shipHP == 0 {
-                        print("Sank a ship!")
-                        battleShip.shipHitPoints.removeValue(forKey: battleShip.boardMap[.p1]![row][col])
-                        print(battleShip.shipHitPoints.count)
-                    }
-                }
-                //if shipCount for ship token is == 0, sunk ship.
-                //then check if that players shipHitpoints dictionary is empty, if so game over
-            }
-        case .p1:
-            if battleShip.boardMap[.p2]![row][col] != .hit && battleShip.boardMap[.p2]![row][col] != .none {
-                print("hit a ship")
-                print(battleShip.boardMap[.p2]![row][col])
-                battleShip.shipHitPoints[.p2]![battleShip.boardMap[.p2]![row][col], default: 0] -= 1
-                battleShip.boardMap[.p2]![row][col] = .hit
-                if let shipHP = battleShip.shipHitPoints[.p2]![battleShip.boardMap[.p2]![row][col]] {
-                    if shipHP == 0 {
-                        print("Sank a ship!")
-                        battleShip.shipHitPoints.removeValue(forKey: battleShip.boardMap[.p2]![row][col])
-                        print(battleShip.shipHitPoints.count)
-                    }
-                }
-            }
-        default:
-            return
-        }
+        battleShip.takeTurn(at: row, and: col)
+    }
+    
+    func battleShip(_ battleShip: BattleShip, cellChangedAt row: Int, and col: Int) {
+        gameView.reloadData()
     }
 }
 

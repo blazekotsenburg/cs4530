@@ -5,6 +5,9 @@
 //  Created by Blaze Kotsenburg on 2/20/19.
 //  Copyright © 2019 Blaze Kotsenburg. All rights reserved.
 //
+protocol BattleShipDelegate {
+    func battleShip(_ battleShip: BattleShip, cellChangedAt row: Int, and col: Int)
+}
 
 class BattleShip {
     enum Token {
@@ -20,6 +23,7 @@ class BattleShip {
         case ship2B //marks seconds ship of size 2
     }
     
+    var delegate: BattleShipDelegate?
     var winner: Token
     var currentPlayer: Token
     var boardMap: [Token : [[Token]]] = [.p1: [], .p2: []]
@@ -256,28 +260,43 @@ class BattleShip {
      
      - Return: returns true if the player successfully hit an opponenets ship, false otherwise.
      */
-    func takeTurn(at row: Int, and col: Int) -> Bool {
+    func takeTurn(at row: Int, and col: Int) {
         if currentPlayer == .p1 {
             if let pos = boardMap[.p2]?[row][col] {
                 if pos != .none && pos != .hit {
+                    print("ship hit at row: \(row), col: \(col)")
+                    shipHitPoints[.p2]?[pos, default: 0] -= 1
+                    if shipHitPoints[.p2]?[pos] == 0 {
+                        print("ship sank!")
+                    }
                     boardMap[.p2]?[row][col] = .hit
                     currentPlayer = .p2
-                    return true
                 }
-                return false
+                else if pos == .miss {
+                    boardMap[.p2]?[row][col] = .miss
+                    currentPlayer = .p2
+                    print("missed at row: \(row), col: \(col)")
+                }
             }
-            return false
         }
         else {
             if let pos = boardMap[.p1]?[row][col] {
                 if pos != .none && pos != .hit {
+                    print("ship hit at row: \(row), col: \(col)")
+                    shipHitPoints[.p1]?[pos, default: 0] -= 1
+                    if shipHitPoints[.p1]?[pos] == 0 {
+                        print("ship sank!")
+                    }
                     boardMap[.p1]?[row][col] = .hit
                     currentPlayer = .p1
-                    return true
                 }
-                return false
+                else if pos == .miss {
+                    boardMap[.p1]?[row][col] = .miss
+                    currentPlayer = .p1
+                    print("missed at row: \(row), col: \(col)")
+                }
             }
-            return false
         }
+        delegate?.battleShip(self, cellChangedAt: row, and: col)
     }
 }
