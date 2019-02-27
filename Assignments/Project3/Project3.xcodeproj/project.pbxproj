@@ -17,6 +17,8 @@
 		67E2A5A7221E4DE8000A7E41 /* BattleShip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67E2A5A6221E4DE8000A7E41 /* BattleShip.swift */; };
 		67E2A5A9221E4E08000A7E41 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67E2A5A8221E4E08000A7E41 /* GameView.swift */; };
 		67E2A5AF221E4E7E000A7E41 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67E2A5AE221E4E7E000A7E41 /* MainViewController.swift */; };
+		67FA314422272E5000F0B5FC /* SwitchPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67FA314322272E5000F0B5FC /* SwitchPlayerViewController.swift */; };
+		67FA314622272E8B00F0B5FC /* SwitchPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67FA314522272E8B00F0B5FC /* SwitchPlayerView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +34,8 @@
 		67E2A5A6221E4DE8000A7E41 /* BattleShip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BattleShip.swift; sourceTree = "<group>"; };
 		67E2A5A8221E4E08000A7E41 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 		67E2A5AE221E4E7E000A7E41 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		67FA314322272E5000F0B5FC /* SwitchPlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchPlayerViewController.swift; sourceTree = "<group>"; };
+		67FA314522272E8B00F0B5FC /* SwitchPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwitchPlayerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +93,7 @@
 				67E2A5A8221E4E08000A7E41 /* GameView.swift */,
 				67BB7B2E22232AEE00A5B287 /* HomeView.swift */,
 				67BB7B3022232BA900A5B287 /* TableViewCell.swift */,
+				67FA314522272E8B00F0B5FC /* SwitchPlayerView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -99,6 +104,7 @@
 				67E2A595221E4D7B000A7E41 /* GameViewController.swift */,
 				67E2A5AE221E4E7E000A7E41 /* MainViewController.swift */,
 				67BB7B2C2223259500A5B287 /* HomeViewController.swift */,
+				67FA314322272E5000F0B5FC /* SwitchPlayerViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -174,8 +180,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				67E2A596221E4D7B000A7E41 /* GameViewController.swift in Sources */,
+				67FA314622272E8B00F0B5FC /* SwitchPlayerView.swift in Sources */,
 				67BB7B3122232BA900A5B287 /* TableViewCell.swift in Sources */,
 				67BB7B2F22232AEE00A5B287 /* HomeView.swift in Sources */,
+				67FA314422272E5000F0B5FC /* SwitchPlayerViewController.swift in Sources */,
 				67E2A5A7221E4DE8000A7E41 /* BattleShip.swift in Sources */,
 				67E2A5A9221E4E08000A7E41 /* GameView.swift in Sources */,
 				67E2A5AF221E4E7E000A7E41 /* MainViewController.swift in Sources */,
