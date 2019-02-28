@@ -10,6 +10,8 @@ import UIKit
 
 class HomeViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, HomeViewDelegate {
     
+    var gamesList: [BattleShip] = []
+    
     var homeView: HomeView {
         return view as! HomeView
     }
@@ -58,7 +60,15 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func homeView(newGameFor homeView: HomeView) {
-        present(GameViewController(), animated: true, completion: nil)
+        // Initialize a new GameViewController which will be initialized with a new BattleShip Game
+        let gameViewController: GameViewController = GameViewController()
+        // New instance of BattleShip game
+        let battleShip: BattleShip = BattleShip()
+        // Initialize new GameViewControllers model to new BattleShip model
+        gameViewController.battleShip = battleShip
+        // Append games list with new instance of Battleship (will need to eventually make sure that this instance gets updated between all gamesLists)
+        gameViewController.gamesList.append(battleShip)
+        present(gameViewController, animated: true, completion: nil)
     }
     
     func homeView(loadDataFor homeView: HomeView) {

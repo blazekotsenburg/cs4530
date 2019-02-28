@@ -12,6 +12,8 @@ protocol BattleShipDelegate {
 }
 
 class BattleShip: Codable {
+    
+    //MARK: - Properties
     enum Token {
         case none   //where board is water
         case p1     //marks position of player1 ship
@@ -26,18 +28,20 @@ class BattleShip: Codable {
     }
     
     var delegate: BattleShipDelegate?
-    var winner: Token = .none      //assigning here might break, but try it for decoder
+    var winner: Token = .none
     var currentPlayer: Token = .p1 //assigning here might break, but try it for decoder
     var boardMap: [Token : [[Token]]] = [.p1: [], .p2: []]
     var shipHitPoints: [Token : [Token: Int]] = [.p1: [.ship5: 1, .ship4: 1, .ship3: 1, .ship2A: 1, .ship2B: 1],
                                                  .p2: [.ship5: 1, .ship4: 1, .ship3: 1, .ship2A: 1, .ship2B: 1]]
     
+    //MARK - Model initialization
     init() {
 //        winner = .none
 //        currentPlayer = .p1
         initBoards()
     }
     
+    //MARK: - CodingKey enum
     enum CodingKeys: String, CodingKey {
         case winner
         case currentPlayer
@@ -45,11 +49,13 @@ class BattleShip: Codable {
         case shipHitPoints
     }
     
+    //MARK: - Error enum
     enum Error: Swift.Error {
         case encoding
         case writing
     }
     
+    //MARK: - Decoding requirements & functions
     required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let winnerStr = try values.decode(String.self, forKey: BattleShip.CodingKeys.winner)
@@ -132,6 +138,7 @@ class BattleShip: Codable {
         return playerShips
     }
     
+    //MARK: - Encoding functions
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         var gameWinner = ""
@@ -216,6 +223,8 @@ class BattleShip: Codable {
         }
         return playerShips
     }
+    
+    //MARK: - Game logic
     
     /**
      Initializes boards with enum Token for each player.
