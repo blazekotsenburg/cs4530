@@ -39,7 +39,7 @@ class BattleShip {
     }
     
     /**
-     Initializes boards of enum Token for each player.
+     Initializes boards with enum Token for each player.
      */
     private func initBoards() {
         

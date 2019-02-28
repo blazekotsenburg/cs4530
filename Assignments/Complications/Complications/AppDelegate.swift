@@ -1,8 +1,8 @@
 //
 //  AppDelegate.swift
-//  Project3
+//  Complications
 //
-//  Created by Blaze Kotsenburg on 2/20/19.
+//  Created by Blaze Kotsenburg on 2/27/19.
 //  Copyright © 2019 Blaze Kotsenburg. All rights reserved.
 //
 
@@ -12,13 +12,10 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    
+
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        window = UIWindow()
-//        window?.rootViewController = GameViewController()
-        window?.rootViewController = HomeViewController()
-        window?.makeKeyAndVisible()
         return true
     }
 

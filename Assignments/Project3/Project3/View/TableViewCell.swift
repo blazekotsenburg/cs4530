@@ -13,7 +13,7 @@ class TableViewCell: UITableViewCell {
     static let lock = NSLock()
     static var count: Int = 0 {
         didSet {
-            print(count)
+//            print(count)
         }
     }
     

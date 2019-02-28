@@ -22,19 +22,8 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     override func viewDidLoad() {
         super.viewDidLoad()
         homeView.delegate = self
-//        print(homeView.frame)
-//        print(view.frame)
-//        let tableView: UITableView = UITableView(frame: self.view.frame)
-//        tableView.delegate = self
-//        tableView.dataSource = self
-//        tableView.translatesAutoresizingMaskIntoConstraints = false
-//        tableView.register(TableViewCell.self, forCellReuseIdentifier: String(describing: TableViewCell.self))
-//        
-//        let views: [String: Any] = ["tableView": tableView]
-//
-//        homeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tableView]-|", options: [], metrics: nil, views: views))
-//        homeView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[tableView]-|", options: [], metrics: nil, views: views))
-//        homeView.addSubview(tableView)
+        homeView.tableView.delegate = self
+        homeView.tableView.dataSource = self
     }
     
     //MARK: UITableView Delegate functions
@@ -52,13 +41,22 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let color = UIColor(hue: CGFloat(indexPath.row) / 42.0, saturation: 1.0, brightness: 1.0, alpha: 1.0)
+        let color = UIColor(red: 0.25, green: 0.25, blue: 0.333, alpha: 1.0)
+//        let color = UIColor(red: 0.15, green: 0.15, blue: 0.15, alpha: 1.0)
         cell.backgroundColor = color
         cell.textLabel?.text = "hello, world: \(indexPath.row)"
     }
     
+    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        print("Cell clicked to load game")
+    }
+    
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 42
+        return 1
+    }
+    
+    func homeView(newGameFor homeView: HomeView) {
+        present(GameViewController(), animated: true, completion: nil)
     }
     
     func homeView(loadDataFor homeView: HomeView) {

@@ -31,6 +31,10 @@ class GameViewController: UIViewController, GameViewDelegate, BattleShipDelegate
         view = GameView()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        print("GameVC appeared")
+        gameView.reloadData()
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -72,6 +76,8 @@ class GameViewController: UIViewController, GameViewDelegate, BattleShipDelegate
     
     func battleShip(_ battleShip: BattleShip, cellChangedAt row: Int, and col: Int) {
         gameView.reloadData()
+        present(SwitchPlayerViewController(), animated: true, completion: nil) // switch view controller after a player takes their turn
+//        show(SwitchPlayerViewController(), sender: self)
     }
 }
 
