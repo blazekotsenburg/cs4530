@@ -45,6 +45,8 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
 //        let color = UIColor(red: 0.15, green: 0.15, blue: 0.15, alpha: 1.0)
         cell.backgroundColor = color
         cell.textLabel?.text = "hello, world: \(indexPath.row)"
+        cell.textLabel?.textColor = .white
+        cell.detailTextLabel?.text = "existing game"
     }
     
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {

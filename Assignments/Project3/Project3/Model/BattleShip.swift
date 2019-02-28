@@ -5,11 +5,13 @@
 //  Created by Blaze Kotsenburg on 2/20/19.
 //  Copyright © 2019 Blaze Kotsenburg. All rights reserved.
 //
+import Foundation
+
 protocol BattleShipDelegate {
     func battleShip(_ battleShip: BattleShip, cellChangedAt row: Int, and col: Int)
 }
 
-class BattleShip {
+class BattleShip: Codable {
     enum Token {
         case none   //where board is water
         case p1     //marks position of player1 ship
@@ -24,18 +26,195 @@ class BattleShip {
     }
     
     var delegate: BattleShipDelegate?
-    var winner: Token
-    var currentPlayer: Token
+    var winner: Token = .none      //assigning here might break, but try it for decoder
+    var currentPlayer: Token = .p1 //assigning here might break, but try it for decoder
     var boardMap: [Token : [[Token]]] = [.p1: [], .p2: []]
     var shipHitPoints: [Token : [Token: Int]] = [.p1: [.ship5: 1, .ship4: 1, .ship3: 1, .ship2A: 1, .ship2B: 1],
                                                  .p2: [.ship5: 1, .ship4: 1, .ship3: 1, .ship2A: 1, .ship2B: 1]]
     
     init() {
-        winner = .none
-        currentPlayer = .p1
+//        winner = .none
+//        currentPlayer = .p1
         initBoards()
-//        printMaps()
-//        print(shipHitPoints)
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case winner
+        case currentPlayer
+        case boardMap
+        case shipHitPoints
+    }
+    
+    enum Error: Swift.Error {
+        case encoding
+        case writing
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        let winnerStr = try values.decode(String.self, forKey: BattleShip.CodingKeys.winner)
+        if winnerStr == "Player 1" {
+            winner = .p1
+        }
+        else if winnerStr == "Player 2" {
+            winner = .p2
+        }
+        else {
+            winner = .none
+        }
+        let decodedMaps = try values.decode([String: [[String]]].self, forKey: BattleShip.CodingKeys.boardMap)
+        boardMap = decodePlayerMaps(serializedBoards: decodedMaps)
+        let decodedShipHitPoints = try values.decode([String: [String: Int]].self, forKey: BattleShip.CodingKeys.shipHitPoints)
+        shipHitPoints = decodeShipHitPoints(serializedHitPoints: decodedShipHitPoints)
+    }
+    
+    func decodePlayerMaps(serializedBoards: [String: [[String]]]) -> [Token : [[Token]]]{
+        var playerMaps: [Token: [[Token]]] = [.p1: [], .p2: []]
+        for (k, _) in serializedBoards {
+            let key: Token = k == "Player 1" ? .p1 : .p2
+            for row in 0..<10 {
+                var rowTokens: [Token] = []
+                for col in 0..<10 {
+                    if serializedBoards[k]?[row][col] == "ship5" {
+                        rowTokens.append(.ship5)
+                    }
+                    else if serializedBoards[k]?[row][col] == "ship4" {
+                        rowTokens.append(.ship4)
+                    }
+                    else if serializedBoards[k]?[row][col] == "ship3" {
+                        rowTokens.append(.ship3)
+                    }
+                    else if serializedBoards[k]?[row][col] == "ship2A" {
+                        rowTokens.append(.ship2A)
+                    }
+                    else if serializedBoards[k]?[row][col] == "ship2B" {
+                        rowTokens.append(.ship2B)
+                    }
+                    else if serializedBoards[k]?[row][col] == "hit" {
+                        rowTokens.append(.hit)
+                    }
+                    else if serializedBoards[k]?[row][col] == "miss" {
+                        rowTokens.append(.miss)
+                    }
+                    else {
+                        rowTokens.append(.none)
+                    }
+                }
+                playerMaps[key]?.append(rowTokens)
+            }
+        }
+        return playerMaps
+    }
+    
+    func decodeShipHitPoints(serializedHitPoints: [String: [String: Int]]) -> [Token: [Token: Int]] {
+        var playerShips: [Token: [Token: Int]] = [.p1: [.ship5: 0, .ship4: 0, .ship3: 0, .ship2A: 0, .ship2B: 0],
+                                                    .p2: [.ship5: 0, .ship4: 0, .ship3: 0, .ship2A: 0, .ship2B: 0]]
+        for (k, list) in serializedHitPoints {
+            let key: Token = k == "Player 1" ? .p1 : .p2
+            for (ship, hp) in list {
+                if ship == "ship5" {
+                    playerShips[key]![.ship5] = hp
+                }
+                else if ship == "ship4" {
+                    playerShips[key]![.ship4] = hp
+                }
+                else if ship == "ship3" {
+                    playerShips[key]![.ship3] = hp
+                }
+                else if ship == "ship2A" {
+                    playerShips[key]![.ship2A] = hp
+                }
+                else {
+                    playerShips[key]![.ship2B] = hp
+                }
+            }
+        }
+        return playerShips
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        var gameWinner = ""
+        if winner == .p1 {
+            gameWinner = "Player 1"
+        }
+        else if winner == .p2 {
+            gameWinner = "Player 2"
+        }
+        else {
+            gameWinner = "None"
+        }
+        let currPlayer = currentPlayer == .p1 ? "Player 1" : "Player 2"
+        let maps = encodePlayerMaps()
+        let hpForShips = encodeShipHitPoints()
+        try container.encode(gameWinner, forKey: BattleShip.CodingKeys.winner)
+        try container.encode(currPlayer, forKey: BattleShip.CodingKeys.currentPlayer)
+        try container.encode(maps, forKey: BattleShip.CodingKeys.boardMap)
+        try container.encode(hpForShips, forKey: BattleShip.CodingKeys.shipHitPoints)
+    }
+    
+    func encodePlayerMaps() -> [String: [[String]]] {
+        var playerMaps: [String: [[String]]] = ["Player 1": [], "Player 2": []]
+        for (k, _) in boardMap {
+            let key = k == .p1 ? "Player 1" : "Player 2"
+            for row in 0..<10 {
+                var rowStrings: [String] = []
+                for col in 0..<10 {
+                    if boardMap[k]?[row][col] == .ship5 {
+                        rowStrings.append("ship5")
+                    }
+                    else if boardMap[k]?[row][col] == .ship4 {
+                        rowStrings.append("ship4")
+                    }
+                    else if boardMap[k]?[row][col] == .ship3 {
+                        rowStrings.append("ship3")
+                    }
+                    else if boardMap[k]?[row][col] == .ship2A {
+                        rowStrings.append("ship2A")
+                    }
+                    else if boardMap[k]?[row][col] == .ship2B {
+                        rowStrings.append("ship2B")
+                    }
+                    else if boardMap[k]?[row][col] == .hit {
+                        rowStrings.append("hit")
+                    }
+                    else if boardMap[k]?[row][col] == .miss {
+                        rowStrings.append("miss")
+                    }
+                    else {
+                        rowStrings.append("none")
+                    }
+                }
+                playerMaps[key]?.append(rowStrings)
+            }
+        }
+        return playerMaps
+    }
+    
+    func encodeShipHitPoints() -> [String: [String: Int]] {
+        var playerShips: [String: [String: Int]] = ["Player 1": ["ship5": 0, "ship4": 0, "ship3": 0, "ship2A": 0, "ship2B": 0],
+                                                      "Player 2": ["ship5": 0, "ship4": 0, "ship3": 0, "ship2A": 0, "ship2B": 0]]
+        for (k, list) in shipHitPoints {
+            let key = k == .p1 ? "Player 1" : "Player 2"
+            for (ship, hp) in list {
+                if ship == .ship5 {
+                    playerShips[key]!["ship5"] = hp
+                }
+                else if ship == .ship4 {
+                    playerShips[key]!["ship4"] = hp
+                }
+                else if ship == .ship3 {
+                    playerShips[key]!["ship3"] = hp
+                }
+                else if ship == .ship2A {
+                    playerShips[key]!["ship2A"] = hp
+                }
+                else {
+                    playerShips[key]!["ship2B"] = hp
+                }
+            }
+        }
+        return playerShips
     }
     
     /**
@@ -299,5 +478,22 @@ class BattleShip {
             }
         }
         delegate?.battleShip(self, cellChangedAt: row, and: col) // may need to pass in the player value to determine whos board changed
+    }
+}
+
+//MARK: - Array extension for BattleShip
+extension Array where Element == BattleShip {
+    func save(to url: URL) throws {
+        guard let jsonData = try? JSONEncoder().encode(self) else {
+            throw BattleShip.Error.encoding
+        }
+        guard (try? jsonData.write(to: url)) != nil else {
+            throw BattleShip.Error.writing
+        }
+    }
+    
+    init(from url: URL) throws {
+        let jsonData = try! Data(contentsOf: url)
+        self  = try JSONDecoder().decode([BattleShip].self, from: jsonData)
     }
 }

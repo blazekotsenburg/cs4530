@@ -17,6 +17,14 @@ class TableViewCell: UITableViewCell {
         }
     }
     
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: .value2, reuseIdentifier: reuseIdentifier)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     let increment: Void = {
         TableViewCell.lock.lock()
         defer{ TableViewCell.lock.unlock() }
