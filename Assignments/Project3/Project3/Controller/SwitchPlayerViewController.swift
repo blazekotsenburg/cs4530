@@ -10,14 +10,23 @@ import UIKit
 
 class SwitchPlayerViewController: UIViewController, SwitchPlayerViewDelegate {
     
+    var currGame: BattleShip?
+    
     var switchPlayerView: SwitchPlayerView {
         return view as! SwitchPlayerView
     }
     
     override func loadView() {
         view = SwitchPlayerView()
+        if let currPlayer = currGame?.currentPlayer {
+            if currPlayer == .p1 {
+                switchPlayerView.playerLabel?.text = "Player 1's Turn"
+            }
+            else {
+                switchPlayerView.playerLabel?.text = "Player 2's Turn"
+            }
+        }
     }
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
