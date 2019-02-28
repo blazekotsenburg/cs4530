@@ -25,7 +25,7 @@ class SwitchPlayerView: UIView {
         tapToContinueLabel = UILabel()
         super.init(frame: frame)
         
-        backgroundColor = .lightGray
+        backgroundColor = UIColor(red: 0.88, green: 0.88, blue: 0.88, alpha: 1.0)
         playerLabel?.translatesAutoresizingMaskIntoConstraints = false
         tapToContinueLabel?.translatesAutoresizingMaskIntoConstraints = false
     }

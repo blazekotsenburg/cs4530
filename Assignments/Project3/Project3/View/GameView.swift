@@ -25,7 +25,7 @@ class GameView: UIView {
         boardRect = CGRect(x: frame.width * 0.5, y: frame.height * 0.3, width: frame.width * 0.8, height: frame.width * 0.8)
         super.init(frame: frame)
         
-        backgroundColor = .blue
+        backgroundColor = UIColor(red: 0.15, green: 0.15, blue: 0.15, alpha: 1.0)
     }
     
     override func draw(_ rect: CGRect) {

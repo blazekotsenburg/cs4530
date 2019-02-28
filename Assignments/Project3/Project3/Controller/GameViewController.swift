@@ -75,11 +75,10 @@ class GameViewController: UIViewController, GameViewDelegate, BattleShipDelegate
     }
     
     func battleShip(_ battleShip: BattleShip, cellChangedAt row: Int, and col: Int) {
-        gameView.reloadData()
+//        gameView.reloadData()
         let switchPlayerViewController = SwitchPlayerViewController()
         switchPlayerViewController.currGame = battleShip
         present(switchPlayerViewController, animated: true, completion: nil) // switch view controller after a player takes their turn
-//        show(SwitchPlayerViewController(), sender: self)
     }
 }
 
