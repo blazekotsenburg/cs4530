@@ -12,7 +12,8 @@ protocol GameViewDelegate {
 //    func gameView(_ gameView: GameView, tokenFor player: BattleShip.Token, at row: Int, and col: Int) -> BattleShip.Token
 //    func gameView(_ gameView: GameView, cellChangedAt row: Int, and col: Int)
     func gameView(_ gameView: GameView, cellTouchedAt row: Int, and col: Int)
-    func gameView(_ gameView: GameView, tokenFor row: Int, and col: Int) -> String
+    func gameView(_ gameView: GameView, currentPlayerTokenFor row: Int, and col: Int) -> String
+    func gameView(_ gameView: GameView, opponentTokenFor row: Int, and col: Int) -> String
 }
 
 class GameView: UIView {
@@ -134,9 +135,18 @@ class GameView: UIView {
         if let delegate = delegate {
             for col in 0 ..< 10 {
                 for row in 0 ..< 10 {
-                    let cell: String = delegate.gameView(self, tokenFor: row, and: col)
+                    let cell: String = delegate.gameView(self, currentPlayerTokenFor: row, and: col)
                     //not completely updating correctly for
                     let point: CGPoint = CGPoint(x: homeRect.origin.x + (CGFloat(col) / 10.0) * homeRect.width, y: homeRect.origin.y + (CGFloat(row) / 10) * homeRect.height)
+                    (cell as NSString).draw(at: point, withAttributes: nil)
+                }
+            }
+            
+            for col in 0 ..< 10 {
+                for row in 0 ..< 10 {
+                    let cell: String = delegate.gameView(self, opponentTokenFor: row, and: col)
+                    //not completely updating correctly for
+                    let point: CGPoint = CGPoint(x: opponentRect.origin.x + (CGFloat(col) / 10.0) * opponentRect.width, y: opponentRect.origin.y + (CGFloat(row) / 10) * opponentRect.height)
                     (cell as NSString).draw(at: point, withAttributes: nil)
                 }
             }
@@ -145,9 +155,9 @@ class GameView: UIView {
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let touch = touches.first?.location(in: self) {
-            if homeRect.contains(touch) {
-                let col = Int((touch.x - homeRect.origin.x) / (homeRect.width / 10.0))
-                let row = Int((touch.y - homeRect.origin.y) / (homeRect.width / 10.0))
+            if opponentRect.contains(touch) {
+                let col = Int((touch.x - opponentRect.origin.x) / (opponentRect.width / 10.0))
+                let row = Int((touch.y - opponentRect.origin.y) / (opponentRect.width / 10.0))
                 
                 delegate?.gameView(self, cellTouchedAt: row, and: col)
 //                print(row, col)
