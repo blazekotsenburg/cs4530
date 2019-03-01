@@ -20,9 +20,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         window = UIWindow()
-        homeViewController.gamesList = [BattleShip()]
         window?.rootViewController = homeViewController
         window?.makeKeyAndVisible()
+        
+        let docDirectory = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+        let jsonData = try! Data(contentsOf: docDirectory.appendingPathComponent(Constants.battleShipListFile))
+        
+        homeViewController.gamesList = try! JSONDecoder().decode([BattleShip].self, from: jsonData)
+        print(homeViewController.gamesList)
         
         return true
     }
@@ -44,13 +49,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         do {
             if t == HomeViewController.self {
                 try (viewController as! HomeViewController).gamesList.save(to: docDirectory.appendingPathComponent(Constants.battleShipListFile))
+                UserDefaults.standard.set(docDirectory, forKey: "Games")
             }
-            else if type(of: viewController) == GameViewController.self {
+            else if t == GameViewController.self {
 //            else if t == GameViewController.self {
                 try (viewController as! GameViewController).gamesList.save(to: docDirectory.appendingPathComponent(Constants.battleShipListFile))
+                UserDefaults.standard.set(docDirectory, forKey: "Games")
             }
             else if t == SwitchPlayerViewController.self {
                 try (viewController as! SwitchPlayerViewController).gamesList.save(to: docDirectory.appendingPathComponent(Constants.battleShipListFile))
+                UserDefaults.standard.set(docDirectory, forKey: "Games")
             }
         } catch let error where error is BattleShip.Error {
             print(error)
@@ -58,57 +66,44 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print(error)
         }
         
-//        viewController.shoppingLists = []
-//        let count = UserDefaults.standard.integer(forKey: "Count") + 1
-//        UserDefaults.standard.set(count, forKey: "Count")
+        let arr = UserDefaults.standard.data(forKey: "Games")
+//        UserDefaults.standard.set(<#T##url: URL?##URL?#>, forKey: <#T##String#>)
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+//        let count = UserDefaults.standard.integer(forKey: "Count")
 //        let count = UserDefaults.standard.integer(forKey: "Count")
 //        print(count)
         //        print()
         let docDirectory = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
         let jsonData = try! Data(contentsOf: docDirectory.appendingPathComponent(Constants.battleShipListFile))
         let t = type(of: viewController)
+        
         if t == HomeViewController.self {
             (viewController as! HomeViewController).gamesList = try! JSONDecoder().decode([BattleShip].self, from: jsonData)
-            print((viewController as! HomeViewController).gamesList)
+            gamesList = (viewController as! HomeViewController).gamesList
         }
         else if t == GameViewController.self {
             (viewController as! GameViewController).gamesList = try! JSONDecoder().decode([BattleShip].self, from: jsonData)
-            print((viewController as! GameViewController).gamesList)
+            gamesList = (viewController as! GameViewController).gamesList
         }
-        if t == SwitchPlayerViewController.self {
+        else if t == SwitchPlayerViewController.self {
             (viewController as! SwitchPlayerViewController).gamesList = try! JSONDecoder().decode([BattleShip].self, from: jsonData)
-            print((viewController as! SwitchPlayerViewController).gamesList)
+            gamesList = (viewController as! SwitchPlayerViewController).gamesList
         }
+        
+        print(gamesList?.description)
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-        let docDirectory = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-        let jsonData = try! Data(contentsOf: docDirectory.appendingPathComponent(Constants.battleShipListFile))
-        let t = type(of: viewController)
-        if t == HomeViewController.self {
-            (viewController as! HomeViewController).gamesList = try! JSONDecoder().decode([BattleShip].self, from: jsonData)
-            print((viewController as! HomeViewController).gamesList)
-        }
-        else if t == GameViewController.self {
-            (viewController as! GameViewController).gamesList = try! JSONDecoder().decode([BattleShip].self, from: jsonData)
-            print((viewController as! GameViewController).gamesList)
-        }
-        if t == SwitchPlayerViewController.self {
-            (viewController as! SwitchPlayerViewController).gamesList = try! JSONDecoder().decode([BattleShip].self, from: jsonData)
-            print((viewController as! SwitchPlayerViewController).gamesList)
-        }
+//        UserDefaults.
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-
-
 }
 
 /**
