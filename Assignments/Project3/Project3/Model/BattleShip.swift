@@ -28,6 +28,7 @@ class BattleShip: Codable {
     }
     
     var delegate: BattleShipDelegate?
+    var eventString: String = ""
     var winner: Token = .none
     var currentPlayer: Token = .p1 //assigning here might break, but try it for decoder
     var boardMap: [Token : [[Token]]] = [.p1: [], .p2: []]
@@ -43,6 +44,7 @@ class BattleShip: Codable {
     
     //MARK: - CodingKey enum
     enum CodingKeys: CodingKey {
+        case eventString
         case winner
         case currentPlayer
         case boardMap
@@ -58,6 +60,7 @@ class BattleShip: Codable {
     //MARK: - Decoding requirements & functions
     required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
+        eventString = try values.decode(String.self, forKey: BattleShip.CodingKeys.eventString)
         let winnerStr = try values.decode(String.self, forKey: BattleShip.CodingKeys.winner)
         if winnerStr == "Player 1" {
             winner = .p1
@@ -154,6 +157,7 @@ class BattleShip: Codable {
         let currPlayer = currentPlayer == .p1 ? "Player 1" : "Player 2"
         let maps = encodePlayerMaps()
         let hpForShips = encodeShipHitPoints()
+        try container.encode(eventString, forKey: BattleShip.CodingKeys.eventString)
         try container.encode(gameWinner, forKey: BattleShip.CodingKeys.winner)
         try container.encode(currPlayer, forKey: BattleShip.CodingKeys.currentPlayer)
         try container.encode(maps, forKey: BattleShip.CodingKeys.boardMap)
@@ -449,13 +453,19 @@ class BattleShip: Codable {
      - Return: returns true if the player successfully hit an opponenets ship, false otherwise.
      */
     func takeTurn(at row: Int, and col: Int) {
+        eventString = ""
         if currentPlayer == .p1 {
             if let pos = boardMap[.p2]?[row][col] {
                 if pos != .none && pos != .hit {
-                    print("P1: hit P2 ship at row: \(row), col: \(col)")
                     shipHitPoints[.p2]?[pos, default: 0] -= 1
+                    eventString = "Player 1 hit a ship!"
                     if shipHitPoints[.p2]?[pos] == 0 {
-                        print("ship sank!")
+                        shipHitPoints[.p2]?[pos] = nil
+                        eventString = "Player 1 sank a ship!"
+                    }
+                    if shipHitPoints[.p2]?.count == 0 {
+                        winner = .p1
+                        eventString = "Player 1 wins!"
                     }
                     boardMap[.p2]?[row][col] = .hit
                     currentPlayer = .p2
@@ -463,17 +473,23 @@ class BattleShip: Codable {
                 else if pos == .none {
                     boardMap[.p2]?[row][col] = .miss
                     currentPlayer = .p2
-                    print("P1: missed P2 ship at row: \(row), col: \(col)")
+                    eventString = "Player 1 missed!"
                 }
             }
         }
         else {
             if let pos = boardMap[.p1]?[row][col] {
                 if pos != .none && pos != .hit {
-                    print("P2: hit P1 ship at row: \(row), col: \(col)")
                     shipHitPoints[.p1]?[pos, default: 0] -= 1
+                    eventString = "Player 2 hit a ship!"
                     if shipHitPoints[.p1]?[pos] == 0 {
                         print("ship sank!")
+                        eventString = "Player 2 sank a ship!"
+                        shipHitPoints[.p1]?[pos] = nil
+                    }
+                    if shipHitPoints[.p1]?.count == 0 {
+                        winner = .p2
+                        eventString = "Player 2 wins!"
                     }
                     boardMap[.p1]?[row][col] = .hit
                     currentPlayer = .p1
@@ -481,9 +497,8 @@ class BattleShip: Codable {
                 else if pos == .none {
                     boardMap[.p1]?[row][col] = .miss
                     currentPlayer = .p1
-                    print("P2: missed P1 ship at row: \(row), col: \(col)")
+                    eventString = "Player 2 missed!"
                 }
-                
             }
         }
         delegate?.battleShip(self, cellChangedAt: row, and: col) // may need to pass in the player value to determine whos board changed

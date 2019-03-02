@@ -36,9 +36,9 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             saveGameState()
         }
         else {
-            print("loading data from FileManager")
+//            print("loading data from FileManager")
             loadSavedGames()
-            print("Number of Games loaded: \(gamesList.count)")
+//            print("Number of Games loaded: \(gamesList.count)")
         }
     }
     
@@ -63,21 +63,24 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let color = UIColor(red: 0.25, green: 0.25, blue: 0.333, alpha: 1.0)
         cell.textLabel?.font = UIFont(name: "Avenir", size: 18)
+        cell.detailTextLabel?.font = UIFont(name: "Avenir", size: 14)
         cell.backgroundColor = color
         print(indexPath.row)
         if gamesList.count > 0 {
             if gamesList[indexPath.row].winner == .none {
 //                0.98 green:0.79 blue:0.79
                 cell.textLabel?.text = "In Progress"
-                cell.textLabel?.textColor = UIColor(red: 0.98, green: 0.60, blue: 0.60, alpha: 1.0)
+                cell.textLabel?.textColor = UIColor(red: 0.99, green: 0.38, blue: 0.38, alpha: 1.0)
 //                cell.backgroundColor = UIColor(red: 0.53, green: 0.88, blue: 0.91, alpha: 1.0)
             }
             else {
+                cell.textLabel?.textColor = UIColor(red: 0.35, green: 0.99, blue: 0.35, alpha: 1.0)
                 cell.textLabel?.text = gamesList[indexPath.row].winner == .p1 ? "Winner:\nP1" : "Winner:\nP2"
 //                0.53 green:0.91 blue:0.76
 //                cell.backgroundColor = UIColor(red: 0.53, green: 0.91, blue: 0.88, alpha: 1.0)
             }
             if let p1Ships = gamesList[indexPath.row].shipHitPoints[.p1], let p2Ships = gamesList[indexPath.row].shipHitPoints[.p2] {
+                cell.detailTextLabel?.textColor = .white
                 cell.detailTextLabel?.text = "P1 Ships: \(p1Ships.count)  P2 Ships: \(p2Ships.count)"
             }
         }

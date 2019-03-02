@@ -94,7 +94,9 @@ class GameViewController: UIViewController, GameViewDelegate, BattleShipDelegate
     }
     
     func gameView(_ gameView: GameView, cellTouchedAt row: Int, and col: Int) {
-        battleShip.takeTurn(at: row, and: col)
+        if battleShip.winner == .none {
+            battleShip.takeTurn(at: row, and: col)
+        }
     }
     
     func battleShip(_ battleShip: BattleShip, cellChangedAt row: Int, and col: Int) {

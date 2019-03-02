@@ -17,16 +17,18 @@ class SwitchPlayerView: UIView {
     var delegate: SwitchPlayerViewDelegate?
     
     var playerLabel: UILabel?
-//    var shipHitLabel: UILabel?
+    var eventLabel: UILabel?
     private var tapToContinueLabel: UILabel?
     
     override init(frame: CGRect) {
         playerLabel = UILabel()
         tapToContinueLabel = UILabel()
+        eventLabel = UILabel()
         super.init(frame: frame)
         
         backgroundColor = UIColor(red: 0.88, green: 0.88, blue: 0.88, alpha: 1.0)
         playerLabel?.translatesAutoresizingMaskIntoConstraints = false
+        eventLabel?.translatesAutoresizingMaskIntoConstraints = false
         tapToContinueLabel?.translatesAutoresizingMaskIntoConstraints = false
     }
     
@@ -37,18 +39,25 @@ class SwitchPlayerView: UIView {
         playerLabel?.textAlignment = .center
         self.addSubview(playerLabel!)
         
+//        eventLabel?.text = "Tap to Continue"
+        eventLabel?.textColor = .black
+        eventLabel?.font = UIFont(name: "Avenir", size: 20.0)
+        eventLabel?.textAlignment = .center
+        self.addSubview(eventLabel!)
+        
         tapToContinueLabel?.text = "Tap to Continue"
         tapToContinueLabel?.textColor = .black
         tapToContinueLabel?.font = UIFont(name: "Avenir", size: 24.0)
         tapToContinueLabel?.textAlignment = .center
         self.addSubview(tapToContinueLabel!)
         
-        let views: [String: Any] = ["playerLabel": playerLabel!, "tapToContinueLabel": tapToContinueLabel!]
+        let views: [String: Any] = ["playerLabel": playerLabel!, "eventLabel": eventLabel!, "tapToContinueLabel": tapToContinueLabel!]
         
         // set the height and widths used below to properties of the view so that it can be updated in the viewController on willTransitionTo
         self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[playerLabel]-|", options: [], metrics: nil, views: views))
         self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tapToContinueLabel]-|", options: [], metrics: nil, views: views))
-        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-(\(frame.height * 0.333))-[playerLabel(<=\(frame.width * 0.25))]-50-[tapToContinueLabel(<=\(frame.width * 0.25))]", options: [], metrics: nil, views: views))
+        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[eventLabel]-|", options: [], metrics: nil, views: views))
+        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-(\(frame.height * 0.3))-[playerLabel(<=\(frame.width * 0.2))]-[eventLabel(<=\(frame.width * 0.08))]-15-[tapToContinueLabel(<=\(frame.width * 0.25))]-|", options: [], metrics: nil, views: views))
     }
     
     required init?(coder aDecoder: NSCoder) {

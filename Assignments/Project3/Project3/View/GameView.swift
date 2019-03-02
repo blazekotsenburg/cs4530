@@ -9,8 +9,6 @@
 import UIKit
 
 protocol GameViewDelegate {
-//    func gameView(_ gameView: GameView, tokenFor player: BattleShip.Token, at row: Int, and col: Int) -> BattleShip.Token
-//    func gameView(_ gameView: GameView, cellChangedAt row: Int, and col: Int)
     func gameView(_ gameView: GameView, cellTouchedAt row: Int, and col: Int)
     func gameView(_ gameView: GameView, currentPlayerTokenFor row: Int, and col: Int) -> String
     func gameView(_ gameView: GameView, opponentTokenFor row: Int, and col: Int) -> String
@@ -39,7 +37,7 @@ class GameView: UIView {
         let context: CGContext = UIGraphicsGetCurrentContext()!
         opponentRect = CGRect(x: 0.0, y: 0.0, width: frame.width * 0.7, height: frame.width * 0.7)
         opponentRect.origin.x = frame.width / 2 - opponentRect.width / 2
-        opponentRect.origin.y = 35.0
+        opponentRect.origin.y = 50.0
     
         context.addRect(opponentRect)
         context.setStrokeColor(UIColor.darkGray.cgColor)
@@ -49,7 +47,7 @@ class GameView: UIView {
 
         homeRect = CGRect(x: 0.0, y: 0.0, width: frame.width * 0.7, height: frame.width * 0.7)
         homeRect.origin.x = frame.width / 2 - homeRect.width / 2
-        homeRect.origin.y = opponentRect.origin.y + opponentRect.height + opponentRect.height * 0.1
+        homeRect.origin.y = opponentRect.origin.y + opponentRect.height + opponentRect.height * 0.08
         //Opponentboard
         context.addRect(homeRect)
         context.setStrokeColor(UIColor.darkGray.cgColor)

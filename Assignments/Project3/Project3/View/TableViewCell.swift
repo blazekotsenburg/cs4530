@@ -33,7 +33,7 @@ class TableViewCell: UITableViewCell {
 //        detailTextLabel?.numberOfLines = 2
 //        detailTextLabel?.lineBreakMode = .byWordWrapping
         detailTextLabel?.textAlignment = .center
-        self.selectionStyle = .none
+        selectionStyle = .none
     }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")

@@ -27,6 +27,7 @@ class SwitchPlayerViewController: UIViewController, SwitchPlayerViewDelegate {
                 switchPlayerView.playerLabel?.text = "Player 2's Turn"
             }
         }
+        switchPlayerView.eventLabel?.text = currGame?.eventString
     }
     
     override func viewDidLoad() {
