@@ -9,7 +9,6 @@
 import UIKit
 
 protocol HomeViewDelegate {
-    func homeView(loadDataFor homeView: HomeView)
     func homeView(newGameFor homeView: HomeView)
 }
 
@@ -64,8 +63,11 @@ class HomeView: UIView {
         self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-(\(frame.width * 0.15))-[newGameButton]-(\(frame.width * 0.15))-|", options: [], metrics: nil, views: views))
     }
     
+    func reloadData() {
+        setNeedsDisplay()
+    }
+    
     @objc func newGameButtonClicked() {
-        print("clicked")
         delegate.homeView(newGameFor: self)
     }
     

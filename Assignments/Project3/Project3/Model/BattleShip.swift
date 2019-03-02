@@ -42,7 +42,7 @@ class BattleShip: Codable {
     }
     
     //MARK: - CodingKey enum
-    enum CodingKeys: String, CodingKey {
+    enum CodingKeys: CodingKey {
         case winner
         case currentPlayer
         case boardMap

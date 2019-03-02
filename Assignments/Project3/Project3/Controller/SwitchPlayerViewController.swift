@@ -10,7 +10,7 @@ import UIKit
 
 class SwitchPlayerViewController: UIViewController, SwitchPlayerViewDelegate {
     
-    var gamesList: [BattleShip] = []
+//    var gamesList: [BattleShip] = []
     var currGame: BattleShip?
     
     var switchPlayerView: SwitchPlayerView {
@@ -27,7 +27,6 @@ class SwitchPlayerViewController: UIViewController, SwitchPlayerViewDelegate {
                 switchPlayerView.playerLabel?.text = "Player 2's Turn"
             }
         }
-        print(gamesList)
     }
     
     override func viewDidLoad() {

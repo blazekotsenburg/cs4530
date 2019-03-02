@@ -21,6 +21,20 @@ class TableViewCell: UITableViewCell {
         super.init(style: .value2, reuseIdentifier: reuseIdentifier)
     }
     
+    override func draw(_ rect: CGRect) {
+//        textLabel!.frame = CGRect(x: frame.origin.x, y: frame.origin.y, width: textLabel!.frame.width, height: frame.height)
+//        textLabel?.numberOfLines = 2
+//        textLabel?.lineBreakMode = .byWordWrapping
+        textLabel?.textAlignment = .center
+//
+//        let detailLabelXOrigin = frame.origin.x + textLabel!.frame.width
+//        let detailLabelYOrigin = frame.origin.y
+//        detailTextLabel!.frame = CGRect(x: detailLabelXOrigin, y: detailLabelYOrigin, width: frame.width * 0.666, height: frame.height)
+//        detailTextLabel?.numberOfLines = 2
+//        detailTextLabel?.lineBreakMode = .byWordWrapping
+        detailTextLabel?.textAlignment = .center
+        self.selectionStyle = .none
+    }
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

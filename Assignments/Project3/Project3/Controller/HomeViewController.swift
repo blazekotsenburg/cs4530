@@ -28,9 +28,27 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         homeView.tableView.dataSource = self
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        print(UserDefaults.standard.bool(forKey: "hasLoggedInBefore"))
+        if !UserDefaults.standard.bool(forKey: "hasLoggedInBefore") {
+            UserDefaults.standard.set(true, forKey: "hasLoggedInBefore")
+            saveGameState()
+        }
+        else {
+            print("loading data from FileManager")
+            loadSavedGames()
+            print("Number of Games loaded: \(gamesList.count)")
+        }
+    }
+    
     //MARK: UITableView Delegate functions
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return gamesList.count
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 100
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -44,20 +62,44 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let color = UIColor(red: 0.25, green: 0.25, blue: 0.333, alpha: 1.0)
-//        let color = UIColor(red: 0.15, green: 0.15, blue: 0.15, alpha: 1.0)
+        cell.textLabel?.font = UIFont(name: "Avenir", size: 18)
         cell.backgroundColor = color
-        cell.textLabel?.text = "hello, world: \(indexPath.row)"
-        cell.textLabel?.textColor = .white
-        cell.detailTextLabel?.text = "existing game"
+        print(indexPath.row)
+        if gamesList.count > 0 {
+            if gamesList[indexPath.row].winner == .none {
+//                0.98 green:0.79 blue:0.79
+                cell.textLabel?.text = "In Progress"
+                cell.textLabel?.textColor = UIColor(red: 0.98, green: 0.60, blue: 0.60, alpha: 1.0)
+//                cell.backgroundColor = UIColor(red: 0.53, green: 0.88, blue: 0.91, alpha: 1.0)
+            }
+            else {
+                cell.textLabel?.text = gamesList[indexPath.row].winner == .p1 ? "Winner:\nP1" : "Winner:\nP2"
+//                0.53 green:0.91 blue:0.76
+//                cell.backgroundColor = UIColor(red: 0.53, green: 0.91, blue: 0.88, alpha: 1.0)
+            }
+            if let p1Ships = gamesList[indexPath.row].shipHitPoints[.p1], let p2Ships = gamesList[indexPath.row].shipHitPoints[.p2] {
+                cell.detailTextLabel?.text = "P1 Ships: \(p1Ships.count)  P2 Ships: \(p2Ships.count)"
+            }
+        }
     }
-    
-    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print("Cell clicked to load game")
+        let gameViewController: GameViewController = GameViewController()
+        // New instance of BattleShip game
+        let battleShip: BattleShip = gamesList[indexPath.row]
+        // Initialize new GameViewControllers model to new BattleShip model
+        gameViewController.battleShip = battleShip
+        // Append games list with new instance of Battleship (will need to eventually make sure that this instance gets updated between all gamesLists)
+        //        gamesList.append(battleShip)
+        gameViewController.gameIndex = indexPath.row
+        gameViewController.gamesList = gamesList
+        present(gameViewController, animated: true, completion: nil)
     }
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
+//    func numberOfSections(in tableView: UITableView) -> Int {
+//        return 1
+//    }
     
     func homeView(newGameFor homeView: HomeView) {
         // Initialize a new GameViewController which will be initialized with a new BattleShip Game
@@ -67,11 +109,27 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         // Initialize new GameViewControllers model to new BattleShip model
         gameViewController.battleShip = battleShip
         // Append games list with new instance of Battleship (will need to eventually make sure that this instance gets updated between all gamesLists)
-        gameViewController.gamesList.append(battleShip)
+//        gamesList.append(battleShip)
+        gamesList.insert(battleShip, at: 0)
+        gameViewController.gameIndex = 0
+        gameViewController.gamesList = gamesList
         present(gameViewController, animated: true, completion: nil)
     }
     
-    func homeView(loadDataFor homeView: HomeView) {
-        
+    func saveGameState() {
+        let docDirectory = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+        do {
+            try gamesList.save(to: docDirectory.appendingPathComponent(Constants.battleShipListFile))
+        } catch let error where error is BattleShip.Error {
+            print(error)
+        } catch {
+            print(error)
+        }
+    }
+    
+    func loadSavedGames() {
+        let docDirectory = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+        let jsonData = try! Data(contentsOf: docDirectory.appendingPathComponent(Constants.battleShipListFile))
+        gamesList = try! JSONDecoder().decode([BattleShip].self, from: jsonData)
     }
 }

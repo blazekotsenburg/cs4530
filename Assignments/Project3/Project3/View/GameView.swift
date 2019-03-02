@@ -18,17 +18,14 @@ protocol GameViewDelegate {
 
 class GameView: UIView {
     
-    private var boardRect: CGRect
-//    private var homeBoard: UIView
+//    private var boardRect: CGRect
     private var homeRect: CGRect
     private var opponentRect: CGRect
-//    private var opponentBoard: UIView
-//    var boardStackView: UIStackView
     
     var delegate: GameViewDelegate?
     
     override init(frame: CGRect) {
-        boardRect = CGRect(x: frame.width * 0.5, y: frame.height * 0.3, width: frame.width * 0.8, height: frame.width * 0.8)
+//        boardRect = CGRect(x: frame.width * 0.5, y: frame.height * 0.3, width: frame.width * 0.8, height: frame.width * 0.8)
         homeRect = CGRect(x: frame.width * 0.5, y: frame.height * 0.3, width: frame.width * 0.8, height: frame.width * 0.8)
         opponentRect = CGRect(x: frame.width * 0.5, y: frame.height * 0.3, width: frame.width * 0.8, height: frame.width * 0.8)
         super.init(frame: frame)
@@ -136,8 +133,11 @@ class GameView: UIView {
             for col in 0 ..< 10 {
                 for row in 0 ..< 10 {
                     let cell: String = delegate.gameView(self, currentPlayerTokenFor: row, and: col)
-                    //not completely updating correctly for
-                    let point: CGPoint = CGPoint(x: homeRect.origin.x + (CGFloat(col) / 10.0) * homeRect.width, y: homeRect.origin.y + (CGFloat(row) / 10) * homeRect.height)
+                    
+                    let x: CGFloat = (CGFloat(col) + 0.25) * 0.1 * homeRect.width + homeRect.origin.x
+                    let y: CGFloat = (CGFloat(row) + 0.25) * 0.1 * homeRect.height + homeRect.origin.y
+                    let point: CGPoint = CGPoint(x: x, y: y)
+
                     (cell as NSString).draw(at: point, withAttributes: nil)
                 }
             }
@@ -145,8 +145,11 @@ class GameView: UIView {
             for col in 0 ..< 10 {
                 for row in 0 ..< 10 {
                     let cell: String = delegate.gameView(self, opponentTokenFor: row, and: col)
-                    //not completely updating correctly for
-                    let point: CGPoint = CGPoint(x: opponentRect.origin.x + (CGFloat(col) / 10.0) * opponentRect.width, y: opponentRect.origin.y + (CGFloat(row) / 10) * opponentRect.height)
+                    
+                    let x: CGFloat = (CGFloat(col) + 0.25) * 0.1 * opponentRect.width + opponentRect.origin.x
+                    let y: CGFloat = (CGFloat(row) + 0.25) * 0.1 * opponentRect.height + opponentRect.origin.y
+                    let point: CGPoint = CGPoint(x: x, y: y)
+
                     (cell as NSString).draw(at: point, withAttributes: nil)
                 }
             }
@@ -160,7 +163,6 @@ class GameView: UIView {
                 let row = Int((touch.y - opponentRect.origin.y) / (opponentRect.width / 10.0))
                 
                 delegate?.gameView(self, cellTouchedAt: row, and: col)
-//                print(row, col)
             }
         }
     }
