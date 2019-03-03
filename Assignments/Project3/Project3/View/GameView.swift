@@ -23,6 +23,8 @@ class GameView: UIView {
     var homeRectOriginX: CGFloat = 0.0
     var homeRectOriginY: CGFloat = 0.0
     var frameWidth: CGFloat = 0.0
+    var opponentLabel: UILabel
+    var homeLabel: UILabel
     private var firstLoad: Bool
     
     var delegate: GameViewDelegate?
@@ -31,6 +33,8 @@ class GameView: UIView {
         homeRect = CGRect(x: frame.width * 0.5, y: frame.height * 0.3, width: frame.width * 0.8, height: frame.width * 0.8)
         opponentRect = CGRect(x: frame.width * 0.5, y: frame.height * 0.3, width: frame.width * 0.8, height: frame.width * 0.8)
         firstLoad = true
+        opponentLabel = UILabel()
+        homeLabel = UILabel()
         super.init(frame: frame)
         
         backgroundColor = UIColor(red: 0.15, green: 0.15, blue: 0.15, alpha: 1.0)
@@ -47,10 +51,17 @@ class GameView: UIView {
         opponentRect.origin.x = frameWidth / 2 - opponentRect.width / 2
         opponentRect.origin.y = 50.0
         
+        opponentLabel.frame = CGRect(x: opponentRect.origin.x, y: opponentRect.origin.y - 20, width: frameWidth * 0.7, height: 20)
+        opponentLabel.text = "Opponent's Board"
+        opponentLabel.font = UIFont(name: "Avenir", size: 18)
+        opponentLabel.textAlignment = .center
+        opponentLabel.textColor = .white
+        addSubview(opponentLabel)
+        
         if firstLoad {
             firstLoad = false
-            homeRectOriginX = frame.width / 2 - homeRect.width / 2
-            homeRectOriginY = opponentRect.origin.y + opponentRect.height + opponentRect.height * 0.08
+            homeRectOriginX = opponentRect.origin.x
+            homeRectOriginY = opponentRect.origin.y + opponentRect.height + opponentRect.height * 0.1
         }
     
         context.addRect(opponentRect)
@@ -64,6 +75,13 @@ class GameView: UIView {
 //        homeRect.origin.y = opponentRect.origin.y + opponentRect.height + opponentRect.height * 0.08
         homeRect.origin.x = homeRectOriginX
         homeRect.origin.y = homeRectOriginY
+        
+        homeLabel.frame = CGRect(x: homeRect.origin.x, y: homeRect.origin.y - 20, width: frameWidth * 0.7, height: 20)
+        homeLabel.text = "Your Board"
+        homeLabel.font = UIFont(name: "Avenir", size: 18)
+        homeLabel.textAlignment = .center
+        homeLabel.textColor = .white
+        addSubview(homeLabel)
         
         //Opponentboard
         context.addRect(homeRect)
@@ -91,14 +109,14 @@ class GameView: UIView {
         }
         
         heightPercentage = 0.0
-        //Opponentboard
+        
         for _ in 0 ... 10 {
             let path: UIBezierPath = UIBezierPath()
-            path.move(to: CGPoint(x: opponentRect.origin.x, y: opponentRect.origin.y + (heightPercentage * opponentRect.height)))
-
-            let toX = opponentRect.origin.x + opponentRect.width
-            let toY = opponentRect.origin.y + (heightPercentage * opponentRect.height)
-
+            path.move(to: CGPoint(x: homeRectOriginX + (heightPercentage * homeRect.width), y: homeRectOriginY))
+            
+            let toX = homeRectOriginX + (heightPercentage * homeRect.width)
+            let toY = homeRectOriginY + homeRect.height
+            
             path.addLine(to: CGPoint(x: toX, y: toY))
             path.lineWidth = 1.0
             path.lineCapStyle = .round
@@ -109,14 +127,14 @@ class GameView: UIView {
         }
         
         heightPercentage = 0.0
-        
+        //Opponentboard
         for _ in 0 ... 10 {
             let path: UIBezierPath = UIBezierPath()
-            path.move(to: CGPoint(x: homeRectOriginX + (heightPercentage * homeRect.width), y: homeRectOriginY))
-            
-            let toX = homeRectOriginX + (heightPercentage * homeRect.width)
-            let toY = homeRectOriginY + homeRect.height
-            
+            path.move(to: CGPoint(x: opponentRect.origin.x, y: opponentRect.origin.y + (heightPercentage * opponentRect.height)))
+
+            let toX = opponentRect.origin.x + opponentRect.width
+            let toY = opponentRect.origin.y + (heightPercentage * opponentRect.height)
+
             path.addLine(to: CGPoint(x: toX, y: toY))
             path.lineWidth = 1.0
             path.lineCapStyle = .round

@@ -28,13 +28,16 @@ class GameViewController: UIViewController, GameViewDelegate, BattleShipDelegate
         return view as! GameView
     }
     
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    
     //MARK: - UIViewController Ovrrides
     override func loadView() {
         view = GameView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        print("GameVC appeared")
         saveGameState()
         gameView.reloadData()
     }
@@ -56,11 +59,11 @@ class GameViewController: UIViewController, GameViewDelegate, BattleShipDelegate
                 switch(token) {
                 case .hit:  cell = "🔥"
                 case .miss: cell = "💧"
-                case .ship5: cell = "5"
-                case .ship4: cell = "4"
-                case .ship3: cell = "3"
-                case .ship2A: cell = "2"
-                case .ship2B: cell = "2"
+                case .ship5: cell = "🚢"
+                case .ship4: cell = "🛳"
+                case .ship3: cell = "⛴"
+                case .ship2A: cell = "🛥"
+                case .ship2B: cell = "🚤"
                 default:    cell = ""
             }
         }
@@ -125,13 +128,13 @@ class GameViewController: UIViewController, GameViewDelegate, BattleShipDelegate
         if UIDevice.current.orientation.isPortrait {
             gameView.frameWidth = gameView.frame.height
             gameView.homeRectOriginX = gameView.frameWidth / 2 - gameView.homeRect.width / 2
-            gameView.homeRectOriginY = gameView.opponentRect.origin.y + gameView.opponentRect.width + gameView.opponentRect.width * 0.08
+            gameView.homeRectOriginY = gameView.opponentRect.origin.y + gameView.opponentRect.width + gameView.opponentRect.width * 0.1
             
             gameView.reloadData()
         }
         else if UIDevice.current.orientation.isLandscape {
             gameView.frameWidth = gameView.frame.width
-            gameView.homeRectOriginX = gameView.opponentRect.origin.x + gameView.opponentRect.width + gameView.opponentRect.width * 0.08
+            gameView.homeRectOriginX = gameView.opponentRect.origin.x + gameView.opponentRect.width + gameView.opponentRect.width * 0.1
             gameView.homeRectOriginY = gameView.frameWidth / 2 - gameView.homeRect.height / 2
             
             gameView.reloadData()

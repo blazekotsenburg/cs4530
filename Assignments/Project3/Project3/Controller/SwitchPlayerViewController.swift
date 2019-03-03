@@ -10,11 +10,14 @@ import UIKit
 
 class SwitchPlayerViewController: UIViewController, SwitchPlayerViewDelegate {
     
-//    var gamesList: [BattleShip] = []
     var currGame: BattleShip?
     
     var switchPlayerView: SwitchPlayerView {
         return view as! SwitchPlayerView
+    }
+    
+    override var prefersStatusBarHidden: Bool {
+        return true
     }
     
     override func loadView() {
@@ -44,8 +47,6 @@ class SwitchPlayerViewController: UIViewController, SwitchPlayerViewDelegate {
     }
     
     func switchPlayerView(_ switchPlayerView: SwitchPlayerView, playerReady: Bool) {
-        print("switchPlayerView clicked")
         self.dismiss(animated: true, completion: nil)
-        // how to resume to controller that presented this viewController and maintain state?
     }
 }

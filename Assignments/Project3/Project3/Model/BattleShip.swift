@@ -483,7 +483,6 @@ class BattleShip: Codable {
                     shipHitPoints[.p1]?[pos, default: 0] -= 1
                     eventString = "Player 2 hit a ship!"
                     if shipHitPoints[.p1]?[pos] == 0 {
-                        print("ship sank!")
                         eventString = "Player 2 sank a ship!"
                         shipHitPoints[.p1]?[pos] = nil
                     }

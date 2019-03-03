@@ -39,7 +39,6 @@ class SwitchPlayerView: UIView {
         playerLabel?.textAlignment = .center
         self.addSubview(playerLabel!)
         
-//        eventLabel?.text = "Tap to Continue"
         eventLabel?.textColor = .black
         eventLabel?.font = UIFont(name: "Avenir", size: 20.0)
         eventLabel?.textAlignment = .center

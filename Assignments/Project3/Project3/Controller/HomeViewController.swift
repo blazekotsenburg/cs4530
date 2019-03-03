@@ -16,6 +16,10 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         return view as! HomeView
     }
     
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    
     //MARK: Override functions
     override func loadView() {
         view = HomeView()
@@ -30,15 +34,12 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-        print(UserDefaults.standard.bool(forKey: "hasLoggedInBefore"))
         if !UserDefaults.standard.bool(forKey: "hasLoggedInBefore") {
             UserDefaults.standard.set(true, forKey: "hasLoggedInBefore")
             saveGameState()
         }
         else {
-//            print("loading data from FileManager")
             loadSavedGames()
-//            print("Number of Games loaded: \(gamesList.count)")
         }
     }
     
@@ -65,10 +66,9 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         cell.textLabel?.font = UIFont(name: "Avenir", size: 18)
         cell.detailTextLabel?.font = UIFont(name: "Avenir", size: 14)
         cell.backgroundColor = color
-        print(indexPath.row)
+
         if gamesList.count > 0 {
             if gamesList[indexPath.row].winner == .none {
-//                0.98 green:0.79 blue:0.79
                 cell.textLabel?.text = "In Progress"
                 cell.textLabel?.textColor = UIColor(red: 0.99, green: 0.38, blue: 0.38, alpha: 1.0)
 //                cell.backgroundColor = UIColor(red: 0.53, green: 0.88, blue: 0.91, alpha: 1.0)
@@ -87,17 +87,23 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
         
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print("Cell clicked to load game")
         let gameViewController: GameViewController = GameViewController()
         // New instance of BattleShip game
         let battleShip: BattleShip = gamesList[indexPath.row]
         // Initialize new GameViewControllers model to new BattleShip model
         gameViewController.battleShip = battleShip
         // Append games list with new instance of Battleship (will need to eventually make sure that this instance gets updated between all gamesLists)
-        //        gamesList.append(battleShip)
         gameViewController.gameIndex = indexPath.row
         gameViewController.gamesList = gamesList
         present(gameViewController, animated: true, completion: nil)
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            gamesList.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .bottom)
+            saveGameState()
+        }
     }
     
 //    func numberOfSections(in tableView: UITableView) -> Int {
@@ -112,7 +118,6 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         // Initialize new GameViewControllers model to new BattleShip model
         gameViewController.battleShip = battleShip
         // Append games list with new instance of Battleship (will need to eventually make sure that this instance gets updated between all gamesLists)
-//        gamesList.append(battleShip)
         gamesList.insert(battleShip, at: 0)
         gameViewController.gameIndex = 0
         gameViewController.gamesList = gamesList
