@@ -17,27 +17,41 @@ protocol GameViewDelegate {
 class GameView: UIView {
     
 //    private var boardRect: CGRect
-    private var homeRect: CGRect
-    private var opponentRect: CGRect
+    var homeRect: CGRect
+    var opponentRect: CGRect
+    
+    var homeRectOriginX: CGFloat = 0.0
+    var homeRectOriginY: CGFloat = 0.0
+    var frameWidth: CGFloat = 0.0
+    private var firstLoad: Bool
     
     var delegate: GameViewDelegate?
     
     override init(frame: CGRect) {
-//        boardRect = CGRect(x: frame.width * 0.5, y: frame.height * 0.3, width: frame.width * 0.8, height: frame.width * 0.8)
         homeRect = CGRect(x: frame.width * 0.5, y: frame.height * 0.3, width: frame.width * 0.8, height: frame.width * 0.8)
         opponentRect = CGRect(x: frame.width * 0.5, y: frame.height * 0.3, width: frame.width * 0.8, height: frame.width * 0.8)
+        firstLoad = true
         super.init(frame: frame)
         
         backgroundColor = UIColor(red: 0.15, green: 0.15, blue: 0.15, alpha: 1.0)
     }
     
     override func draw(_ rect: CGRect) {
-//        let boardWidth = frame.width * 0.6
+        
+        if firstLoad {
+            frameWidth = frame.width
+        }
         
         let context: CGContext = UIGraphicsGetCurrentContext()!
-        opponentRect = CGRect(x: 0.0, y: 0.0, width: frame.width * 0.7, height: frame.width * 0.7)
-        opponentRect.origin.x = frame.width / 2 - opponentRect.width / 2
+        opponentRect = CGRect(x: 0.0, y: 0.0, width: frameWidth * 0.7, height: frameWidth * 0.7)
+        opponentRect.origin.x = frameWidth / 2 - opponentRect.width / 2
         opponentRect.origin.y = 50.0
+        
+        if firstLoad {
+            firstLoad = false
+            homeRectOriginX = frame.width / 2 - homeRect.width / 2
+            homeRectOriginY = opponentRect.origin.y + opponentRect.height + opponentRect.height * 0.08
+        }
     
         context.addRect(opponentRect)
         context.setStrokeColor(UIColor.darkGray.cgColor)
@@ -45,9 +59,12 @@ class GameView: UIView {
         context.setFillColor(UIColor.darkGray.cgColor)
         context.drawPath(using: .fillStroke)
 
-        homeRect = CGRect(x: 0.0, y: 0.0, width: frame.width * 0.7, height: frame.width * 0.7)
-        homeRect.origin.x = frame.width / 2 - homeRect.width / 2
-        homeRect.origin.y = opponentRect.origin.y + opponentRect.height + opponentRect.height * 0.08
+        homeRect = CGRect(x: 0.0, y: 0.0, width: frameWidth * 0.7, height: frameWidth * 0.7)
+//        homeRect.origin.x = frameWidth / 2 - homeRect.width / 2
+//        homeRect.origin.y = opponentRect.origin.y + opponentRect.height + opponentRect.height * 0.08
+        homeRect.origin.x = homeRectOriginX
+        homeRect.origin.y = homeRectOriginY
+        
         //Opponentboard
         context.addRect(homeRect)
         context.setStrokeColor(UIColor.darkGray.cgColor)
@@ -59,10 +76,10 @@ class GameView: UIView {
 
         for _ in 0 ... 10 {
             let path: UIBezierPath = UIBezierPath()
-            path.move(to: CGPoint(x: homeRect.origin.x, y: homeRect.origin.y + (heightPercentage * homeRect.height)))
+            path.move(to: CGPoint(x: homeRectOriginX, y: homeRectOriginY + (heightPercentage * homeRect.height)))
             
-            let toX = homeRect.origin.x + homeRect.width
-            let toY = homeRect.origin.y + (heightPercentage * homeRect.height)
+            let toX = homeRectOriginX + homeRect.width
+            let toY = homeRectOriginY + (heightPercentage * homeRect.height)
             
             path.addLine(to: CGPoint(x: toX, y: toY))
             path.lineWidth = 1.0
@@ -95,10 +112,10 @@ class GameView: UIView {
         
         for _ in 0 ... 10 {
             let path: UIBezierPath = UIBezierPath()
-            path.move(to: CGPoint(x: homeRect.origin.x + (heightPercentage * homeRect.width), y: homeRect.origin.y))
+            path.move(to: CGPoint(x: homeRectOriginX + (heightPercentage * homeRect.width), y: homeRectOriginY))
             
-            let toX = homeRect.origin.x + (heightPercentage * homeRect.width)
-            let toY = homeRect.origin.y + homeRect.height
+            let toX = homeRectOriginX + (heightPercentage * homeRect.width)
+            let toY = homeRectOriginY + homeRect.height
             
             path.addLine(to: CGPoint(x: toX, y: toY))
             path.lineWidth = 1.0
@@ -132,8 +149,8 @@ class GameView: UIView {
                 for row in 0 ..< 10 {
                     let cell: String = delegate.gameView(self, currentPlayerTokenFor: row, and: col)
                     
-                    let x: CGFloat = (CGFloat(col) + 0.25) * 0.1 * homeRect.width + homeRect.origin.x
-                    let y: CGFloat = (CGFloat(row) + 0.25) * 0.1 * homeRect.height + homeRect.origin.y
+                    let x: CGFloat = (CGFloat(col) + 0.25) * 0.1 * homeRect.width + homeRectOriginX
+                    let y: CGFloat = (CGFloat(row) + 0.25) * 0.1 * homeRect.height + homeRectOriginY
                     let point: CGPoint = CGPoint(x: x, y: y)
 
                     (cell as NSString).draw(at: point, withAttributes: nil)

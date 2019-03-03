@@ -119,8 +119,23 @@ class GameViewController: UIViewController, GameViewDelegate, BattleShipDelegate
         }
     }
     
-//    override func willTransition(to newCollection: UITraitCollection, with coordinator: UIViewControllerTransitionCoordinator) {
-//        <#code#>
-//    }
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        if UIDevice.current.orientation.isPortrait {
+            gameView.frameWidth = gameView.frame.height
+            gameView.homeRectOriginX = gameView.frameWidth / 2 - gameView.homeRect.width / 2
+            gameView.homeRectOriginY = gameView.opponentRect.origin.y + gameView.opponentRect.width + gameView.opponentRect.width * 0.08
+            
+            gameView.reloadData()
+        }
+        else if UIDevice.current.orientation.isLandscape {
+            gameView.frameWidth = gameView.frame.width
+            gameView.homeRectOriginX = gameView.opponentRect.origin.x + gameView.opponentRect.width + gameView.opponentRect.width * 0.08
+            gameView.homeRectOriginY = gameView.frameWidth / 2 - gameView.homeRect.height / 2
+            
+            gameView.reloadData()
+        }
+    }
 }
 
