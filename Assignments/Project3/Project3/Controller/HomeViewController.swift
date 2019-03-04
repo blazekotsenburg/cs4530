@@ -40,6 +40,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         else {
             loadSavedGames()
+            homeView.tableView.reloadData()
         }
     }
     
