@@ -52,6 +52,11 @@ class GameViewController: UIViewController, GameViewDelegate, BattleShipDelegate
     }
 
     //MARK: - GameViewDelegate Methods
+    func gameView(backButtonPressedFor gameView: GameView) {
+        saveGameState()
+        dismiss(animated: true, completion: nil)
+    }
+    
     func gameView(_ gameView: GameView, currentPlayerTokenFor row: Int, and col: Int) -> String{ //the gameView doesn't update on a turn taken fast enough. consider a way to display a hit for opponnent board and then transitioning to the other viewcontroller.
         let currPlayer = battleShip.currentPlayer
         var cell: String = ""

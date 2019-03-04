@@ -44,21 +44,30 @@ class HomeView: UIView {
         tableView.frame.origin.y -= tableView.frame.height / 2.0
         tableView.backgroundColor = UIColor(red: 0.25, green: 0.25, blue: 0.333, alpha: 1.0)
         tableView.rowHeight = 80.0
+        tableView.layer.borderColor = UIColor.white.cgColor
+        tableView.layer.borderWidth = 2.0
         addSubview(tableView)
         
         titleLabel.text = "Battle Ship"
         titleLabel.textColor = .white
         titleLabel.font = UIFont(name: "Avenir", size: 22)
         titleLabel.textAlignment = .center
+        titleLabel.backgroundColor = .black
+        titleLabel.layer.borderWidth = 2.0
+        titleLabel.layer.borderColor = UIColor.white.cgColor
         addSubview(titleLabel)
         
         newGameButton.setTitle("New Game", for: .normal)
+        newGameButton.titleLabel!.font = UIFont(name: "Avenir", size: 22)
+        newGameButton.backgroundColor = UIColor(red: 0.19, green: 0.83, blue: 0.52, alpha: 1.0)
+        newGameButton.layer.borderColor = UIColor.white.cgColor
+        newGameButton.layer.borderWidth = 2.0
         addSubview(newGameButton)
         
         let views = ["tableView": tableView, "titleLabel": titleLabel, "newGameButton": newGameButton]
         
         self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[titleLabel]-|", options: [], metrics: nil, views: views))
-        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-[titleLabel]-20-[tableView]-20-[newGameButton]-14-|", options: [], metrics: nil, views: views))
+        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-12-[titleLabel]-20-[tableView]-20-[newGameButton]-14-|", options: [], metrics: nil, views: views))
         self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tableView]-|", options: [], metrics: nil, views: views))
         self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-(\(frame.width * 0.15))-[newGameButton]-(\(frame.width * 0.15))-|", options: [], metrics: nil, views: views))
     }

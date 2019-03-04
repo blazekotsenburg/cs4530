@@ -9,6 +9,7 @@
 import UIKit
 
 protocol GameViewDelegate {
+    func gameView(backButtonPressedFor gameView: GameView)
     func gameView(_ gameView: GameView, cellTouchedAt row: Int, and col: Int)
     func gameView(_ gameView: GameView, currentPlayerTokenFor row: Int, and col: Int) -> String
     func gameView(_ gameView: GameView, opponentTokenFor row: Int, and col: Int) -> String
@@ -26,18 +27,25 @@ class GameView: UIView {
     var opponentLabel: UILabel
     var homeLabel: UILabel
     private var firstLoad: Bool
+    private var backButton: UIButton
     
     var delegate: GameViewDelegate?
     
     override init(frame: CGRect) {
         homeRect = CGRect(x: frame.width * 0.5, y: frame.height * 0.3, width: frame.width * 0.8, height: frame.width * 0.8)
         opponentRect = CGRect(x: frame.width * 0.5, y: frame.height * 0.3, width: frame.width * 0.8, height: frame.width * 0.8)
+        backButton = UIButton()
         firstLoad = true
         opponentLabel = UILabel()
         homeLabel = UILabel()
         super.init(frame: frame)
         
+        backButton.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
         backgroundColor = UIColor(red: 0.15, green: 0.15, blue: 0.15, alpha: 1.0)
+    }
+    
+    @objc func backButtonPressed() {
+        delegate?.gameView(backButtonPressedFor: self)
     }
     
     override func draw(_ rect: CGRect) {
@@ -57,6 +65,11 @@ class GameView: UIView {
         opponentLabel.textAlignment = .center
         opponentLabel.textColor = .white
         addSubview(opponentLabel)
+        
+        backButton.frame = CGRect(x: 12.0, y: 12.0, width: 80.0, height: 20.0)
+        backButton.setTitle("← Back", for: .normal)
+        backButton.titleLabel!.font = UIFont(name: "Avenir", size: 18)
+        addSubview(backButton)
         
         if firstLoad {
             firstLoad = false
