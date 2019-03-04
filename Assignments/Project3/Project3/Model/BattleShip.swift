@@ -37,8 +37,6 @@ class BattleShip: Codable {
     
     //MARK - Model initialization
     init() {
-//        winner = .none
-//        currentPlayer = .p1
         initBoards()
     }
     
@@ -454,53 +452,60 @@ class BattleShip: Codable {
      */
     func takeTurn(at row: Int, and col: Int) {
         eventString = ""
+        var wasValidMove: Bool = false
         if currentPlayer == .p1 {
             if let pos = boardMap[.p2]?[row][col] {
-                if pos != .none && pos != .hit {
+                if pos != .none && pos != .hit && pos != .miss {
+                    wasValidMove = true
                     shipHitPoints[.p2]?[pos, default: 0] -= 1
-                    eventString = "Player 1 hit a ship!"
+                    eventString = "Player 1 hit a ship! 🔥"
                     if shipHitPoints[.p2]?[pos] == 0 {
                         shipHitPoints[.p2]?[pos] = nil
-                        eventString = "Player 1 sank a ship!"
+                        eventString = "Player 1 sank a ship! 💣"
                     }
                     if shipHitPoints[.p2]?.count == 0 {
                         winner = .p1
-                        eventString = "Player 1 wins!"
+                        eventString = "Player 1 wins! 🏆"
                     }
                     boardMap[.p2]?[row][col] = .hit
                     currentPlayer = .p2
                 }
                 else if pos == .none {
+                    wasValidMove = true
                     boardMap[.p2]?[row][col] = .miss
                     currentPlayer = .p2
-                    eventString = "Player 1 missed!"
+                    eventString = "Player 1 missed! 💧"
                 }
             }
         }
         else {
             if let pos = boardMap[.p1]?[row][col] {
-                if pos != .none && pos != .hit {
+                if pos != .none && pos != .hit && pos != .miss {
+                    wasValidMove = true
                     shipHitPoints[.p1]?[pos, default: 0] -= 1
-                    eventString = "Player 2 hit a ship!"
+                    eventString = "Player 2 hit a ship! 🔥"
                     if shipHitPoints[.p1]?[pos] == 0 {
-                        eventString = "Player 2 sank a ship!"
                         shipHitPoints[.p1]?[pos] = nil
+                        eventString = "Player 2 sank a ship! 💣"
                     }
                     if shipHitPoints[.p1]?.count == 0 {
                         winner = .p2
-                        eventString = "Player 2 wins!"
+                        eventString = "Player 2 wins! 🏆"
                     }
                     boardMap[.p1]?[row][col] = .hit
                     currentPlayer = .p1
                 }
                 else if pos == .none {
+                    wasValidMove = true
                     boardMap[.p1]?[row][col] = .miss
                     currentPlayer = .p1
-                    eventString = "Player 2 missed!"
+                    eventString = "Player 2 missed! 💧"
                 }
             }
         }
-        delegate?.battleShip(self, cellChangedAt: row, and: col) // may need to pass in the player value to determine whos board changed
+        if wasValidMove {
+            delegate?.battleShip(self, cellChangedAt: row, and: col) // may need to pass in the player value to determine whos board changed
+        }
     }
 }
 

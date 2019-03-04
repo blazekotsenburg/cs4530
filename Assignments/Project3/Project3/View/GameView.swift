@@ -63,11 +63,11 @@ class GameView: UIView {
             homeRectOriginX = opponentRect.origin.x
             homeRectOriginY = opponentRect.origin.y + opponentRect.height + opponentRect.height * 0.1
         }
-    
+//        58 green:0.93 blue:0.91
         context.addRect(opponentRect)
-        context.setStrokeColor(UIColor.darkGray.cgColor)
+        context.setStrokeColor(UIColor(red: 0.50, green: 0.80, blue: 0.77, alpha: 1.0).cgColor)
         context.setLineWidth(1.0)
-        context.setFillColor(UIColor.darkGray.cgColor)
+        context.setFillColor(UIColor(red: 0.50, green: 0.80, blue: 0.77, alpha: 1.0).cgColor)
         context.drawPath(using: .fillStroke)
 
         homeRect = CGRect(x: 0.0, y: 0.0, width: frameWidth * 0.7, height: frameWidth * 0.7)
@@ -85,9 +85,9 @@ class GameView: UIView {
         
         //Opponentboard
         context.addRect(homeRect)
-        context.setStrokeColor(UIColor.darkGray.cgColor)
+        context.setStrokeColor(UIColor(red: 0.50, green: 0.80, blue: 0.77, alpha: 1.0).cgColor)
         context.setLineWidth(1.0)
-        context.setFillColor(UIColor.darkGray.cgColor)
+        context.setFillColor(UIColor(red: 0.50, green: 0.80, blue: 0.77, alpha: 1.0).cgColor)
         context.drawPath(using: .fillStroke)
         
         var heightPercentage: CGFloat = 0.0
@@ -102,7 +102,7 @@ class GameView: UIView {
             path.addLine(to: CGPoint(x: toX, y: toY))
             path.lineWidth = 1.0
             path.lineCapStyle = .round
-            UIColor.lightGray.setStroke()
+            UIColor(red: 0.22, green: 0.64, blue: 0.98, alpha: 1.0).setStroke()
             path.stroke()
             path.close()
             heightPercentage += 0.1
@@ -120,7 +120,7 @@ class GameView: UIView {
             path.addLine(to: CGPoint(x: toX, y: toY))
             path.lineWidth = 1.0
             path.lineCapStyle = .round
-            UIColor.lightGray.setStroke()
+            UIColor(red: 0.22, green: 0.64, blue: 0.98, alpha: 1.0).setStroke()
             path.stroke()
             path.close()
             heightPercentage += 0.1
@@ -138,7 +138,7 @@ class GameView: UIView {
             path.addLine(to: CGPoint(x: toX, y: toY))
             path.lineWidth = 1.0
             path.lineCapStyle = .round
-            UIColor.lightGray.setStroke()
+            UIColor(red: 0.22, green: 0.64, blue: 0.98, alpha: 1.0).setStroke()
             path.stroke()
             path.close()
             heightPercentage += 0.1
@@ -156,7 +156,7 @@ class GameView: UIView {
             path.addLine(to: CGPoint(x: toX, y: toY))
             path.lineWidth = 1.0
             path.lineCapStyle = .round
-            UIColor.lightGray.setStroke()
+            UIColor(red: 0.22, green: 0.64, blue: 0.98, alpha: 1.0).setStroke()
             path.stroke()
             path.close()
             heightPercentage += 0.1
