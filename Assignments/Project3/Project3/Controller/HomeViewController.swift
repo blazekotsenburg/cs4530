@@ -40,8 +40,8 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         else {
             loadSavedGames()
-            homeView.tableView.reloadData()
         }
+        homeView.tableView.reloadData()
     }
     
     //MARK: UITableView Delegate functions
@@ -50,7 +50,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 100
+        return 80
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -59,30 +59,30 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         }
         _ = cell.increment
         // this is where you can actually customize a cell
+        
         return cell
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let color = UIColor(red: 0.25, green: 0.25, blue: 0.333, alpha: 1.0)
-        cell.textLabel?.font = UIFont(name: "Avenir", size: 18)
+        cell.textLabel?.font = UIFont(name: "Avenir", size: 14)
         cell.detailTextLabel?.font = UIFont(name: "Avenir", size: 14)
         cell.backgroundColor = color
+        
+        let player = gamesList[indexPath.row].currentPlayer == .p1 ? "P1" : "P2"
 
         if gamesList.count > 0 {
             if gamesList[indexPath.row].winner == .none {
-                cell.textLabel?.text = "In Progress"
+                cell.textLabel?.text = "In Progress - " + player + "'s Turn"
                 cell.textLabel?.textColor = UIColor(red: 0.99, green: 0.38, blue: 0.38, alpha: 1.0)
-//                cell.backgroundColor = UIColor(red: 0.53, green: 0.88, blue: 0.91, alpha: 1.0)
             }
             else {
                 cell.textLabel?.textColor = UIColor(red: 0.35, green: 0.99, blue: 0.35, alpha: 1.0)
-                cell.textLabel?.text = gamesList[indexPath.row].winner == .p1 ? "Winner:\nP1" : "Winner:\nP2"
-//                0.53 green:0.91 blue:0.76
-//                cell.backgroundColor = UIColor(red: 0.53, green: 0.91, blue: 0.88, alpha: 1.0)
+                cell.textLabel?.text = gamesList[indexPath.row].winner == .p1 ? "Winner:P1" : "Winner:P2"
             }
             if let p1Ships = gamesList[indexPath.row].shipHitPoints[.p1], let p2Ships = gamesList[indexPath.row].shipHitPoints[.p2] {
                 cell.detailTextLabel?.textColor = .white
-                cell.detailTextLabel?.text = "P1 Ships: \(p1Ships.count)  P2 Ships: \(p2Ships.count)"
+                cell.detailTextLabel?.text = "P1: \(p1Ships.count)  P2: \(p2Ships.count)"
             }
         }
     }
@@ -106,10 +106,6 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             saveGameState()
         }
     }
-    
-//    func numberOfSections(in tableView: UITableView) -> Int {
-//        return 1
-//    }
     
     func homeView(newGameFor homeView: HomeView) {
         // Initialize a new GameViewController which will be initialized with a new BattleShip Game
