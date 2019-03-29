@@ -87,6 +87,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let color = UIColor(red: 0.25, green: 0.25, blue: 0.333, alpha: 1.0)
         cell.textLabel?.font = UIFont(name: "Avenir", size: 14)
+        cell.textLabel?.textColor = UIColor(red: 0.19, green: 0.83, blue: 0.52, alpha: 1.0)
         cell.detailTextLabel?.font = UIFont(name: "Avenir", size: 14)
         cell.backgroundColor = color
         cell.textLabel?.text = lobbyGameList[indexPath.row].name
@@ -98,10 +99,12 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         let gameAtIndex: LobbyGame = lobbyGameList[indexPath.row]
 
         if gameAtIndex.status == "WAITING" {
-            let joinGameViewController: JoinGameViewController = JoinGameViewController()
-            joinGameViewController.guid = lobbyGameList[indexPath.row].id
-            joinGameViewController.guidDict = guidDict
-            present(joinGameViewController, animated: true, completion: nil)
+            if guidDict[gameAtIndex.id] == nil {
+                let joinGameViewController: JoinGameViewController = JoinGameViewController()
+                joinGameViewController.guid = lobbyGameList[indexPath.row].id
+                joinGameViewController.guidDict = guidDict
+                present(joinGameViewController, animated: true, completion: nil)
+            }
         }
         else if gameAtIndex.status == "PLAYING" {
             if guidDict[gameAtIndex.id] != nil {
@@ -109,6 +112,11 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                 gameViewController.guid = gameAtIndex.id
                 gameViewController.playerId = guidDict[gameAtIndex.id]!
                 present(gameViewController, animated: true, completion: nil)
+            }
+            else {
+                let gameDetailViewController: GameDetailViewController = GameDetailViewController()
+                gameDetailViewController.guid = gameAtIndex.id
+                present(gameDetailViewController, animated: true, completion: nil)
             }
         }
         else if gameAtIndex.status == "DONE" {
@@ -120,6 +128,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
             else {
                 let gameDetailViewController: GameDetailViewController = GameDetailViewController()
+                gameDetailViewController.guid = gameAtIndex.id
                 present(gameDetailViewController, animated: true, completion: nil)
             }
         }

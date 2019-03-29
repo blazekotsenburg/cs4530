@@ -11,7 +11,6 @@ import UIKit
 class GameViewController: UIViewController, GameViewDelegate, BattleShipDelegate {
     
     //MARK: - Instance Elements
-    var gamesList: [BattleShip] = []
     var battleShip: BattleShip = BattleShip()
     var gameIndex: Int = 0
     var playerId: String = ""
@@ -159,23 +158,9 @@ class GameViewController: UIViewController, GameViewDelegate, BattleShipDelegate
     
     func battleShip(_ battleShip: BattleShip, cellChangedAt row: Int, and col: Int) {
         let switchPlayerViewController = SwitchPlayerViewController()
-//        switchPlayerViewController.currGame = battleShip
-        gamesList[gameIndex] = battleShip // this will not always be the case, will need to save game index
-        
-//        saveGameState()
+        //TODO: - Need to set up switch player view accoridingly now
         present(switchPlayerViewController, animated: true, completion: nil) // switch view controller after a player takes their turn
     }
-    
-//    func saveGameState() {
-//        let docDirectory = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-//        do {
-//            try gamesList.save(to: docDirectory.appendingPathComponent(Constants.gameListFile))
-//        } catch let error where error is BattleShip.Error {
-//            print(error)
-//        } catch {
-//            print(error)
-//        }
-//    }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
