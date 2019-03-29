@@ -118,6 +118,10 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                 gameViewController.playerId = guidDict[gameAtIndex.id]!
                 present(gameViewController, animated: true, completion: nil)
             }
+            else {
+                let gameDetailViewController: GameDetailViewController = GameDetailViewController()
+                present(gameDetailViewController, animated: true, completion: nil)
+            }
         }
     }
     
