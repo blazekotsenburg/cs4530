@@ -31,23 +31,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         homeView.delegate = self
         homeView.tableView.delegate = self
         homeView.tableView.dataSource = self
-
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(true)
-        
         homeView.segmentedControl.selectedSegmentIndex = 0
-        
-        if !UserDefaults.standard.bool(forKey: "hasLoggedInBefore") {
-            UserDefaults.standard.set(true, forKey: "hasLoggedInBefore")
-            saveGameState()
-        }
-        else {
-            loadSavedGames()
-        }
-        
-        homeView.tableView.reloadData()
         
         let waitingURL: URL = URL(string: "http://174.23.159.139:2142/api/lobby?status=WAITING")!
         let task = URLSession.shared.dataTask(with: waitingURL) { [weak self] (data, response, error) in
@@ -65,6 +49,20 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             }
         }
         task.resume()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        
+        if !UserDefaults.standard.bool(forKey: "hasLoggedInBefore") {
+            UserDefaults.standard.set(true, forKey: "hasLoggedInBefore")
+            saveGameState()
+        }
+        else {
+            loadSavedGames()
+        }
+        
+        homeView.tableView.reloadData()
     }
     
     //MARK: UITableView Delegate functions
@@ -214,12 +212,15 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                             fatalError("no data to work with")
                     }
                     //            print(datastring)
-                    self?.lobbyGameList = try! JSONDecoder().decode([LobbyGame].self, from: data)
+                    let guidList = try! JSONDecoder().decode([[String: String]].self, from: data)
                     DispatchQueue.main.async {
                         
-                        
-                        
-                        self?.homeView.tableView.reloadData()
+                        self?.lobbyGameList = []
+                        for item in guidList {
+                            if self?.guidDict[item["id"]!] != nil {
+                                self?.getGameDetails(for: item["id"]!)
+                            }
+                        }
                     }
                 }
                 task.resume()
@@ -242,6 +243,25 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         } catch {
             print(error)
         }
+    }
+    
+    func getGameDetails(for guid: String) {
+        let webURL: URL = URL(string: "http://174.23.159.139:2142/api/lobby/\(guid)")!
+        let loadBoardTask = URLSession.shared.dataTask(with: webURL) { [weak self] (data, response, error) in
+            guard error == nil else {
+                fatalError("URL dataTask failed: \(error!)")
+            }
+            guard let data = data,
+                let dataString = String(bytes: data, encoding: .utf8) else {
+                    fatalError("no data to work with")
+            }
+            let gameDetailData = try! JSONDecoder().decode(LobbyGame.self, from: data)
+            DispatchQueue.main.async {
+                self?.lobbyGameList.append(gameDetailData)
+                self?.homeView.tableView.reloadData()
+            }
+        }
+        loadBoardTask.resume()
     }
     
     func loadSavedGames() {

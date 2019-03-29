@@ -242,6 +242,9 @@ func turnDetailForGame() {
                     }
                     if turnDetailData["winner"] as! String != "IN_PROGRESS" {
                         self?.isYourTurn = false
+                        let switchPlayerViewController: SwitchPlayerViewController = SwitchPlayerViewController()
+                        switchPlayerViewController.status = "\(turnDetailData["winner"] as? String) WINS!"
+                        self?.present(switchPlayerViewController, animated: true, completion: nil)
                     }
                 }
             }
