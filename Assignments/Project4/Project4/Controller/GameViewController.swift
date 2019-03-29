@@ -233,7 +233,7 @@ func turnDetailForGame() {
                         self?.gameView.reloadData()
                     }
                     if turnDetailData["winner"] as! String != "IN_PROGRESS" {
-                        //TODO: Handle the winner
+                        self?.isYourTurn = false
                     }
                 }
             }

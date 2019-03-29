@@ -80,7 +80,6 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             fatalError("Coulod not dequeue reusable cell of type: \(TableViewCell.self)")
         }
         _ = cell.increment
-        // this is where you can actually customize a cell
         
         return cell
     }
@@ -92,23 +91,6 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         cell.backgroundColor = color
         cell.textLabel?.text = lobbyGameList[indexPath.row].name
         cell.detailTextLabel?.text = lobbyGameList[indexPath.row].status
-        
-//        let player = gamesList[indexPath.row].currentPlayer == .p1 ? "P1" : "P2"
-//
-//        if gamesList.count > 0 {
-//            if gamesList[indexPath.row].winner == .none {
-//                cell.textLabel?.text = "In Progress - " + player + "'s Turn"
-//                cell.textLabel?.textColor = UIColor(red: 0.99, green: 0.38, blue: 0.38, alpha: 1.0)
-//            }
-//            else {
-//                cell.textLabel?.textColor = UIColor(red: 0.35, green: 0.99, blue: 0.35, alpha: 1.0)
-//                cell.textLabel?.text = gamesList[indexPath.row].winner == .p1 ? "Winner:P1" : "Winner:P2"
-//            }
-//            if let p1Ships = gamesList[indexPath.row].shipHitPoints[.p1], let p2Ships = gamesList[indexPath.row].shipHitPoints[.p2] {
-//                cell.detailTextLabel?.textColor = .white
-//                cell.detailTextLabel?.text = "P1: \(p1Ships.count)  P2: \(p2Ships.count)"
-//            }
-//        }
     }
         
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -122,6 +104,14 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             present(joinGameViewController, animated: true, completion: nil)
         }
         else if gameAtIndex.status == "PLAYING" {
+            if guidDict[gameAtIndex.id] != nil {
+                let gameViewController: GameViewController = GameViewController()
+                gameViewController.guid = gameAtIndex.id
+                gameViewController.playerId = guidDict[gameAtIndex.id]!
+                present(gameViewController, animated: true, completion: nil)
+            }
+        }
+        else if gameAtIndex.status == "DONE" {
             if guidDict[gameAtIndex.id] != nil {
                 let gameViewController: GameViewController = GameViewController()
                 gameViewController.guid = gameAtIndex.id
