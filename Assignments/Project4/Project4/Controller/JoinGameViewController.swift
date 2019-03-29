@@ -24,6 +24,10 @@ class JoinGameViewController: UIViewController, JoinGameViewDelegate {
         joinGameView.reloadData()
     }
     
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    
     override func loadView() {
         view = JoinGameView()
     }
@@ -64,6 +68,10 @@ class JoinGameViewController: UIViewController, JoinGameViewDelegate {
             }
         }
         task.resume()
+    }
+    
+    func joinGameView(exitGameViewFor joinGameView: JoinGameView) {
+        dismiss(animated: true, completion: nil)
     }
     
     func saveGameState() {

@@ -10,53 +10,44 @@ import UIKit
 
 protocol SwitchPlayerViewDelegate {
     func switchPlayerView(_ switchPlayerView: SwitchPlayerView, playerReady: Bool)
+    func switchPlayerView(getLaunchStatus switchPlayerView: SwitchPlayerView) -> String
 }
 
 class SwitchPlayerView: UIView {
     
     var delegate: SwitchPlayerViewDelegate?
     
-    var playerLabel: UILabel?
-    var eventLabel: UILabel?
-    private var tapToContinueLabel: UILabel?
+    var status: UILabel = UILabel()
+    private var tapToContinueLabel: UILabel = UILabel()
     
     override init(frame: CGRect) {
-        playerLabel = UILabel()
-        tapToContinueLabel = UILabel()
-        eventLabel = UILabel()
         super.init(frame: frame)
         
         backgroundColor = UIColor(red: 0.88, green: 0.88, blue: 0.88, alpha: 1.0)
-        playerLabel?.translatesAutoresizingMaskIntoConstraints = false
-        eventLabel?.translatesAutoresizingMaskIntoConstraints = false
-        tapToContinueLabel?.translatesAutoresizingMaskIntoConstraints = false
+        status.translatesAutoresizingMaskIntoConstraints = false
+        tapToContinueLabel.translatesAutoresizingMaskIntoConstraints = false
     }
     
     override func draw(_ rect: CGRect) {
-        playerLabel?.textColor = .black
-        playerLabel?.font = UIFont(name: "Avenir", size: 32.0)
-        playerLabel?.font = UIFont.boldSystemFont(ofSize: 32.0)
-        playerLabel?.textAlignment = .center
-        self.addSubview(playerLabel!)
         
-        eventLabel?.textColor = .black
-        eventLabel?.font = UIFont(name: "Avenir", size: 20.0)
-        eventLabel?.textAlignment = .center
-        self.addSubview(eventLabel!)
+        status.text = delegate?.switchPlayerView(getLaunchStatus: self)
+        status.textColor = .black
+        status.font = UIFont(name: "Avenir", size: 32.0)
+        status.textAlignment = .center
+        addSubview(status)
         
-        tapToContinueLabel?.text = "Tap to Continue"
-        tapToContinueLabel?.textColor = .black
-        tapToContinueLabel?.font = UIFont(name: "Avenir", size: 24.0)
-        tapToContinueLabel?.textAlignment = .center
-        self.addSubview(tapToContinueLabel!)
+        tapToContinueLabel.text = "Tap to Continue"
+        tapToContinueLabel.textColor = .black
+        tapToContinueLabel.font = UIFont(name: "Avenir", size: 24.0)
+        tapToContinueLabel.textAlignment = .center
+        addSubview(tapToContinueLabel)
         
-        let views: [String: Any] = ["playerLabel": playerLabel!, "eventLabel": eventLabel!, "tapToContinueLabel": tapToContinueLabel!]
+        status.widthAnchor.constraint(equalTo: safeAreaLayoutGuide.widthAnchor, multiplier: 0.5).isActive = true
+        status.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor).isActive = true
+        status.centerXAnchor.constraint(lessThanOrEqualToSystemSpacingAfter: safeAreaLayoutGuide.centerXAnchor, multiplier: 0.5).isActive = true
         
-        // set the height and widths used below to properties of the view so that it can be updated in the viewController on willTransitionTo
-        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[playerLabel]-|", options: [], metrics: nil, views: views))
-        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tapToContinueLabel]-|", options: [], metrics: nil, views: views))
-        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[eventLabel]-|", options: [], metrics: nil, views: views))
-        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-(\(frame.height * 0.3))-[playerLabel(<=\(frame.width * 0.2))]-[eventLabel(<=\(frame.width * 0.08))]-15-[tapToContinueLabel(<=\(frame.width * 0.25))]-|", options: [], metrics: nil, views: views))
+        tapToContinueLabel.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -50.0).isActive = true
+        tapToContinueLabel.centerXAnchor.constraint(lessThanOrEqualToSystemSpacingAfter: safeAreaLayoutGuide.centerXAnchor, multiplier: 0.5).isActive = true
     }
     
     required init?(coder aDecoder: NSCoder) {

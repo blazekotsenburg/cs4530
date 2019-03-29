@@ -10,6 +10,7 @@ import UIKit
 
 protocol NewGameViewDelegate {
     func newGameView(createGameFor newGameView: NewGameView)
+    func newGameView(exitGameViewFor newGameView: NewGameView)
 }
 
 class NewGameView: UIView {
@@ -34,6 +35,8 @@ class NewGameView: UIView {
         submitButton.translatesAutoresizingMaskIntoConstraints = false
         backButton.translatesAutoresizingMaskIntoConstraints = false
         stackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        backButton.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -98,6 +101,12 @@ class NewGameView: UIView {
         stackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[playerNameLabel]-|", options: [], metrics: nil, views: views))
         stackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[playerNameField]-|", options: [], metrics: nil, views: views))
         stackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-20-[submitButton]-20-|", options: [], metrics: nil, views: views))
+        
+        backButton.setTitle("← Back", for: .normal)
+        backButton.titleLabel!.font = UIFont(name: "Avenir", size: 18)
+        addSubview(backButton)
+        backButton.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 12.0)
+        backButton.widthAnchor.constraint(lessThanOrEqualToConstant: 80.0)
     }
     
     func reloadData() {
@@ -115,6 +124,12 @@ class NewGameView: UIView {
     @objc func submitButtonPressed(sender: Any) {
         if let _ = sender as? UIButton {
             delegate?.newGameView(createGameFor: self)
+        }
+    }
+    
+    @objc func backButtonPressed(sender: Any) {
+        if let _ = sender as? UIButton {
+            delegate?.newGameView(exitGameViewFor: self)
         }
     }
 }

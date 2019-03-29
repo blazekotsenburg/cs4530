@@ -10,6 +10,7 @@ import UIKit
 
 protocol HomeViewDelegate {
     func homeView(newGameFor homeView: HomeView)
+    func homeView(filterGamesFor homeView: HomeView, index: Int)
 }
 
 class HomeView: UIView {
@@ -17,6 +18,7 @@ class HomeView: UIView {
     var tableView: UITableView
     private var titleLabel: UILabel
     private var newGameButton: UIButton
+    var segmentedControl: UISegmentedControl
     
     var delegate: HomeViewDelegate!
     
@@ -24,6 +26,7 @@ class HomeView: UIView {
         tableView = UITableView()
         titleLabel = UILabel()
         newGameButton = UIButton()
+        segmentedControl = UISegmentedControl()
         super.init(frame: frame)
         
         tableView.register(TableViewCell.self, forCellReuseIdentifier: String(describing: TableViewCell.self))
@@ -34,6 +37,13 @@ class HomeView: UIView {
         newGameButton.addTarget(self, action: #selector(newGameButtonClicked), for: .touchUpInside)
         newGameButton.translatesAutoresizingMaskIntoConstraints = false
         
+        segmentedControl.addTarget(self, action: #selector(updateGameFilter), for: .valueChanged)
+        segmentedControl.translatesAutoresizingMaskIntoConstraints = false
+        segmentedControl.insertSegment(withTitle: "Waiting", at: 0, animated: true)
+        segmentedControl.insertSegment(withTitle: "Playing", at: 1, animated: true)
+        segmentedControl.insertSegment(withTitle: "Done", at: 2, animated: true)
+        segmentedControl.insertSegment(withTitle: "My Games", at: 3, animated: true)
+        addSubview(segmentedControl)
 //        backgroundColor = UIColor(red: 0.25, green: 0.25, blue: 0.333, alpha: 1.0)
         backgroundColor = UIColor(red: 0.15, green: 0.15, blue: 0.15, alpha: 1.0)
     }
@@ -64,10 +74,14 @@ class HomeView: UIView {
         newGameButton.layer.borderWidth = 2.0
         addSubview(newGameButton)
         
-        let views = ["tableView": tableView, "titleLabel": titleLabel, "newGameButton": newGameButton]
+        segmentedControl.backgroundColor = .black
+        segmentedControl.tintColor = UIColor(red: 0.19, green: 0.83, blue: 0.52, alpha: 1.0)
+        
+        let views = ["tableView": tableView, "titleLabel": titleLabel, "newGameButton": newGameButton, "segControl": segmentedControl]
         
         self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[titleLabel]-|", options: [], metrics: nil, views: views))
-        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-12-[titleLabel]-20-[tableView]-20-[newGameButton]-14-|", options: [], metrics: nil, views: views))
+        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[segControl]-|", options: [], metrics: nil, views: views))
+        self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:|-12-[titleLabel]-20-[segControl]-10-[tableView]-20-[newGameButton]-14-|", options: [], metrics: nil, views: views))
         self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[tableView]-|", options: [], metrics: nil, views: views))
         self.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-(\(frame.width * 0.15))-[newGameButton]-(\(frame.width * 0.15))-|", options: [], metrics: nil, views: views))
     }
@@ -78,6 +92,10 @@ class HomeView: UIView {
     
     @objc func newGameButtonClicked() {
         delegate.homeView(newGameFor: self)
+    }
+    
+    @objc func updateGameFilter() {
+        delegate.homeView(filterGamesFor: self, index: segmentedControl.selectedSegmentIndex)
     }
     
     required init?(coder aDecoder: NSCoder) {

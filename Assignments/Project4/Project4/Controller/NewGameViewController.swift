@@ -17,6 +17,10 @@ class NewGameViewController: UIViewController, NewGameViewDelegate {
         return view as! NewGameView
     }
     
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         newGameView.delegate = self
@@ -59,6 +63,10 @@ class NewGameViewController: UIViewController, NewGameViewDelegate {
             }
         }
         task.resume()
+    }
+    
+    func newGameView(exitGameViewFor newGameView: NewGameView) {
+        dismiss(animated: true, completion: nil)
     }
     
     func saveGameState() {

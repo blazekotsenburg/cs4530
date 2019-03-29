@@ -10,6 +10,7 @@ import UIKit
 
 protocol JoinGameViewDelegate {
     func joinGameView(for joinGameView: JoinGameView)
+    func joinGameView(exitGameViewFor joinGameView: JoinGameView)
 }
 
 class JoinGameView: UIView {
@@ -30,6 +31,8 @@ class JoinGameView: UIView {
         submitButton.translatesAutoresizingMaskIntoConstraints = false
         backButton.translatesAutoresizingMaskIntoConstraints = false
         stackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        backButton.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -76,6 +79,12 @@ class JoinGameView: UIView {
         stackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[playerNameLabel]-|", options: [], metrics: nil, views: views))
         stackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[playerNameField]-|", options: [], metrics: nil, views: views))
         stackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-20-[submitButton]-20-|", options: [], metrics: nil, views: views))
+        
+        backButton.setTitle("← Back", for: .normal)
+        backButton.titleLabel!.font = UIFont(name: "Avenir", size: 18)
+        addSubview(backButton)
+        backButton.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 12.0)
+        backButton.widthAnchor.constraint(lessThanOrEqualToConstant: 80.0)
     }
     
     func reloadData() {
@@ -93,6 +102,12 @@ class JoinGameView: UIView {
     @objc func submitButtonPressed(sender: Any) {
         if let _ = sender as? UIButton {
             delegate?.joinGameView(for: self)
+        }
+    }
+    
+    @objc func backButtonPressed(sender: Any) {
+        if let _ = sender as? UIButton {
+            delegate?.joinGameView(exitGameViewFor: self)
         }
     }
 }

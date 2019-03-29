@@ -131,9 +131,32 @@ class GameViewController: UIViewController, GameViewDelegate, BattleShipDelegate
                             let hit = missileFiredData["hit"] as! Bool
                             let shipSunk = missileFiredData["shipSunk"] as! Int
                             
+                            var launchStatus: String
+                            switch(shipSunk) {
+                                case 5:
+                                    launchStatus = "CARRIER SANK!"
+                                    break
+                                case 4:
+                                    launchStatus = "BATTLESHIP SANK!"
+                                    break
+                                case 3:
+                                    launchStatus = "SUBMARINE SANK!" //Consider adding some means of determining whether sub or cruiser sank
+                                    break
+                                case 2:
+                                    launchStatus = "DESTROYER SANK!"
+                                    break
+                                default:
+                                    launchStatus = ""
+                            }
+                            
                             var status: String = ""
                             if hit {
-                                status = "HIT!"
+                                if !launchStatus.isEmpty {
+                                    status = launchStatus
+                                }
+                                else {
+                                    status = "HIT!"
+                                }
                             }
                             else {
                                 status = "MISS!"

@@ -16,6 +16,10 @@ class GameDetailViewController: UIViewController, GameDetailViewDelegate {
         return view as! GameDetailView
     }
     
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    
     override func loadView() {
         view = GameDetailView()
     }

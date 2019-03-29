@@ -27,7 +27,12 @@ class SwitchPlayerViewController: UIViewController, SwitchPlayerViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         switchPlayerView.delegate = self
+//        switchPlayerView.status.text = status
     }
+    
+//    override func viewWillAppear(_ animated: Bool) {
+//        switchPlayerView.status.text = status
+//    }
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -39,5 +44,9 @@ class SwitchPlayerViewController: UIViewController, SwitchPlayerViewDelegate {
     
     func switchPlayerView(_ switchPlayerView: SwitchPlayerView, playerReady: Bool) {
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    func switchPlayerView(getLaunchStatus switchPlayerView: SwitchPlayerView) -> String {
+        return status
     }
 }
