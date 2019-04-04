@@ -32,7 +32,7 @@ class SwitchPlayerView: UIView {
         
         status.text = delegate?.switchPlayerView(getLaunchStatus: self)
         status.textColor = .black
-        status.font = UIFont(name: "Avenir", size: 32.0)
+        status.font = UIFont(name: "Avenir", size: 28.0)
         status.textAlignment = .center
         addSubview(status)
         
@@ -42,7 +42,7 @@ class SwitchPlayerView: UIView {
         tapToContinueLabel.textAlignment = .center
         addSubview(tapToContinueLabel)
         
-        status.widthAnchor.constraint(equalTo: safeAreaLayoutGuide.widthAnchor, multiplier: 0.5).isActive = true
+        status.widthAnchor.constraint(equalTo: safeAreaLayoutGuide.widthAnchor).isActive = true
         status.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor).isActive = true
         status.centerXAnchor.constraint(lessThanOrEqualToSystemSpacingAfter: safeAreaLayoutGuide.centerXAnchor, multiplier: 0.5).isActive = true
         

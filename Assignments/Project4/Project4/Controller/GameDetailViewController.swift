@@ -41,7 +41,7 @@ class GameDetailViewController: UIViewController, GameDetailViewDelegate {
     }
     
     private func getGameDetails() {
-        let webURL: URL = URL(string: "http://174.23.159.139:2142/api/lobby/\(guid)")!
+        let webURL: URL = URL(string: "http://174.23.151.160:2142/api/lobby/\(guid)")!
         let loadBoardTask = URLSession.shared.dataTask(with: webURL) { [weak self] (data, response, error) in
             guard error == nil else {
                 fatalError("URL dataTask failed: \(error!)")

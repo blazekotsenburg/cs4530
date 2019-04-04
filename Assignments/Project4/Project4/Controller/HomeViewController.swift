@@ -33,7 +33,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
         homeView.tableView.dataSource = self
         homeView.segmentedControl.selectedSegmentIndex = 0
         
-        let waitingURL: URL = URL(string: "http://174.23.159.139:2142/api/lobby?status=WAITING")!
+        let waitingURL: URL = URL(string: "http://174.23.151.160:2142/api/lobby?status=WAITING")!
         let task = URLSession.shared.dataTask(with: waitingURL) { [weak self] (data, response, error) in
             guard error == nil else {
                 fatalError("URL dataTask failed: \(error!)")
@@ -41,6 +41,12 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
             guard let data = data,
                 let _ = String(bytes: data, encoding: .utf8) else {
                     fatalError("no data to work with")
+            }
+            guard let response = response as? HTTPURLResponse,
+                (200...299).contains(response.statusCode)
+                else {
+                    print("Network Error")
+                    return
             }
             //            print(datastring)
             self?.lobbyGameList = try! JSONDecoder().decode([LobbyGame].self, from: data)
@@ -148,7 +154,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     func homeView(filterGamesFor homeView: HomeView, index: Int) {
         switch(index) {
             case 0:
-                let waitingFilterURL: URL = URL(string: "http://174.23.159.139:2142/api/lobby?status=WAITING")!
+                let waitingFilterURL: URL = URL(string: "http://174.23.151.160:2142/api/lobby?status=WAITING")!
                 let task = URLSession.shared.dataTask(with: waitingFilterURL) { [weak self] (data, response, error) in
                     guard error == nil else {
                         fatalError("URL dataTask failed: \(error!)")
@@ -156,6 +162,12 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                     guard let data = data,
                         let _ = String(bytes: data, encoding: .utf8) else {
                             fatalError("no data to work with")
+                    }
+                    guard let response = response as? HTTPURLResponse,
+                        (200...299).contains(response.statusCode)
+                        else {
+                            print("Network Error")
+                            return
                     }
                     //            print(datastring)
                     self?.lobbyGameList = try! JSONDecoder().decode([LobbyGame].self, from: data)
@@ -166,7 +178,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                 task.resume()
                 break
             case 1:
-                let playingFilterURL: URL = URL(string: "http://174.23.159.139:2142/api/lobby?status=PLAYING")!
+                let playingFilterURL: URL = URL(string: "http://174.23.151.160:2142/api/lobby?status=PLAYING")!
                 let task = URLSession.shared.dataTask(with: playingFilterURL) { [weak self] (data, response, error) in
                     guard error == nil else {
                         fatalError("URL dataTask failed: \(error!)")
@@ -184,7 +196,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                 task.resume()
                 break
             case 2:
-                let doneFilterURL: URL = URL(string: "http://174.23.159.139:2142/api/lobby?status=DONE")!
+                let doneFilterURL: URL = URL(string: "http://174.23.151.160:2142/api/lobby?status=DONE")!
                 let task = URLSession.shared.dataTask(with: doneFilterURL) { [weak self] (data, response, error) in
                     guard error == nil else {
                         fatalError("URL dataTask failed: \(error!)")
@@ -192,6 +204,12 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                     guard let data = data,
                         let _ = String(bytes: data, encoding: .utf8) else {
                             fatalError("no data to work with")
+                    }
+                    guard let response = response as? HTTPURLResponse,
+                        (200...299).contains(response.statusCode)
+                        else {
+                            print("Network Error")
+                            return
                     }
                     //            print(datastring)
                     self?.lobbyGameList = try! JSONDecoder().decode([LobbyGame].self, from: data)
@@ -202,7 +220,7 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                 task.resume()
                 break
             default:
-                let doneFilterURL: URL = URL(string: "http://174.23.159.139:2142/api/lobby")!
+                let doneFilterURL: URL = URL(string: "http://174.23.151.160:2142/api/lobby")!
                 let task = URLSession.shared.dataTask(with: doneFilterURL) { [weak self] (data, response, error) in
                     guard error == nil else {
                         fatalError("URL dataTask failed: \(error!)")
@@ -210,6 +228,12 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
                     guard let data = data,
                         let _ = String(bytes: data, encoding: .utf8) else {
                             fatalError("no data to work with")
+                    }
+                    guard let response = response as? HTTPURLResponse,
+                        (200...299).contains(response.statusCode)
+                        else {
+                            print("Network Error")
+                            return
                     }
                     //            print(datastring)
                     let guidList = try! JSONDecoder().decode([[String: String]].self, from: data)
@@ -246,14 +270,20 @@ class HomeViewController: UIViewController, UITableViewDelegate, UITableViewData
     }
     
     func getGameDetails(for guid: String) {
-        let webURL: URL = URL(string: "http://174.23.159.139:2142/api/lobby/\(guid)")!
+        let webURL: URL = URL(string: "http://174.23.151.160:2142/api/lobby/\(guid)")!
         let loadBoardTask = URLSession.shared.dataTask(with: webURL) { [weak self] (data, response, error) in
             guard error == nil else {
                 fatalError("URL dataTask failed: \(error!)")
             }
             guard let data = data,
-                let dataString = String(bytes: data, encoding: .utf8) else {
+                let _ = String(bytes: data, encoding: .utf8) else {
                     fatalError("no data to work with")
+            }
+            guard let response = response as? HTTPURLResponse,
+                (200...299).contains(response.statusCode)
+                else {
+                    print("Network Error")
+                    return
             }
             let gameDetailData = try! JSONDecoder().decode(LobbyGame.self, from: data)
             DispatchQueue.main.async {

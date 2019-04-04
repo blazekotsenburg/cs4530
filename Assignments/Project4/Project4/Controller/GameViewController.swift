@@ -18,6 +18,7 @@ class GameViewController: UIViewController, GameViewDelegate, BattleShipDelegate
     var status: String = ""
     var gameDetailTimer: Timer = Timer()
     var isYourTurn: Bool = Bool()
+    var gameOver: Bool = false
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -62,7 +63,8 @@ class GameViewController: UIViewController, GameViewDelegate, BattleShipDelegate
     //MARK: - GameViewDelegate Methods
     func gameView(backButtonPressedFor gameView: GameView) {
 //        saveGameState()
-        dismiss(animated: true, completion: nil)
+        self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
+//        dismiss(animated: true, completion: nil)
     }
     
     func gameView(_ gameView: GameView, currentPlayerTokenFor row: Int, and col: Int) -> String{
@@ -95,7 +97,7 @@ class GameViewController: UIViewController, GameViewDelegate, BattleShipDelegate
     func gameView(_ gameView: GameView, cellTouchedAt row: Int, and col: Int) {
         if isYourTurn {
             isYourTurn = false
-            let gamesWebURL: URL = URL(string: "http://174.23.159.139:2142/api/games/\(guid)")!
+            let gamesWebURL: URL = URL(string: "http://174.23.151.160:2142/api/games/\(guid)")!
             if battleShip.winner == .none {
                 //            battleShip.takeTurn(at: row, and: col)
                 var post: URLRequest = URLRequest(url: gamesWebURL)
@@ -205,7 +207,7 @@ class GameViewController: UIViewController, GameViewDelegate, BattleShipDelegate
     }
     
     func loadBattleshipBoards() {
-        let webURL: URL = URL(string: "http://174.23.159.139:2142/api/games/\(guid)/boards?playerId=\(playerId)")!
+        let webURL: URL = URL(string: "http://174.23.151.160:2142/api/games/\(guid)/boards?playerId=\(playerId)")!
         let loadBoardTask = URLSession.shared.dataTask(with: webURL) { [weak self] (data, response, error) in
             guard error == nil else {
                 fatalError("URL dataTask failed: \(error!)")
@@ -223,7 +225,7 @@ class GameViewController: UIViewController, GameViewDelegate, BattleShipDelegate
     }
     
 func turnDetailForGame() {
-        let webURL: URL = URL(string: "http://174.23.159.139:2142/api/games/\(guid)?playerId=\(playerId)")!
+        let webURL: URL = URL(string: "http://174.23.151.160:2142/api/games/\(guid)?playerId=\(playerId)")!
         let whosTurnTask = URLSession.shared.dataTask(with: webURL) { [weak self] (data, response, error) in
             guard error == nil else {
                 fatalError("URL dataTask failed: \(error!)")
@@ -232,19 +234,36 @@ func turnDetailForGame() {
                 let _ = String(bytes: data, encoding: .utf8) else {
                     fatalError("no data to work with")
             }
+            guard let response = response as? HTTPURLResponse,
+                (200...299).contains(response.statusCode)
+                else {
+                    print("Network Error: Game turns")
+                    return
+            }
             if let turnDetailData = try! JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
                 DispatchQueue.main.async {
                     if turnDetailData["isYourTurn"] as! Bool{
                         self?.gameDetailTimer.invalidate()
                         self?.isYourTurn = true
                         self?.loadBattleshipBoards()
+                        self?.gameView.opponentLabel.text = "Your Turn!"
+                        self?.gameView.reloadData()
+                    }
+                    else {
+                        self?.gameView.opponentLabel.text = "Opponents Turn!"
                         self?.gameView.reloadData()
                     }
                     if turnDetailData["winner"] as! String != "IN_PROGRESS" {
-                        self?.isYourTurn = false
-                        let switchPlayerViewController: SwitchPlayerViewController = SwitchPlayerViewController()
-                        switchPlayerViewController.status = "\(turnDetailData["winner"] as? String) WINS!"
-                        self?.present(switchPlayerViewController, animated: true, completion: nil)
+                        if !(self?.gameOver)! {
+                            self?.gameOver = true
+                            self?.isYourTurn = false
+                            self?.gameDetailTimer.invalidate()
+                            let switchPlayerViewController: SwitchPlayerViewController = SwitchPlayerViewController()
+                            if let winnerName = turnDetailData["winner"] as? String {
+                                switchPlayerViewController.status = "\(winnerName) WINS!"
+                            }
+                            self?.present(switchPlayerViewController, animated: true, completion: nil)
+                        }
                     }
                 }
             }

@@ -10,7 +10,7 @@ import UIKit
 
 class JoinGameViewController: UIViewController, JoinGameViewDelegate {
     
-    var webURL: URL = URL(string: "http://174.23.159.139:2142/api/lobby")!
+    var webURL: URL = URL(string: "http://174.23.151.160:2142/api/lobby")!
     var guidDict: [String: String] = [String: String]()
     var guid: String = ""
     
@@ -33,7 +33,7 @@ class JoinGameViewController: UIViewController, JoinGameViewDelegate {
     }
     
     func joinGameView(for joinGameView: JoinGameView) {
-        let joinGameURL: URL = URL(string: "http://174.23.159.139:2142/api/lobby/\(guid)")!
+        let joinGameURL: URL = URL(string: "http://174.23.151.160:2142/api/lobby/\(guid)")!
         var post: URLRequest = URLRequest(url: joinGameURL)
         post.httpMethod = "PUT"
         let dataString: [String: String] = ["playerName": joinGameView.playerNameTextField.text!, "id": guid]
@@ -71,6 +71,7 @@ class JoinGameViewController: UIViewController, JoinGameViewDelegate {
     }
     
     func joinGameView(exitGameViewFor joinGameView: JoinGameView) {
+//        self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
         dismiss(animated: true, completion: nil)
     }
     

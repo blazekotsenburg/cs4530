@@ -60,7 +60,6 @@ class GameView: UIView {
         opponentRect.origin.y = 50.0
         
         opponentLabel.frame = CGRect(x: opponentRect.origin.x, y: opponentRect.origin.y - 20, width: frameWidth * 0.7, height: 20)
-        opponentLabel.text = "Opponent's Board"
         opponentLabel.font = UIFont(name: "Avenir", size: 18)
         opponentLabel.textAlignment = .center
         opponentLabel.textColor = .white
@@ -76,7 +75,7 @@ class GameView: UIView {
             homeRectOriginX = opponentRect.origin.x
             homeRectOriginY = opponentRect.origin.y + opponentRect.height + opponentRect.height * 0.1
         }
-//        58 green:0.93 blue:0.91
+
         context.addRect(opponentRect)
         context.setStrokeColor(UIColor(red: 0.50, green: 0.80, blue: 0.77, alpha: 1.0).cgColor)
         context.setLineWidth(1.0)

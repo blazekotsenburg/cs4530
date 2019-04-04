@@ -44,7 +44,7 @@ class JoinGameView: UIView {
         //        addSubview(gameNameTextField)
         addSubview(stackView)
         stackView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 50).isActive = true
-        stackView.heightAnchor.constraint(equalToConstant: 200).isActive = true
+        stackView.heightAnchor.constraint(equalToConstant: 150).isActive = true
         stackView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 12.0).isActive = true
         stackView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -12.0).isActive = true
         stackView.alignment = .center

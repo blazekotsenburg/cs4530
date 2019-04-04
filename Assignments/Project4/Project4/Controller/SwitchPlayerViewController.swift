@@ -27,7 +27,6 @@ class SwitchPlayerViewController: UIViewController, SwitchPlayerViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         switchPlayerView.delegate = self
-//        switchPlayerView.status.text = status
     }
     
 //    override func viewWillAppear(_ animated: Bool) {

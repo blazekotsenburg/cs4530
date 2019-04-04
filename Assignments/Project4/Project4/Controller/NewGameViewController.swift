@@ -10,7 +10,7 @@ import UIKit
 
 class NewGameViewController: UIViewController, NewGameViewDelegate {
     
-    var webURL: URL = URL(string: "http://174.23.159.139:2142/api/lobby")!
+    var webURL: URL = URL(string: "http://174.23.151.160:2142/api/lobby")!
     var guidDict: [String: String] = [:]
     
     var newGameView: NewGameView {
@@ -58,7 +58,11 @@ class NewGameViewController: UIViewController, NewGameViewDelegate {
                 DispatchQueue.main.async { [weak self] in
                     self?.guidDict.updateValue(dataForGUID["playerId"]!, forKey: dataForGUID["gameId"]!)
                     self?.saveGameState()
-                    self?.dismiss(animated: true, completion: nil)
+
+                    let gameViewController: GameViewController = GameViewController()
+                    gameViewController.guid = (dataForGUID["gameId"])!
+                    gameViewController.playerId = dataForGUID["playerId"]!
+                    self?.present(gameViewController, animated: true, completion: nil)
                 }
             }
         }

@@ -2,7 +2,7 @@
 //  TableViewCell.swift
 //  Project3
 //
-//  Created by Blaze Kotsenburg on 2/24/19.
+//  Created by Blaze Kotsenburg on 4/3/19.
 //  Copyright © 2019 Blaze Kotsenburg. All rights reserved.
 //
 
@@ -13,7 +13,7 @@ class TableViewCell: UITableViewCell {
     static let lock = NSLock()
     static var count: Int = 0 {
         didSet {
-//            print(count)
+            //            print(count)
         }
     }
     
@@ -22,8 +22,8 @@ class TableViewCell: UITableViewCell {
     }
     
     override func draw(_ rect: CGRect) {
-        textLabel?.textAlignment = .center
-        detailTextLabel?.textAlignment = .center
+        textLabel?.textAlignment = .left
+        detailTextLabel?.textAlignment = .left
         selectionStyle = .none
     }
     
