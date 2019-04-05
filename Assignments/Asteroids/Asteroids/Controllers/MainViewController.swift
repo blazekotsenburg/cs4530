@@ -31,13 +31,11 @@ class MainViewController: UIViewController, MainViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         mainView.delegate = self
-        mainView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
-        mainView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        mainView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
-        mainView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
         mainView.reloadData()
     }
-
-
+    
+    override func viewWillAppear(_ animated: Bool) {
+        mainView.reloadData()
+    }
 }
 

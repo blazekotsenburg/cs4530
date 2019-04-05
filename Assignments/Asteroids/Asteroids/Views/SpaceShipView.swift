@@ -17,6 +17,7 @@ class SpaceShipView: UIView {
         super.init(frame: .zero)
         
         backgroundColor = .clear
+        translatesAutoresizingMaskIntoConstraints = false
     }
     
     required init?(coder aDecoder: NSCoder) {

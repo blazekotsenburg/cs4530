@@ -39,7 +39,6 @@ class MainView: UIView {
         stackView.addArrangedSubview(gameButton)
         stackView.addArrangedSubview(highScoreButton)
         
-        translatesAutoresizingMaskIntoConstraints = false
         gameButton.translatesAutoresizingMaskIntoConstraints = false
         highScoreButton.translatesAutoresizingMaskIntoConstraints = false
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -50,34 +49,37 @@ class MainView: UIView {
         stackView.spacing = 25.0
         
         gameButton.setTitle("New Game", for: .normal)
+        gameButton.titleLabel?.font = UIFont(name: "Avenir", size: 18.0)
         gameButton.backgroundColor = .cyan
         gameButton.layer.borderColor = UIColor.white.cgColor
         gameButton.layer.borderWidth = 2.0
         
         highScoreButton.setTitle("High Scores", for: .normal)
+        highScoreButton.titleLabel?.font = UIFont(name: "Avenir", size: 18.0)
         highScoreButton.backgroundColor = .cyan
         highScoreButton.layer.borderColor = UIColor.white.cgColor
         highScoreButton.layer.borderWidth = 2.0
     }
     
     override func draw(_ rect: CGRect) {
+        
         stackView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor).isActive = true
         stackView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor).isActive = true
         stackView.heightAnchor.constraint(equalToConstant: 100.0).isActive = true
         stackView.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor).isActive = true
         
-        stackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-30-[gameButton]-30-|", options: [], metrics: nil, views: views))
-        stackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-15-[highScoreButton]-15-|", options: [], metrics: nil, views: views))
+        stackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-50-[gameButton]-50-|", options: [], metrics: nil, views: views))
+        stackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-30-[highScoreButton]-30-|", options: [], metrics: nil, views: views))
     }
     
     @objc func homeViewButtonPressed(sender: Any) {
         if let button = sender as? UIButton {
             if button == gameButton {
-                //TODO: - Present GameViewController
+                
                 delegate?.mainView(presentGameViewFor: self)
             }
             else if button == highScoreButton {
-                //TODO: - Present HighScoreViewController
+                
                 delegate?.mainView(presentHighScoresFor: self)
             }
         }

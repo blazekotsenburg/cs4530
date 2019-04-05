@@ -25,6 +25,10 @@ class HighScoresViewController: UIViewController, UITableViewDelegate, UITableVi
         highScoresView.tableView.dataSource = self
     }
     
+    func highScoresView(backButtonPressedFor highScoresView: HighScoresView) {
+        dismiss(animated: true, completion: nil)
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return 10
     }

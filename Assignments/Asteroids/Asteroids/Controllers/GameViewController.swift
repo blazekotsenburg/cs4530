@@ -24,4 +24,8 @@ class GameViewController: UIViewController, GameViewDelegate {
         gameView.delegate = self
         gameView.reloadData()
     }
+    
+//    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+//        gameView.setNeedsLayout()
+//    }
 }
