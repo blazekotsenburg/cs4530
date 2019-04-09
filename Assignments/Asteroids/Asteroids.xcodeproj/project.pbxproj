@@ -20,6 +20,8 @@
 		67A5EAA12255BB0900B56EB6 /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67A5EAA02255BB0900B56EB6 /* TableViewCell.swift */; };
 		67A5EAA42256860A00B56EB6 /* space_font.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 67A5EAA32256860A00B56EB6 /* space_font.ttf */; };
 		67A5EAA62256BA7E00B56EB6 /* Asteroids.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67A5EAA52256BA7E00B56EB6 /* Asteroids.swift */; };
+		67A5EAA822582C4B00B56EB6 /* AsteroidLarge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67A5EAA722582C4B00B56EB6 /* AsteroidLarge.swift */; };
+		67A5EAAA225830BB00B56EB6 /* AsteroidMedium.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67A5EAA9225830BB00B56EB6 /* AsteroidMedium.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +40,8 @@
 		67A5EAA02255BB0900B56EB6 /* TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
 		67A5EAA32256860A00B56EB6 /* space_font.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = space_font.ttf; sourceTree = "<group>"; };
 		67A5EAA52256BA7E00B56EB6 /* Asteroids.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Asteroids.swift; sourceTree = "<group>"; };
+		67A5EAA722582C4B00B56EB6 /* AsteroidLarge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsteroidLarge.swift; sourceTree = "<group>"; };
+		67A5EAA9225830BB00B56EB6 /* AsteroidMedium.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsteroidMedium.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +94,8 @@
 				67A5EA9C2255A57100B56EB6 /* HighScoresView.swift */,
 				67A5EA9E2255A90000B56EB6 /* SpaceShipView.swift */,
 				67A5EAA02255BB0900B56EB6 /* TableViewCell.swift */,
+				67A5EAA722582C4B00B56EB6 /* AsteroidLarge.swift */,
+				67A5EAA9225830BB00B56EB6 /* AsteroidMedium.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -194,6 +200,8 @@
 				67A5EAA62256BA7E00B56EB6 /* Asteroids.swift in Sources */,
 				67A5EA972255A31100B56EB6 /* GameViewController.swift in Sources */,
 				67A5EA9F2255A90000B56EB6 /* SpaceShipView.swift in Sources */,
+				67A5EAAA225830BB00B56EB6 /* AsteroidMedium.swift in Sources */,
+				67A5EAA822582C4B00B56EB6 /* AsteroidLarge.swift in Sources */,
 				67A5EA82225581A600B56EB6 /* MainViewController.swift in Sources */,
 				67A5EAA12255BB0900B56EB6 /* TableViewCell.swift in Sources */,
 				67A5EA9D2255A57100B56EB6 /* HighScoresView.swift in Sources */,

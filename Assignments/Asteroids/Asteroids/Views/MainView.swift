@@ -31,7 +31,7 @@ class MainView: UIView {
         views = ["gameButton": gameButton, "highScoreButton": highScoreButton]
         super.init(frame: frame)
         
-        backgroundColor = .lightGray
+        backgroundColor = UIColor(patternImage: UIImage(named: "star_bckgnd")!)
         
         gameButton.addTarget(self, action: #selector(homeViewButtonPressed), for: .touchUpInside)
         highScoreButton.addTarget(self, action: #selector(homeViewButtonPressed), for: .touchUpInside)

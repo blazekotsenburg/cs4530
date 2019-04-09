@@ -9,12 +9,16 @@
 import UIKit
 
 protocol GameViewDelegate {
-    //getdata from model
+    func gameView(updateAngleIn gameView: GameView, for shipAngle: CGFloat)
+    func gameView(accelerateShipIn gameView: GameView)
+    func gameView(getPositionForShipIn gameView: GameView) -> CGPoint
 }
 
 class GameView: UIView {
     
     private var shipView: SpaceShipView
+    private var largeAsteroid: AsteroidLarge
+    private var mediumAsteroid: AsteroidMedium
     private var gameLabelStackView: UIStackView
     private var rotateButtonsStackView: UIStackView
     private var controlStackView: UIStackView
@@ -27,13 +31,16 @@ class GameView: UIView {
     private var labelViews: [String: Any]
     private var buttonViews: [String: Any]
     private var controlViews: [String: Any]
+    var currAngle:CGFloat = 0.0
     
     var timer: Timer = Timer()
     
     var delegate: GameViewDelegate?
     
     override init(frame: CGRect) {
-        shipView = SpaceShipView()
+        shipView = SpaceShipView(frame: .zero)
+        largeAsteroid = AsteroidLarge()
+        mediumAsteroid = AsteroidMedium()
         gameLabelStackView = UIStackView()
         rotateButtonsStackView = UIStackView()
         controlStackView = UIStackView()
@@ -56,6 +63,8 @@ class GameView: UIView {
         
         backgroundColor = .black
         addSubview(shipView)
+        addSubview(largeAsteroid)
+        addSubview(mediumAsteroid)
         addSubview(gameLabelStackView)
         addSubview(rotateButtonsStackView)
         addSubview(controlStackView)
@@ -84,12 +93,15 @@ class GameView: UIView {
         
         rotateLeftButton.setTitle("Left", for: .normal)
         rotateLeftButton.titleLabel?.textColor = .black
+        rotateLeftButton.addTarget(self, action: #selector(rotateShip), for: .allTouchEvents)
         
         rotateRightButton.setTitle("Right", for: .normal)
         rotateRightButton.titleLabel?.textColor = .black
+        rotateRightButton.addTarget(self, action: #selector(rotateShip), for: .allTouchEvents)
         
         thrustButton.setTitle("Go", for: .normal)
         thrustButton.titleLabel?.textColor = .white
+        thrustButton.addTarget(self, action: #selector(accelerateShip), for: .allTouchEvents)
         
         shootButton.setTitle("Fire", for: .normal)
         shootButton.titleLabel?.textColor = .white
@@ -102,14 +114,54 @@ class GameView: UIView {
         
         controlStackView.addArrangedSubview(thrustButton)
         controlStackView.addArrangedSubview(shootButton)
-//        timer = Timer.scheduledTimer(withTimeInterval: 1.0/60.0, repeats: true, block: { _ in
+        
+        beginTimer()
+    }
+    
+    private func beginTimer() {
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0/60.0, repeats: true, block: { _ in
 //            self.UpdateShip()
-//            })
+            self.setNeedsDisplay()
+        })
+
+    }
+    
+    @objc func rotateShip(sender: Any) {
+        
+        if let button = sender as? UIButton {
+            if button == rotateLeftButton {
+                UIView.animate(withDuration: 0.2, animations: {
+                    self.shipView.transform = CGAffineTransform(rotationAngle: (self.currAngle - (5.0 * .pi) / 180.0))
+                    self.currAngle -= (5.0 * .pi) / 180.0
+                    self.delegate?.gameView(updateAngleIn: self, for: self.currAngle)
+                })
+            }
+            else if button == rotateRightButton {
+                UIView.animate(withDuration: 0.2, animations: {
+                    self.shipView.transform = CGAffineTransform(rotationAngle: (self.currAngle + (5.0 * .pi) / 180.0))
+                    self.currAngle += (5.0 * .pi) / 180.0
+                    self.delegate?.gameView(updateAngleIn: self, for: self.currAngle)
+                })
+            }
+        }
+    }
+    
+    @objc func accelerateShip(sender: Any) {
+        if let button = sender as? UIButton {
+            if button == thrustButton {
+                delegate?.gameView(accelerateShipIn: self)
+            }
+        }
     }
     
     override func draw(_ rect: CGRect) {
         
-        shipView.frame = CGRect(x: frame.width * 0.5 - shipView.frame.width * 0.5, y: frame.height * 0.5, width: 25.0, height: 25.0)
+        guard let shipPoint = delegate?.gameView(getPositionForShipIn: self) else { return }
+        
+        shipView.frame = CGRect(x: shipPoint.x, y: shipPoint.y, width: 25.0, height: 25.0)
+        
+        largeAsteroid.frame = CGRect(x: 100.0, y: 100.0, width: 120.0, height: 120.0)
+        mediumAsteroid.frame = CGRect(x: 200.0, y: 200.0, width: 60.0, height: 60.0)
         
         gameLabelStackView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 12.0).isActive = true
         gameLabelStackView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 12.0).isActive = true
@@ -143,6 +195,9 @@ class GameView: UIView {
     }
     
     func reloadData() {
+        guard let shipPoint = delegate?.gameView(getPositionForShipIn: self) else { return }
+        shipView.frame = CGRect(x: shipPoint.x, y: shipPoint.y, width: 25.0, height: 25.0)
         setNeedsDisplay()
+        shipView.reloadData()
     }
 }

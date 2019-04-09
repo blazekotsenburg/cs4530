@@ -40,4 +40,8 @@ class SpaceShipView: UIView {
         path.stroke()
         path.close()
     }
+    
+    func reloadData() {
+        setNeedsDisplay()
+    }
 }
