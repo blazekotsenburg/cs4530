@@ -39,20 +39,23 @@ class Asteroids {
     
     func beginTimer() {
         gameLoopTimer = Timer.scheduledTimer(withTimeInterval: 1.0/120.0, repeats: true, block: { (gameLoopTimer) in
-            self.updateShippositionFs()
+            self.updateShipPosition()
 //            self.decreaseShipAcceleration()
         })
     }
     
     //should be called from game loop
-    private func updateShippositionFs() {
+    private func updateShipPosition() {
         increaseShipVelocity()
         //TODO: - Update x and y positionFs for ship
-//        ship.positionF.x = ((ship.velocityF - ship.velocityO) / 2) * 1.0/60.0
-        ship.positionF.x -= ship.velocityO * 1.0/120.0 + 0.5 * ship.acceleration * pow(1.0/120.0, 2)
-//        ship.positionF.x -= 1
         
-//        print(ship.positionF)
+        //convert the angle in radians to degrees
+        let angleInDegrees = ((ship.angle * 180) / .pi) - .pi/2
+
+        ship.positionF.x += ship.velocityO * cos(angleInDegrees)
+        ship.positionF.y += ship.velocityO * sin(angleInDegrees)
+        
+//        ship.positionF.x -= ship.velocityO * 1.0/120.0 + 0.5 * ship.acceleration * pow(1.0/120.0, 2)
     }
     
     private func increaseShipVelocity() {
@@ -77,10 +80,10 @@ class Asteroids {
     
     func accelerateShip() {
         //TODO: - update the acceleration of the ship in the direction of the velocity vector
-        ship.acceleration += 10.0
+        ship.acceleration += 1.0
     }
     
-    func getShippositionF() -> CGPoint {
+    func getShipPosition() -> CGPoint {
         return ship.positionF
     }
 }
