@@ -19,6 +19,7 @@ class GameView: UIView {
     private var shipView: SpaceShipView
     private var largeAsteroid: AsteroidLarge
     private var mediumAsteroid: AsteroidMedium
+    private var smallAsteroid: AsteroidSmall
     private var gameLabelStackView: UIStackView
     private var rotateButtonsStackView: UIStackView
     private var controlStackView: UIStackView
@@ -41,6 +42,7 @@ class GameView: UIView {
         shipView = SpaceShipView(frame: .zero)
         largeAsteroid = AsteroidLarge()
         mediumAsteroid = AsteroidMedium()
+        smallAsteroid = AsteroidSmall()
         gameLabelStackView = UIStackView()
         rotateButtonsStackView = UIStackView()
         controlStackView = UIStackView()
@@ -65,6 +67,7 @@ class GameView: UIView {
         addSubview(shipView)
         addSubview(largeAsteroid)
         addSubview(mediumAsteroid)
+        addSubview(smallAsteroid)
         addSubview(gameLabelStackView)
         addSubview(rotateButtonsStackView)
         addSubview(controlStackView)
@@ -159,9 +162,12 @@ class GameView: UIView {
         guard let shipPoint = delegate?.gameView(getPositionForShipIn: self) else { return }
         
         shipView.frame = CGRect(x: shipPoint.x, y: shipPoint.y, width: 25.0, height: 25.0)
+//        shipView.center.x = shipPoint.x
+//        shipView.center.y = shipPoint.y
         
         largeAsteroid.frame = CGRect(x: 100.0, y: 100.0, width: 120.0, height: 120.0)
         mediumAsteroid.frame = CGRect(x: 200.0, y: 200.0, width: 60.0, height: 60.0)
+        smallAsteroid.frame = CGRect(x: 300.0, y: 200.0, width: 30.0, height: 30.0)
         
         gameLabelStackView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 12.0).isActive = true
         gameLabelStackView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 12.0).isActive = true
@@ -198,6 +204,6 @@ class GameView: UIView {
         guard let shipPoint = delegate?.gameView(getPositionForShipIn: self) else { return }
         shipView.frame = CGRect(x: shipPoint.x, y: shipPoint.y, width: 25.0, height: 25.0)
         setNeedsDisplay()
-        shipView.reloadData()
+//        shipView.reloadData()
     }
 }
