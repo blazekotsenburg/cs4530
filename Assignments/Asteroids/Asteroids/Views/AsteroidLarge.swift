@@ -10,11 +10,9 @@ import UIKit
 
 class AsteroidLarge: UIView {
     
-    private var asteroidRect: CGRect
     
     override init(frame: CGRect) {
-        asteroidRect = CGRect()
-        super.init(frame: .zero)
+        super.init(frame: frame)
         
         backgroundColor = .clear
         translatesAutoresizingMaskIntoConstraints = false
@@ -25,22 +23,21 @@ class AsteroidLarge: UIView {
     }
     
     override func draw(_ rect: CGRect) {
-        asteroidRect = CGRect(x: 0.0, y: 0.0, width: frame.width, height: frame.height)
         
         let path: UIBezierPath = UIBezierPath()
         
-        path.move(to: CGPoint(x: frame.width * 0.5, y: 0.0))
-        path.addLine(to: CGPoint(x: frame.width, y: frame.height * 0.25))
-        path.addLine(to: CGPoint(x: frame.width * 0.8, y: frame.height * 0.75))
-        path.addLine(to: CGPoint(x: frame.width * 0.65, y: frame.height))
-        path.addLine(to: CGPoint(x: frame.width * 0.2, y: frame.height * 0.85))
-        path.addLine(to: CGPoint(x: frame.width * 0.35, y: frame.height * 0.75))
-        path.addLine(to: CGPoint(x: frame.width * 0.3, y: frame.height * 0.72))
-        path.addLine(to: CGPoint(x: frame.width * 0.2, y: frame.height * 0.68))
-        path.addLine(to: CGPoint(x: 0.0, y: frame.height * 0.58))
-        path.addLine(to: CGPoint(x: frame.width * 0.22, y: frame.height * 0.3))
-        path.addLine(to: CGPoint(x: frame.width * 0.18, y: frame.height * 0.2))
-        path.addLine(to: CGPoint(x: frame.width * 0.5, y: 0.0))
+        path.move(to: CGPoint(x: bounds.width * 0.5, y: 0.0))
+        path.addLine(to: CGPoint(x: bounds.width, y: bounds.height * 0.25))
+        path.addLine(to: CGPoint(x: bounds.width * 0.8, y: bounds.height * 0.75))
+        path.addLine(to: CGPoint(x: bounds.width * 0.65, y: bounds.height))
+        path.addLine(to: CGPoint(x: bounds.width * 0.2, y: bounds.height * 0.85))
+        path.addLine(to: CGPoint(x: bounds.width * 0.35, y: bounds.height * 0.75))
+        path.addLine(to: CGPoint(x: bounds.width * 0.3, y: bounds.height * 0.72))
+        path.addLine(to: CGPoint(x: bounds.width * 0.2, y: bounds.height * 0.68))
+        path.addLine(to: CGPoint(x: 0.0, y: bounds.height * 0.58))
+        path.addLine(to: CGPoint(x: bounds.width * 0.22, y: bounds.height * 0.3))
+        path.addLine(to: CGPoint(x: bounds.width * 0.18, y: bounds.height * 0.2))
+        path.addLine(to: CGPoint(x: bounds.width * 0.5, y: 0.0))
         path.lineWidth = 2.0
         path.lineCapStyle = .round
         UIColor.white.setStroke()

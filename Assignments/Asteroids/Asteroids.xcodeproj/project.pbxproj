@@ -27,6 +27,8 @@
 
 /* Begin PBXFileReference section */
 		6706917C225EAED500B46FC6 /* AsteroidSmall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsteroidSmall.swift; sourceTree = "<group>"; };
+		6706917E225EB57500B46FC6 /* earthorbiter.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = earthorbiter.ttf; sourceTree = "<group>"; };
+		6706917F225EB59300B46FC6 /* earthorbiterital.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = earthorbiterital.ttf; sourceTree = "<group>"; };
 		67A5EA7C225581A600B56EB6 /* Asteroids.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Asteroids.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		67A5EA7F225581A600B56EB6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		67A5EA81225581A600B56EB6 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -79,7 +81,7 @@
 				67A5EA932255826800B56EB6 /* Models */,
 				67A5EA922255825300B56EB6 /* Controllers */,
 				67A5EA912255823200B56EB6 /* Views */,
-				67A5EAA2225685D200B56EB6 /* Font */,
+				67A5EAA2225685D200B56EB6 /* Fonts */,
 				67A5EA86225581A600B56EB6 /* Assets.xcassets */,
 				67A5EA7F225581A600B56EB6 /* AppDelegate.swift */,
 				67A5EA88225581A600B56EB6 /* LaunchScreen.storyboard */,
@@ -121,12 +123,14 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		67A5EAA2225685D200B56EB6 /* Font */ = {
+		67A5EAA2225685D200B56EB6 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
+				6706917F225EB59300B46FC6 /* earthorbiterital.ttf */,
+				6706917E225EB57500B46FC6 /* earthorbiter.ttf */,
 				67A5EAA32256860A00B56EB6 /* space_font.ttf */,
 			);
-			path = Font;
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

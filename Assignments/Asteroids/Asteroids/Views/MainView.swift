@@ -48,15 +48,16 @@ class MainView: UIView {
         stackView.distribution = .equalSpacing
         stackView.spacing = 25.0
         
+        //For all earth orbiter fonts view: https://www.dafont.com/earth-orbiter.font
         gameButton.setTitle("New Game", for: .normal)
         gameButton.titleLabel?.font = UIFont(name: "Avenir", size: 18.0)
-        gameButton.backgroundColor = .cyan
+        gameButton.backgroundColor = .black
         gameButton.layer.borderColor = UIColor.white.cgColor
         gameButton.layer.borderWidth = 2.0
         
         highScoreButton.setTitle("High Scores", for: .normal)
         highScoreButton.titleLabel?.font = UIFont(name: "Avenir", size: 18.0)
-        highScoreButton.backgroundColor = .cyan
+        highScoreButton.backgroundColor = .black
         highScoreButton.layer.borderColor = UIColor.white.cgColor
         highScoreButton.layer.borderWidth = 2.0
     }

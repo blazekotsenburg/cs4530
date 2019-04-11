@@ -13,7 +13,7 @@ class GameViewController: UIViewController, GameViewDelegate, AsteroidsDataSourc
     private var asteroidsGame: Asteroids
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        asteroidsGame = Asteroids()
+        asteroidsGame = Asteroids(width: 1.0, height: Float(UIScreen.main.bounds.width / UIScreen.main.bounds.height))
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
     
@@ -25,17 +25,29 @@ class GameViewController: UIViewController, GameViewDelegate, AsteroidsDataSourc
         return view as! GameView
     }
     
-    func gameView(accelerateShipIn gameView: GameView) {
-        asteroidsGame.accelerateShip()
+    func gameView(getAngleForShipIn gameView: GameView) -> CGFloat {
+        return asteroidsGame.getAngleForShip()
+    }
+    
+    func gameView(rotateLeftPressed gameView: GameView, rotating: Bool) {
+        asteroidsGame.rotateShipLeft(isRotatingLeft: rotating)
+    }
+    
+    func gameView(rotateRightPressed gameView: GameView, rotating: Bool) {
+        asteroidsGame.rotateShipRight(isRotatingRight: rotating)
+    }
+    
+    func gameView(thrusterPressed gameView: GameView, thrusterOn: Bool) {
+        asteroidsGame.toggleThruster(thrusterOn: thrusterOn)
     }
     
     func gameView(getPositionForShipIn gameView: GameView) -> CGPoint {
         return asteroidsGame.getShipPosition()
     }
     
-    func gameView(updateAngleIn gameView: GameView, for shipAngle: CGFloat) {
-        asteroidsGame.setAngleForShip(with: shipAngle)
-    }
+//    func gameView(updateAngleIn gameView: GameView, for shipAngle: CGFloat) {
+//        asteroidsGame.setAngleForShip(with: shipAngle)
+//    }
     
     override func loadView() {
         view = GameView()

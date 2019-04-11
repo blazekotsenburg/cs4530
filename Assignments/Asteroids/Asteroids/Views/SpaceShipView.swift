@@ -10,11 +10,8 @@ import UIKit
 
 class SpaceShipView: UIView {
     
-    private var shipRect: CGRect
-    
     override init(frame: CGRect) {
-        shipRect = CGRect()
-        super.init(frame: .zero)
+        super.init(frame: frame)
         
         backgroundColor = .clear
         translatesAutoresizingMaskIntoConstraints = false
@@ -25,15 +22,14 @@ class SpaceShipView: UIView {
     }
     
     override func draw(_ rect: CGRect) {
-        shipRect = CGRect(x: 0.0, y: 0.0, width: frame.width, height: frame.height)
         
         let path: UIBezierPath = UIBezierPath()
         
-        path.move(to: CGPoint(x: frame.width * 0.5, y: 0.0))
-        path.addLine(to: CGPoint(x: frame.width, y: frame.height))
-        path.addLine(to: CGPoint(x: frame.width * 0.5, y: frame.height * 0.85))
-        path.addLine(to: CGPoint(x: 0.0, y: frame.height))
-        path.addLine(to: CGPoint(x: frame.width * 0.5, y: 0.0))
+        path.move(to: CGPoint(x: bounds.width * 0.5, y: 0.0))
+        path.addLine(to: CGPoint(x: bounds.width, y: bounds.height))
+        path.addLine(to: CGPoint(x: bounds.width * 0.5, y: bounds.height * 0.85))
+        path.addLine(to: CGPoint(x: 0.0, y: bounds.height))
+        path.addLine(to: CGPoint(x: bounds.width * 0.5, y: 0.0))
         path.lineWidth = 2.0
         path.lineCapStyle = .round
         UIColor(red: 1.0, green: 0.47, blue: 0.74, alpha: 1.0).setStroke()
