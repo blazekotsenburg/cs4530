@@ -66,8 +66,8 @@ class Asteroids {
             ship.angle -= CGFloat(elapsed) * 2.0
         }
         
-        ship.acceleration.x = ship.thrusterOn ? cos(ship.angle) * 30.0 : -ship.velocity.x * 0.5
-        ship.acceleration.y = ship.thrusterOn ? sin(ship.angle) * 30.0 : -ship.velocity.y * 0.5
+        ship.acceleration.x = ship.thrusterOn ? sin(ship.angle) * 50.0 : -ship.velocity.x * 0.5
+        ship.acceleration.y = ship.thrusterOn ? -cos(ship.angle) * 50.0 : -ship.velocity.y * 0.5
         
         ship.velocity.x += ship.acceleration.x * CGFloat(elapsed)
         ship.position.x += ship.velocity.x * CGFloat(elapsed)
