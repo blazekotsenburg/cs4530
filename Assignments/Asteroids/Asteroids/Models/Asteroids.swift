@@ -9,7 +9,7 @@
 import UIKit
 
 protocol AsteroidsDataSource {
-    
+    func asteroids(toggleLockFor asteroidsGame: Asteroids, lockAcquired: Bool)
 }
 
 class Asteroids {
@@ -23,7 +23,13 @@ class Asteroids {
         var rotatingLeft: Bool
         var rotatingRight: Bool
     }
-    //TODO: - Need a way of managing asteroids
+    
+//    struct AsteroidObject {
+//        var velocity: (x: Float, y: Float)
+//        var position: (x: Float, y: Float)
+//        var acceleration: (x: Float, y: Float)
+//    }
+    var lock: NSLock = NSLock()
     private var initialFrame: CGRect = CGRect()
     private var numberOfLives: Int = Int()
     private var score: Int = Int()
@@ -32,6 +38,9 @@ class Asteroids {
     private var lastDate: Date
     var width: Float
     var height: Float
+    private var numberOfAsteroids: Int = 4
+    private var asteroidSpawnPoints: [(x: Float, y: Float)] // use this to reassign positions to asteroids after each level
+    private var asteroids: [String: [AsteroidObject]] = ["large":[], "medium": [], "small": []]
     //TODO: - Update positions of objects
     //TODO: - Detect collisions between objects
     
@@ -41,8 +50,22 @@ class Asteroids {
         self.width = width
         self.height = height
         lastDate = Date()
+        // this coordinate system is different than the one in gameView. now need to translate coordinate system.
+        // will also need to initialize asteroids dictionary differently here. asteroidSpawnPoints won't be queried every time now.
+        asteroidSpawnPoints = [(x: width * 0.1, y: height * 0.1),
+                               (x: width * 0.8, y: height * 0.2),
+                               (x: width * 0.25, y: height * 0.9),
+                               (x: width * 0.75, y: height * 0.85)]
+        
+        for i in 0..<numberOfAsteroids {
+            asteroids["large"]?.append(AsteroidObject(velocity: (x: 0.0, y: 0.0), position: asteroidSpawnPoints[i], acceleration: (x: 0.0, y: 0.0)))
+        }
+        
         beginTimer()
     }
+    
+    // make a function to reset the asteroid postions after each level ends.
+    // loop through large key of dictionary and then append another large asteroid to the end with new position.
     
     func beginTimer() {
         gameLoopTimer = Timer.scheduledTimer(withTimeInterval: 1.0/60.0, repeats: true, block: { _ in
@@ -50,15 +73,12 @@ class Asteroids {
             let now: Date = Date()
             let elapsed: TimeInterval = now.timeIntervalSince(self.lastDate)
             self.lastDate = now
-            
             self.executeGameLoop(elapsed: elapsed)
-//            self.decreaseShipAcceleration()
         })
     }
     
     //should be called from game loop
     private func executeGameLoop(elapsed: TimeInterval) {
-        
         if ship.rotatingRight {
             ship.angle += CGFloat(elapsed) * 2.0
         }
@@ -74,22 +94,18 @@ class Asteroids {
         ship.velocity.y += ship.acceleration.y * CGFloat(elapsed)
         ship.position.y += ship.velocity.y * CGFloat(elapsed)
         
-        //convert the angle in radians to degrees
-//        let angleInDegrees = ((ship.angle * 180) / .pi) - .pi/2
-
-//        ship.position.x = ship.velocityO * cos(angleInDegrees)
-//        ship.position.y = ship.velocityO * sin(angleInDegrees)
-        
-//        ship.position.x -= ship.velocityO * 1.0/120.0 + 0.5 * ship.acceleration * pow(1.0/120.0, 2)
-//        let elapsedTime = Date.timeIntervalSinceReferenceDate - currentDate.timeIntervalSinceReferenceDate
-//        print(currentDate.timeIntervalSinceReferenceDate)
-//        print(elapsedTime)
-        
-//        ship.position.x = ship.positionO.x + ship.velocityO.x * CGFloat(elapsedTime) + 0.5 * ship.acceleration * pow(CGFloat(elapsedTime), 2)
-//        ship.position.y = ship.positionO.y + ship.velocityO.y * CGFloat(elapsedTime) + 0.5 * ship.acceleration * pow(CGFloat(elapsedTime), 2)
-        
-//        ship.position.x = ship.positionO.x + ship.velocityO.x * 1.0/60.0 + 0.5 * ship.acceleration * pow(1.0/60.0, 2)
-//        ship.position.y = ship.positionO.y + ship.velocityO.y * 1.0/60.0 + 0.5 * ship.acceleration * pow(1.0/60.0, 2)
+        for (size, asteroidList) in asteroids {
+            for i in 0..<asteroidList.count {
+                dataSource?.asteroids(toggleLockFor: self, lockAcquired: true)
+                asteroids[size]?[i].velocity.x += 0.0001
+                let velocityX = asteroids[size]?[i].velocity.x
+                asteroids[size]?[i].position.x += Float((velocityX)! * Float(elapsed))
+                asteroids[size]?[i].velocity.y += 0.0001
+                let velocityY = asteroids[size]?[i].velocity.y
+                asteroids[size]?[i].position.y += Float((velocityY)! * Float(elapsed))
+                dataSource?.asteroids(toggleLockFor: self, lockAcquired: false)
+            }
+        }
     }
     
     func setFrameForView(with rect: CGRect) {
@@ -115,5 +131,10 @@ class Asteroids {
     
     func getShipPosition() -> CGPoint {
         return ship.position
+    }
+    
+    func getAsteroidPositions() -> [String: [AsteroidObject]] {
+        //this function needs to pass back all of the asteroid positions, not just the spawn points.
+        return asteroids // returns the entire asteroids dictionary back to the gameView
     }
 }

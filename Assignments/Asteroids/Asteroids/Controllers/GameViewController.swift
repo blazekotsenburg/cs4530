@@ -11,9 +11,11 @@ import UIKit
 class GameViewController: UIViewController, GameViewDelegate, AsteroidsDataSource {
     
     private var asteroidsGame: Asteroids
+    private var lock: NSLock
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         asteroidsGame = Asteroids(width: 1.0, height: Float(UIScreen.main.bounds.width / UIScreen.main.bounds.height))
+        lock = NSLock()
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
     
@@ -45,9 +47,27 @@ class GameViewController: UIViewController, GameViewDelegate, AsteroidsDataSourc
         return asteroidsGame.getShipPosition()
     }
     
-//    func gameView(updateAngleIn gameView: GameView, for shipAngle: CGFloat) {
-//        asteroidsGame.setAngleForShip(with: shipAngle)
-//    }
+    func gameView(getAsteroidPositionsIn gameView: GameView) -> [String: [AsteroidObject]] {
+        return asteroidsGame.getAsteroidPositions()
+    }
+    
+    func gameView(acquireLockFor gameView: GameView, lockAcquired: Bool) {
+        if lockAcquired {
+            lock.lock()
+        }
+        else {
+            lock.unlock()
+        }
+    }
+    
+    func asteroids(toggleLockFor asteroidsGame: Asteroids, lockAcquired: Bool) {
+        if lockAcquired {
+            lock.lock()
+        }
+        else {
+            lock.unlock()
+        }
+    }
     
     override func loadView() {
         view = GameView()
