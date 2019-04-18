@@ -56,6 +56,10 @@ class GameViewController: UIViewController, GameViewDelegate, AsteroidsDataSourc
         return asteroidsGame.getAsteroidPositions()
     }
     
+    func gameView(getBulletPositionsIn gameView: GameView) -> [(x: Float, y: Float)] {
+        return asteroidsGame.getBulletPositions()
+    }
+    
     func gameView(acquireLockFor gameView: GameView, lockAcquired: Bool) {
         if lockAcquired {
             lock.lock()

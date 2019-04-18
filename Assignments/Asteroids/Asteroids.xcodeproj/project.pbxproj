@@ -11,6 +11,8 @@
 		670691812266A6FE00B46FC6 /* AsteroidObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 670691802266A6FE00B46FC6 /* AsteroidObject.swift */; };
 		6706918322681ABF00B46FC6 /* BulletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6706918222681ABF00B46FC6 /* BulletView.swift */; };
 		670691852268DC3000B46FC6 /* Bullet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 670691842268DC3000B46FC6 /* Bullet.swift */; };
+		670691862268F39600B46FC6 /* earthorbiter.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6706917E225EB57500B46FC6 /* earthorbiter.ttf */; };
+		670691872268F39900B46FC6 /* earthorbiterital.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6706917F225EB59300B46FC6 /* earthorbiterital.ttf */; };
 		67A5EA80225581A600B56EB6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67A5EA7F225581A600B56EB6 /* AppDelegate.swift */; };
 		67A5EA82225581A600B56EB6 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67A5EA81225581A600B56EB6 /* MainViewController.swift */; };
 		67A5EA87225581A600B56EB6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 67A5EA86225581A600B56EB6 /* Assets.xcassets */; };
@@ -202,7 +204,9 @@
 			files = (
 				67A5EA8A225581A600B56EB6 /* LaunchScreen.storyboard in Resources */,
 				67A5EA87225581A600B56EB6 /* Assets.xcassets in Resources */,
+				670691872268F39900B46FC6 /* earthorbiterital.ttf in Resources */,
 				67A5EAA42256860A00B56EB6 /* space_font.ttf in Resources */,
+				670691862268F39600B46FC6 /* earthorbiter.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

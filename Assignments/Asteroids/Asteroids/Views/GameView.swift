@@ -16,6 +16,7 @@ protocol GameViewDelegate {
     func gameView(shootButtonToggled gameView: GameView, fireProjectile: Bool)
     func gameView(getPositionForShipIn gameView: GameView) -> (x: Float, y: Float)
     func gameView(getAsteroidPositionsIn gameView: GameView) -> [String: [AsteroidObject]]
+    func gameView(getBulletPositionsIn gameView: GameView) -> [(x: Float, y: Float)]
     func gameView(acquireLockFor gameView: GameView, lockAcquired: Bool)
 }
 
@@ -38,6 +39,7 @@ class GameView: UIView {
     private var buttonViews: [String: Any]
     private var controlViews: [String: Any]
     private var asteroids: [String: [Any]]
+    private var bullets: [BulletView]
     var currAngle:CGFloat = 0.0
     
     var timer: Timer = Timer()
@@ -62,6 +64,7 @@ class GameView: UIView {
         buttonViews = ["rotateLeft": rotateLeftButton, "rotateRight": rotateRightButton, "shootButton": shootButton]
         controlViews = ["thrustButton": thrustButton, "shootButton": shootButton]
         asteroids = ["large": [], "medium": [], "small": []]
+        bullets = []
         super.init(frame: frame)
         
         gameLabelStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -98,7 +101,7 @@ class GameView: UIView {
         controlStackView.spacing = 10.0
         
         scoreLabel.text = "00000"
-        scoreLabel.font = UIFont(name: "spacefont", size: 24.0)
+        scoreLabel.font = UIFont(name: "EarthOrbiter", size: 24.0)
         scoreLabel.textColor = .green
         
         livesLabel.text = "♥︎ ♥︎ ♥︎"
@@ -196,33 +199,47 @@ class GameView: UIView {
                         default:
                             return
                         
+                    }
                 }
-            }
-            else { // Else the asteroidList is not empty and positions in asteroid dictionary need to be updated
-                for i in 0..<positionList.count {
-                    spawnAsteroids(withSize: size, atIndex: i, for: positionList)
+                else { // Else the asteroidList is not empty and positions in asteroid dictionary need to be updated
+                    for i in 0..<positionList.count {
+                        spawnAsteroids(withSize: size, atIndex: i, for: positionList)
+                    }
                 }
             }
         }
     }
+    
+    func bulletPositions() {
+        guard let delegate = delegate else { return }
+        let positions = delegate.gameView(getBulletPositionsIn: self)
         
+        let difference = bullets.count - positions.count
         
-        
-//        for i in 0..<spawnPoints.count {
-//            //will need to find a way to initialize new asteroids when needed by checking each key
-//            asteroids.append(AsteroidLarge())
-//            guard let asteroid = (asteroids[i] as? AsteroidLarge) else { return }
-//            asteroid.contentMode = .redraw
-//            // xview = (xmodel + game.width * 0.5) / game.width * view.bounds.width
-//            // yview = (ymodel + 1) * 0.5 * height
-//
-//            // This translation is slightly off but will figure out later
-//            let x = CGFloat((CGFloat(spawnPoints[i].x)) * bounds.width) // these might be mixed up from gameViewController init of model!
-//            let y = (CGFloat(spawnPoints[i].y)) * 0.5 * bounds.height     // these might be mixed up from gameViewController init of model!
-//            asteroid.center = CGPoint(x: x, y: y)
-//            asteroid.bounds = CGRect(x: 0.0, y: 0.0, width: 100.0, height: 100.0)
-//            addSubview(asteroid)
-//        }
+        switch difference {
+            case let x where x < 0:
+                for i in 0..<abs(difference) {
+                    let bullet: BulletView = BulletView()
+                    bullets.append(bullet)
+                    bullet.center = CGPoint(x: CGFloat(positions[i].x), y: CGFloat(positions[i].y))
+                    bullet.bounds = CGRect(x: 0.0, y: 0.0, width: 5.0, height: 5.0)
+                    addSubview(bullet)
+                }
+            break
+            case let x  where x > 0:
+                for i in 0..<abs(difference) {
+                    bullets[i].removeFromSuperview()
+                    bullets.removeFirst()
+                }
+            break
+            default:
+                for i in 0..<positions.count {
+                    bullets[i].center = CGPoint(x: CGFloat(positions[i].x), y: CGFloat(positions[i].y))
+                    bullets[i].bounds = CGRect(x: 0.0, y: 0.0, width: 5.0, height: 5.0)
+                }
+            break
+            
+        }
     }
     
     private func spawnAsteroids(withSize: String, atIndex: Int, for positionList: [AsteroidObject]) {
@@ -354,6 +371,7 @@ class GameView: UIView {
         shipView.bounds = CGRect(x: 0.0, y: 0.0, width: 25.0, height: 25.0)
         shipView.transform = CGAffineTransform(rotationAngle: CGFloat(delegate.gameView(getAngleForShipIn: self)))
         asteroidPositions()
+        bulletPositions()
         
         // -game.width * 0.5 -> game.width * 0.5
         // xview = (xmodel + game.width * 0.5) / game.width * view.bounds.width

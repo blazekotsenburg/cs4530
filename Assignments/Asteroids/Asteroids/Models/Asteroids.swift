@@ -69,7 +69,7 @@ class Asteroids {
         }
         
         beginTimer()
-        beginBulletTimer()
+//        beginBulletTimer()
     }
     
     // make a function to reset the asteroid postions after each level ends.
@@ -81,6 +81,7 @@ class Asteroids {
             let elapsed: TimeInterval = now.timeIntervalSince(self.lastDate)
             self.lastDate = now
             self.executeGameLoop(elapsed: elapsed)
+            self.bulletTicks += 1
         })
     }
     
@@ -105,11 +106,9 @@ class Asteroids {
         
         // Check if the ship is firing and that bullet ticks is greater than 20 (to create gap between each bullet)
         if ship.firingProjectile && bulletTicks >= 20 {
-            lock.lock()
             let bullet: Bullet = Bullet(position: (x: ship.position.x, y: ship.position.y), stepSize: (x: cos(ship.angle) * 0.5, y: sin(ship.angle) * 0.5), angle: ship.angle, spawnedAt: Date())
             bulletQueue.append(bullet)
             bulletTicks = 0
-            lock.unlock()
         }
         
         // Check if ship is still in the view
@@ -128,8 +127,8 @@ class Asteroids {
         }
         
         //Update the acceleration for the ship
-        ship.acceleration.x = ship.thrusterOn ? sin(ship.angle) * 70 : -ship.velocity.x * 0.5
-        ship.acceleration.y = ship.thrusterOn ? -cos(ship.angle) * 70: -ship.velocity.y * 0.5
+        ship.acceleration.x = ship.thrusterOn ? sin(ship.angle) * 70 : -ship.velocity.x * 0.75
+        ship.acceleration.y = ship.thrusterOn ? -cos(ship.angle) * 70: -ship.velocity.y * 0.75
         
         //Update the velocity and position of the ship
         ship.velocity.x += ship.acceleration.x * Float(elapsed)
@@ -166,20 +165,23 @@ class Asteroids {
             }
         }
         
-//        cleanUpBullets()
+        cleanUpBullets()
     }
     
     func cleanUpBullets() {
         //this will need a lock! gets an index out of bounds range when repeately tapping. bulletQueue being manipulated in two spots.
-        lock.lock()
+        var indexesToRemove: [Int] = []
         for i in 0..<bulletQueue.count {
             let now: Date = Date()
             let elapsed: TimeInterval = now.timeIntervalSince(bulletQueue[i].spawnedAt)
+            print(elapsed)
             if elapsed > 2 {
-                bulletQueue.remove(at: i)
+                indexesToRemove.append(i)
             }
         }
-        lock.unlock()
+        for index in indexesToRemove {
+            bulletQueue.remove(at: index)
+        }
     }
     
     func asteroidCollision() {
@@ -195,6 +197,34 @@ class Asteroids {
                         if centerDiffX + centerDiffY <= sumRadii {
 //                            print("collision detected")
 //                            dataSource?.asteroids(shipCollisionDetectedFor: self)
+                            // TODO: - Make delegate to notify view that collision has happened and to remove the ship.
+                        }
+                    }
+                    break
+                case "medium":
+                    for i in 0..<asteroidList.count {
+                        //Circle-circle collision detection: (x2-x1)^2 + (y1-y2)^2 <= (r1+r2)^2
+                        let centerDiffX = pow((Float(ship.position.x) - asteroidList[i].position.x), 2)
+                        let centerDiffY = pow((Float(ship.position.y) - asteroidList[i].position.y), 2)
+                        let sumRadii = Float(pow((25.0 / 2.0) + 50.0, 2))
+                        //                        let sumRadii = Float(((1.0 / 25.0) / 2.0) + ((1.0 / 100.0) / 2.0))
+                        if centerDiffX + centerDiffY <= sumRadii {
+                            //                            print("collision detected")
+                            //                            dataSource?.asteroids(shipCollisionDetectedFor: self)
+                            // TODO: - Make delegate to notify view that collision has happened and to remove the ship.
+                        }
+                    }
+                    break
+                case "small":
+                    for i in 0..<asteroidList.count {
+                        //Circle-circle collision detection: (x2-x1)^2 + (y1-y2)^2 <= (r1+r2)^2
+                        let centerDiffX = pow((Float(ship.position.x) - asteroidList[i].position.x), 2)
+                        let centerDiffY = pow((Float(ship.position.y) - asteroidList[i].position.y), 2)
+                        let sumRadii = Float(pow((25.0 / 2.0) + 50.0, 2))
+                        //                        let sumRadii = Float(((1.0 / 25.0) / 2.0) + ((1.0 / 100.0) / 2.0))
+                        if centerDiffX + centerDiffY <= sumRadii {
+                            //                            print("collision detected")
+                            //                            dataSource?.asteroids(shipCollisionDetectedFor: self)
                             // TODO: - Make delegate to notify view that collision has happened and to remove the ship.
                         }
                     }
@@ -232,5 +262,13 @@ class Asteroids {
     func getAsteroidPositions() -> [String: [AsteroidObject]] {
         //this function needs to pass back all of the asteroid positions, not just the spawn points.
         return asteroids // returns the entire asteroids dictionary back to the gameView
+    }
+    
+    func getBulletPositions() -> [(x: Float, y: Float)] {
+        var positions: [(x: Float, y: Float)] = [(x: Float, y: Float)]()
+        for bullet in bulletQueue {
+            positions.append(bullet.position)
+        }
+        return positions
     }
 }

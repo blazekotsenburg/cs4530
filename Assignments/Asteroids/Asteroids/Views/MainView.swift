@@ -15,7 +15,7 @@ protocol MainViewDelegate {
 
 class MainView: UIView {
     
-    private var logoImageView: UIImageView
+    private var logoLabel: UILabel
     private var gameButton: UIButton
     private var highScoreButton: UIButton
     private var stackView: UIStackView
@@ -24,14 +24,25 @@ class MainView: UIView {
     var delegate: MainViewDelegate?
     
     override init(frame: CGRect) {
-        logoImageView = UIImageView()
+        logoLabel = UILabel()
         gameButton = UIButton()
         highScoreButton = UIButton()
         stackView = UIStackView()
         views = ["gameButton": gameButton, "highScoreButton": highScoreButton]
         super.init(frame: frame)
         
-        backgroundColor = UIColor(patternImage: UIImage(named: "star_bckgnd")!)
+        let backgroundImage = UIImageView(frame: UIScreen.main.bounds)
+        backgroundImage.image = UIImage(named: "star_bckgnd")
+        backgroundImage.contentMode = UIView.ContentMode.scaleAspectFill
+        insertSubview(backgroundImage, at: 0)
+        
+        logoLabel.text = "ASTEROIDS"
+        logoLabel.font = UIFont(name: "EarthOrbiter", size: 56.0)
+        logoLabel.textColor = UIColor.white
+        logoLabel.textAlignment = .center
+        logoLabel.translatesAutoresizingMaskIntoConstraints = false
+        logoLabel.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
+        addSubview(logoLabel)
         
         gameButton.addTarget(self, action: #selector(homeViewButtonPressed), for: .touchUpInside)
         highScoreButton.addTarget(self, action: #selector(homeViewButtonPressed), for: .touchUpInside)
@@ -50,19 +61,22 @@ class MainView: UIView {
         
         //For all earth orbiter fonts view: https://www.dafont.com/earth-orbiter.font
         gameButton.setTitle("New Game", for: .normal)
-        gameButton.titleLabel?.font = UIFont(name: "Avenir", size: 18.0)
+        gameButton.titleLabel?.font = UIFont(name: "EarthOrbiter", size: 18.0)
         gameButton.backgroundColor = .black
         gameButton.layer.borderColor = UIColor.white.cgColor
         gameButton.layer.borderWidth = 2.0
         
         highScoreButton.setTitle("High Scores", for: .normal)
-        highScoreButton.titleLabel?.font = UIFont(name: "Avenir", size: 18.0)
+        highScoreButton.titleLabel?.font = UIFont(name: "EarthOrbiter", size: 18.0)
         highScoreButton.backgroundColor = .black
         highScoreButton.layer.borderColor = UIColor.white.cgColor
         highScoreButton.layer.borderWidth = 2.0
     }
     
     override func draw(_ rect: CGRect) {
+        logoLabel.centerXAnchor.constraint(equalTo: safeAreaLayoutGuide.centerXAnchor).isActive = true
+        logoLabel.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 50.0).isActive = true
+        
         //consider making this centered with a width of half the screen
         stackView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 100.0).isActive = true
         stackView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -100.0).isActive = true
