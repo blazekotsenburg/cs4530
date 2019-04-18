@@ -60,7 +60,7 @@ class Asteroids {
         
         for i in 0..<numberOfAsteroids {
             let randAngle: Float = Float.random(in: 0...180)
-            asteroids["large"]?.append(AsteroidObject(velocity: (x: 0.0, y: 0.0), position: asteroidSpawnPoints[i], acceleration: (x: 0.0, y: 0.0), stepSize: (x: cos(randAngle) * 0.001, y: sin(randAngle) * 0.001)))
+            asteroids["large"]?.append(AsteroidObject(velocity: (x: 0.0, y: 0.0), position: asteroidSpawnPoints[i], acceleration: (x: 0.0, y: 0.0), stepSize: (x: cos(randAngle) * 0.25, y: sin(randAngle) * 0.25)))
         }
         
         beginTimer()
@@ -81,21 +81,21 @@ class Asteroids {
     //should be called from game loop
     private func executeGameLoop(elapsed: TimeInterval) {
         if ship.rotatingRight {
-            ship.angle += CGFloat(elapsed) * 2.0
+            ship.angle += CGFloat(elapsed) * 4.0
         }
         else if ship.rotatingLeft {
-            ship.angle -= CGFloat(elapsed) * 2.0
+            ship.angle -= CGFloat(elapsed) * 4.0
         }
         
         //TODO: - Check for collisions between objects
         asteroidCollision()
         
         // check if ship is still in the view
-        if ship.position.x > 1.0 {
+        if Float(ship.position.x) > width {
             ship.position.x = 0.0
         }
         else if ship.position.x < 0.0 {
-            ship.position.x = 1.0
+            ship.position.x = CGFloat(width)
         }
         if Float(ship.position.y) > height {
             let currYPos = Float(ship.position.y)
@@ -105,8 +105,8 @@ class Asteroids {
             ship.position.y += CGFloat(height)
         }
         
-        ship.acceleration.x = ship.thrusterOn ? sin(ship.angle) * 0.17 : -ship.velocity.x * 0.5
-        ship.acceleration.y = ship.thrusterOn ? -cos(ship.angle) * 0.17: -ship.velocity.y * 0.5
+        ship.acceleration.x = ship.thrusterOn ? sin(ship.angle) * 70 : -ship.velocity.x * 0.5
+        ship.acceleration.y = ship.thrusterOn ? -cos(ship.angle) * 70: -ship.velocity.y * 0.5
         
         ship.velocity.x += ship.acceleration.x * CGFloat(elapsed)
         ship.position.x += ship.velocity.x * CGFloat(elapsed)
@@ -118,11 +118,11 @@ class Asteroids {
                 // check in here for whether the x or y position is off the screen so that it can be repositioned before updating velocity
                 if let xPos = asteroids[size]?[i].position.x, let yPos = asteroids[size]?[i].position.y {
                     // Missing certain edge cases... eventually all asteroids are not spawing in correct spots (maybe solved)
-                    if xPos > 1.0 {
+                    if xPos > width {
                         asteroids[size]?[i].position.x = 0.0
                     }
                     else if xPos < 0.0 {
-                        asteroids[size]?[i].position.x = 1.0
+                        asteroids[size]?[i].position.x = width
                     }
                     if yPos > height {
                         if let currYPos = asteroids[size]?[i].position.y {
@@ -156,7 +156,8 @@ class Asteroids {
                         //(x2-x1)^2 + (y1-y2)^2 <= (r1+r2)^2
                         let centerDiffX = pow((Float(ship.position.x) - asteroidList[i].position.x), 2)
                         let centerDiffY = pow((Float(ship.position.y) - asteroidList[i].position.y), 2)
-                        let sumRadii = Float(((1.0 / 25.0) / 2.0) + ((1.0 / 100.0) / 2.0))
+                        let sumRadii = Float(pow((25.0 / 2.0) + 50.0, 2))
+//                        let sumRadii = Float(((1.0 / 25.0) / 2.0) + ((1.0 / 100.0) / 2.0))
                         if centerDiffX + centerDiffY <= sumRadii {
                             print("collision detected")
                         }

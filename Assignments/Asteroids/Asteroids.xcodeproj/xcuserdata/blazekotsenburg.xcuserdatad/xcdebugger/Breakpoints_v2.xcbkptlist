@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Asteroids/Views/GameView.swift"
-            timestampString = "577259312.540874"
+            timestampString = "577265436.138894"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "173"
-            endingLineNumber = "173"
+            startingLineNumber = "181"
+            endingLineNumber = "181"
             landmarkName = "asteroidPositions()"
             landmarkType = "7">
          </BreakpointContent>

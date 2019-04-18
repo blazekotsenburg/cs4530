@@ -59,7 +59,7 @@ class GameView: UIView {
         thrustButton = UIButton()
         shootButton = UIButton()
         labelViews = ["scoreLabel": scoreLabel, "livesLabel": livesLabel]
-        buttonViews = ["rotateLeft": rotateLeftButton, "rotateRight": rotateRightButton]
+        buttonViews = ["rotateLeft": rotateLeftButton, "rotateRight": rotateRightButton, "shootButton": shootButton]
         controlViews = ["thrustButton": thrustButton, "shootButton": shootButton]
         asteroids = ["large": [], "medium": [], "small": []]
         bullet = BulletView()
@@ -70,6 +70,9 @@ class GameView: UIView {
         controlStackView.translatesAutoresizingMaskIntoConstraints = false
         scoreLabel.translatesAutoresizingMaskIntoConstraints = false
         livesLabel.translatesAutoresizingMaskIntoConstraints = false
+        rotateLeftButton.translatesAutoresizingMaskIntoConstraints = false
+        rotateRightButton.translatesAutoresizingMaskIntoConstraints = false
+        shootButton.translatesAutoresizingMaskIntoConstraints = false
         
         backgroundColor = .black
         shipView.contentMode = .redraw
@@ -88,7 +91,7 @@ class GameView: UIView {
         rotateButtonsStackView.alignment = .center
         rotateButtonsStackView.axis = .horizontal
         rotateButtonsStackView.distribution = .fillEqually
-        rotateButtonsStackView.spacing = 10.0
+//        rotateButtonsStackView.spacing = 10.0
         
         controlStackView.alignment = .center
         controlStackView.axis = .horizontal
@@ -137,14 +140,19 @@ class GameView: UIView {
         gameLabelStackView.heightAnchor.constraint(equalToConstant: 50.0).isActive = true
         
         rotateButtonsStackView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 15.0).isActive = true
-        rotateButtonsStackView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: 15.0).isActive = true
+        rotateButtonsStackView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -5.0).isActive = true
         rotateButtonsStackView.widthAnchor.constraint(equalTo: safeAreaLayoutGuide.widthAnchor, multiplier: 0.3).isActive = true
         rotateButtonsStackView.heightAnchor.constraint(equalToConstant: 70.0).isActive = true
         
         controlStackView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -15.0).isActive = true
-        controlStackView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: 15.0).isActive = true
+        controlStackView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -15.0).isActive = true
         controlStackView.widthAnchor.constraint(equalTo: safeAreaLayoutGuide.widthAnchor, multiplier: 0.3).isActive = true
         controlStackView.heightAnchor.constraint(equalToConstant: 70.0).isActive = true
+        
+        rotateButtonsStackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[rotateLeft][shootButton][rotateRight]", options: [], metrics: nil, views: buttonViews))
+//        rotateButtonsStackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[rotateLeft]", options: [], metrics: nil, views: buttonViews))
+//        rotateButtonsStackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[shootButton]", options: [], metrics: nil, views: buttonViews))
+//        rotateButtonsStackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[rotateRight]", options: [], metrics: nil, views: buttonViews))
         
         gameLabelStackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[scoreLabel]-|", options: [], metrics: nil, views: labelViews))
         gameLabelStackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[livesLabel]-|", options: [], metrics: nil, views: labelViews))
@@ -248,8 +256,10 @@ class GameView: UIView {
         switch withSize {
             case "large":
                 if let asteroidLarge = asteroids[withSize]?[atIndex] as? AsteroidLarge {
-                    let x = CGFloat(positionList[atIndex].position.x) * bounds.width
-                    let y = CGFloat(positionList[atIndex].position.y) * 0.5 * bounds.height
+//                    let x = CGFloat(positionList[atIndex].position.x) * bounds.width
+//                    let y = CGFloat(positionList[atIndex].position.y) * 0.5 * bounds.height
+                    let x = CGFloat(positionList[atIndex].position.x)
+                    let y = CGFloat(positionList[atIndex].position.y)
                     asteroidLarge.center = CGPoint(x: x, y: y)
                     asteroidLarge.bounds = CGRect(x: 0.0, y: 0.0, width: 100.0, height: 100.0)
                     asteroidLarge.contentMode = .redraw
@@ -258,8 +268,10 @@ class GameView: UIView {
             case "medium":
                 if let asteroidMedium = asteroids[withSize]?[atIndex] as? AsteroidMedium {
                     asteroidMedium.contentMode = .redraw
-                    let x = CGFloat(positionList[atIndex].position.x) * bounds.width
-                    let y = CGFloat(positionList[atIndex].position.y) * 0.5 * bounds.height
+//                    let x = CGFloat(positionList[atIndex].position.x) * bounds.width
+//                    let y = CGFloat(positionList[atIndex].position.y) * 0.5 * bounds.height
+                    let x = CGFloat(positionList[atIndex].position.x)
+                    let y = CGFloat(positionList[atIndex].position.y)
                     asteroidMedium.center = CGPoint(x: x, y: y)
                     asteroidMedium.bounds = CGRect(x: 0.0, y: 0.0, width: 100.0, height: 100.0)
                     asteroidMedium.contentMode = .redraw
@@ -268,8 +280,10 @@ class GameView: UIView {
             case "small":
                 if let asteroidSmall = asteroids[withSize]?[atIndex] as? AsteroidSmall {
                     asteroidSmall.contentMode = .redraw
-                    let x = CGFloat(positionList[atIndex].position.x) * bounds.width
-                    let y = CGFloat(positionList[atIndex].position.y) * 0.5 * bounds.height
+//                    let x = CGFloat(positionList[atIndex].position.x) * bounds.width
+//                    let y = CGFloat(positionList[atIndex].position.y) * 0.5 * bounds.height
+                    let x = CGFloat(positionList[atIndex].position.x)
+                    let y = CGFloat(positionList[atIndex].position.y)
                     asteroidSmall.center = CGPoint(x: x, y: y)
                     asteroidSmall.bounds = CGRect(x: 0.0, y: 0.0, width: 100.0, height: 100.0)
                     asteroidSmall.contentMode = .redraw
@@ -341,10 +355,11 @@ class GameView: UIView {
         guard let delegate = delegate else { return }
         let shipPoint = delegate.gameView(getPositionForShipIn: self)
         
-        let x = CGFloat(shipPoint.x) * bounds.width
-        let y = CGFloat(shipPoint.y) * 0.5 * bounds.height
+//        let x = CGFloat(shipPoint.x) * bounds.width
+//        let y = CGFloat(shipPoint.y) * 0.5 * bounds.height
         
-        shipView.center = CGPoint(x: x, y: y)
+//        shipView.center = CGPoint(x: x, y: y)
+        shipView.center = CGPoint(x: shipPoint.x, y: shipPoint.y)
         shipView.bounds = CGRect(x: 0.0, y: 0.0, width: 25.0, height: 25.0)
         shipView.transform = CGAffineTransform(rotationAngle: delegate.gameView(getAngleForShipIn: self))
         asteroidPositions()

@@ -14,7 +14,8 @@ class GameViewController: UIViewController, GameViewDelegate, AsteroidsDataSourc
     private var lock: NSLock
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        asteroidsGame = Asteroids(width: 1.0, height: Float(UIScreen.main.bounds.width / UIScreen.main.bounds.height))
+//        asteroidsGame = Asteroids(width: 1.0, height: Float(UIScreen.main.bounds.width / UIScreen.main.bounds.height))
+        asteroidsGame = Asteroids(width: Float(UIScreen.main.bounds.width), height: Float(UIScreen.main.bounds.height))
         lock = NSLock()
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
