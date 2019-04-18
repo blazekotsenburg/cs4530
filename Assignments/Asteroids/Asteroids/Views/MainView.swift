@@ -63,9 +63,9 @@ class MainView: UIView {
     }
     
     override func draw(_ rect: CGRect) {
-        
-        stackView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor).isActive = true
-        stackView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor).isActive = true
+        //consider making this centered with a width of half the screen
+        stackView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 100.0).isActive = true
+        stackView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -100.0).isActive = true
         stackView.heightAnchor.constraint(equalToConstant: 100.0).isActive = true
         stackView.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor).isActive = true
         
@@ -76,11 +76,9 @@ class MainView: UIView {
     @objc func homeViewButtonPressed(sender: Any) {
         if let button = sender as? UIButton {
             if button == gameButton {
-                
                 delegate?.mainView(presentGameViewFor: self)
             }
             else if button == highScoreButton {
-                
                 delegate?.mainView(presentHighScoresFor: self)
             }
         }

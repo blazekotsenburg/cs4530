@@ -9,11 +9,12 @@
 import UIKit
 
 protocol GameViewDelegate {
-    func gameView(getAngleForShipIn gameView: GameView) -> CGFloat
+    func gameView(getAngleForShipIn gameView: GameView) -> Float
     func gameView(rotateLeftPressed gameView: GameView, rotating: Bool)
     func gameView(rotateRightPressed gameView: GameView, rotating: Bool)
     func gameView(thrusterPressed gameView: GameView, thrusterOn: Bool)
-    func gameView(getPositionForShipIn gameView: GameView) -> CGPoint
+    func gameView(shootButtonToggled gameView: GameView, fireProjectile: Bool)
+    func gameView(getPositionForShipIn gameView: GameView) -> (x: Float, y: Float)
     func gameView(getAsteroidPositionsIn gameView: GameView) -> [String: [AsteroidObject]]
     func gameView(acquireLockFor gameView: GameView, lockAcquired: Bool)
 }
@@ -37,7 +38,6 @@ class GameView: UIView {
     private var buttonViews: [String: Any]
     private var controlViews: [String: Any]
     private var asteroids: [String: [Any]]
-    private var bullet: BulletView
     var currAngle:CGFloat = 0.0
     
     var timer: Timer = Timer()
@@ -62,7 +62,6 @@ class GameView: UIView {
         buttonViews = ["rotateLeft": rotateLeftButton, "rotateRight": rotateRightButton, "shootButton": shootButton]
         controlViews = ["thrustButton": thrustButton, "shootButton": shootButton]
         asteroids = ["large": [], "medium": [], "small": []]
-        bullet = BulletView()
         super.init(frame: frame)
         
         gameLabelStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -123,6 +122,8 @@ class GameView: UIView {
         
         shootButton.setTitle("Fire", for: .normal)
         shootButton.titleLabel?.textColor = .white
+        shootButton.addTarget(self, action: #selector(shootButtonPressed), for: .touchDown)
+        shootButton.addTarget(self, action: #selector(shootButtonReleased), for: .touchUpInside)
         
         gameLabelStackView.addArrangedSubview(scoreLabel)
         gameLabelStackView.addArrangedSubview(livesLabel)
@@ -157,10 +158,6 @@ class GameView: UIView {
         gameLabelStackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[scoreLabel]-|", options: [], metrics: nil, views: labelViews))
         gameLabelStackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[livesLabel]-|", options: [], metrics: nil, views: labelViews))
         
-        bullet = BulletView(frame: CGRect(x: 100.0, y: 100.0, width: 20.0, height: 20.0))
-        bullet.contentMode = .redraw
-        addSubview(bullet)
-        
         beginTimer()
         asteroidPositions()
     }
@@ -181,14 +178,6 @@ class GameView: UIView {
                                 asteroids[size]?.append(asteroid)
                                 spawnAsteroids(withSize: size, atIndex: i, for: positionList)
                                 addSubview(asteroid)
-//                                if let asteroidLarge = asteroids[size]?[i] as? AsteroidLarge {
-//                                    let x = CGFloat(positionList[i].position.x) * bounds.width
-//                                    let y = CGFloat(positionList[i].position.y) * 0.5 * bounds.height
-//                                    asteroidLarge.center = CGPoint(x: x, y: y)
-//                                    asteroidLarge.bounds = CGRect(x: 0.0, y: 0.0, width: 100.0, height: 100.0)
-//                                    asteroidLarge.contentMode = .redraw
-//                                    addSubview(asteroidLarge)
-//                                }
                             }
                         case "medium":
                             for i in 0..<positionList.count {
@@ -196,14 +185,6 @@ class GameView: UIView {
                                 asteroids[size]?.append(asteroid)
                                 spawnAsteroids(withSize: size, atIndex: i, for: positionList)
                                 addSubview(asteroid)
-//                                if let asteroidMedium = asteroids[size]?[i] as? AsteroidMedium {
-//                                    asteroidMedium.contentMode = .redraw
-//                                    let x = CGFloat(positionList[i].position.x) * bounds.width
-//                                    let y = CGFloat(positionList[i].position.y) * 0.5 * bounds.height
-//                                    asteroidMedium.center = CGPoint(x: x, y: y)
-//                                    asteroidMedium.bounds = CGRect(x: 0.0, y: 0.0, width: 100.0, height: 100.0)
-//                                    addSubview(asteroidMedium)
-//                                }
                             }
                         case "small":
                             for i in 0..<positionList.count {
@@ -211,14 +192,6 @@ class GameView: UIView {
                                 asteroids[size]?.append(asteroid)
                                 spawnAsteroids(withSize: size, atIndex: i, for: positionList)
                                 addSubview(asteroid)
-//                                if let asteroidSmall = asteroids[size]?[i] as? AsteroidSmall {
-//                                    asteroidSmall.contentMode = .redraw
-//                                    let x = CGFloat(positionList[i].position.x) * bounds.width
-//                                    let y = CGFloat(positionList[i].position.y) * 0.5 * bounds.height
-//                                    asteroidSmall.center = CGPoint(x: x, y: y)
-//                                    asteroidSmall.bounds = CGRect(x: 0.0, y: 0.0, width: 100.0, height: 100.0)
-//                                    addSubview(asteroidSmall)
-//                                }
                             }
                         default:
                             return
@@ -350,6 +323,24 @@ class GameView: UIView {
         }
     }
     
+    @objc func shootButtonPressed(sender: Any) {
+        if let button = sender as? UIButton {
+            if button == shootButton {
+                guard let delegate = delegate else { return }
+                delegate.gameView(shootButtonToggled: self, fireProjectile: true)
+            }
+        }
+    }
+    
+    @objc func shootButtonReleased(sender: Any) {
+        if let button = sender as? UIButton {
+            if button == shootButton {
+                guard let delegate = delegate else { return }
+                delegate.gameView(shootButtonToggled: self, fireProjectile: false)
+            }
+        }
+    }
+    
     func updateUI() {
         
         guard let delegate = delegate else { return }
@@ -359,17 +350,18 @@ class GameView: UIView {
 //        let y = CGFloat(shipPoint.y) * 0.5 * bounds.height
         
 //        shipView.center = CGPoint(x: x, y: y)
-        shipView.center = CGPoint(x: shipPoint.x, y: shipPoint.y)
+        shipView.center = CGPoint(x: CGFloat(shipPoint.x), y: CGFloat(shipPoint.y))
         shipView.bounds = CGRect(x: 0.0, y: 0.0, width: 25.0, height: 25.0)
-        shipView.transform = CGAffineTransform(rotationAngle: delegate.gameView(getAngleForShipIn: self))
+        shipView.transform = CGAffineTransform(rotationAngle: CGFloat(delegate.gameView(getAngleForShipIn: self)))
         asteroidPositions()
-        
-        bullet.center = CGPoint(x: 100.0, y: 100.0)
-        bullet.bounds = CGRect(x: 0.0, y: 0.0, width: 10.0, height: 10.0)
         
         // -game.width * 0.5 -> game.width * 0.5
         // xview = (xmodel + game.width * 0.5) / game.width * view.bounds.width
         // yview = (ymodel + 1) * 0.5 * height
+    }
+    
+    func removeShip() {
+        shipView.removeFromSuperview()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -377,8 +369,8 @@ class GameView: UIView {
     }
     
     func reloadData() {
-        guard let shipPoint = delegate?.gameView(getPositionForShipIn: self) else { return }
-        shipView.frame = CGRect(x: shipPoint.x, y: shipPoint.y, width: 25.0, height: 25.0)
+//        guard let shipPoint = delegate?.gameView(getPositionForShipIn: self) else { return }
+//        shipView.frame = CGRect(x: shipPoint.x, y: shipPoint.y, width: 25.0, height: 25.0)
         setNeedsDisplay()
     }
 }

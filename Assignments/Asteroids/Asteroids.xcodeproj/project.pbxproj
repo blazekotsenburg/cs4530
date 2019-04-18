@@ -10,6 +10,7 @@
 		6706917D225EAED500B46FC6 /* AsteroidSmall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6706917C225EAED500B46FC6 /* AsteroidSmall.swift */; };
 		670691812266A6FE00B46FC6 /* AsteroidObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 670691802266A6FE00B46FC6 /* AsteroidObject.swift */; };
 		6706918322681ABF00B46FC6 /* BulletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6706918222681ABF00B46FC6 /* BulletView.swift */; };
+		670691852268DC3000B46FC6 /* Bullet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 670691842268DC3000B46FC6 /* Bullet.swift */; };
 		67A5EA80225581A600B56EB6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67A5EA7F225581A600B56EB6 /* AppDelegate.swift */; };
 		67A5EA82225581A600B56EB6 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67A5EA81225581A600B56EB6 /* MainViewController.swift */; };
 		67A5EA87225581A600B56EB6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 67A5EA86225581A600B56EB6 /* Assets.xcassets */; };
@@ -33,6 +34,7 @@
 		6706917F225EB59300B46FC6 /* earthorbiterital.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = earthorbiterital.ttf; sourceTree = "<group>"; };
 		670691802266A6FE00B46FC6 /* AsteroidObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsteroidObject.swift; sourceTree = "<group>"; };
 		6706918222681ABF00B46FC6 /* BulletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BulletView.swift; sourceTree = "<group>"; };
+		670691842268DC3000B46FC6 /* Bullet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bullet.swift; sourceTree = "<group>"; };
 		67A5EA7C225581A600B56EB6 /* Asteroids.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Asteroids.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		67A5EA7F225581A600B56EB6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		67A5EA81225581A600B56EB6 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -125,6 +127,7 @@
 			children = (
 				67A5EAA52256BA7E00B56EB6 /* Asteroids.swift */,
 				670691802266A6FE00B46FC6 /* AsteroidObject.swift */,
+				670691842268DC3000B46FC6 /* Bullet.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -225,6 +228,7 @@
 				67A5EA9B2255A53300B56EB6 /* HighScoresViewController.swift in Sources */,
 				67A5EA80225581A600B56EB6 /* AppDelegate.swift in Sources */,
 				67A5EA992255A33900B56EB6 /* GameView.swift in Sources */,
+				670691852268DC3000B46FC6 /* Bullet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

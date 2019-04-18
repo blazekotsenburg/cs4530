@@ -10,18 +10,20 @@ import UIKit
 
 protocol AsteroidsDataSource {
     func asteroids(toggleLockFor asteroidsGame: Asteroids, lockAcquired: Bool)
+    func asteroids(shipCollisionDetectedFor asteroidsGame: Asteroids)
 }
 
 class Asteroids {
     
     struct Ship {
-        var angle: CGFloat
-        var velocity: (x: CGFloat, y: CGFloat) //might need a vector
-        var acceleration: (x: CGFloat, y: CGFloat)
-        var position: CGPoint
+        var angle: Float
+        var velocity: (x: Float, y: Float) //might need a vector
+        var acceleration: (x: Float, y: Float)
+        var position: (x: Float, y: Float)
         var thrusterOn: Bool
         var rotatingLeft: Bool
         var rotatingRight: Bool
+        var firingProjectile: Bool
     }
     
 //    struct AsteroidObject {
@@ -34,6 +36,8 @@ class Asteroids {
     private var numberOfLives: Int = Int()
     private var score: Int = Int()
     private var gameLoopTimer: Timer = Timer()
+    private var bulletTimer: Timer = Timer()
+    private var bulletTicks: Int
     private var ship: Ship
     private var lastDate: Date
     var width: Float
@@ -41,8 +45,7 @@ class Asteroids {
     private var numberOfAsteroids: Int = 4
     private var asteroidSpawnPoints: [(x: Float, y: Float)] // use this to reassign positions to asteroids after each level
     private var asteroids: [String: [AsteroidObject]] = ["large":[], "medium": [], "small": []]
-    //TODO: - Update positions of objects
-    //TODO: - Detect collisions between objects
+    private var bulletQueue: [Bullet]
     
     var dataSource: AsteroidsDataSource?
     
@@ -50,7 +53,9 @@ class Asteroids {
         self.width = width
         self.height = height
         lastDate = Date()
-        ship = Ship(angle: 0.0, velocity: (0.0, 0.0), acceleration: (x: 0.0, y: 0.0), position: CGPoint(x: Double(self.width * 0.5), y: Double(self.height * 0.5)), thrusterOn: false, rotatingLeft: false, rotatingRight: false)
+        bulletQueue = []
+        bulletTicks = 0
+        ship = Ship(angle: 0.0, velocity: (0.0, 0.0), acceleration: (x: 0.0, y: 0.0), position: (x: self.width * 0.5, y: self.height * 0.5), thrusterOn: false, rotatingLeft: false, rotatingRight: false, firingProjectile: false)
         // this coordinate system is different than the one in gameView. now need to translate coordinate system.
         // will also need to initialize asteroids dictionary differently here. asteroidSpawnPoints won't be queried every time now.
         asteroidSpawnPoints = [(x: width * 0.1, y: height * 0.1),
@@ -64,6 +69,7 @@ class Asteroids {
         }
         
         beginTimer()
+        beginBulletTimer()
     }
     
     // make a function to reset the asteroid postions after each level ends.
@@ -78,41 +84,60 @@ class Asteroids {
         })
     }
     
-    //should be called from game loop
+    func beginBulletTimer() {
+        bulletTimer = Timer.scheduledTimer(withTimeInterval: 1.0/120.0, repeats: true, block: { _ in
+            self.bulletTicks += 1
+        })
+    }
+    
     private func executeGameLoop(elapsed: TimeInterval) {
-        if ship.rotatingRight {
-            ship.angle += CGFloat(elapsed) * 4.0
-        }
-        else if ship.rotatingLeft {
-            ship.angle -= CGFloat(elapsed) * 4.0
-        }
         
         //TODO: - Check for collisions between objects
         asteroidCollision()
         
-        // check if ship is still in the view
+        // Check if the ship is supposed to rotate left or right
+        if ship.rotatingRight {
+            ship.angle += Float(elapsed) * 4.0
+        }
+        else if ship.rotatingLeft {
+            ship.angle -= Float(elapsed) * 4.0
+        }
+        
+        // Check if the ship is firing and that bullet ticks is greater than 20 (to create gap between each bullet)
+        if ship.firingProjectile && bulletTicks >= 20 {
+            lock.lock()
+            let bullet: Bullet = Bullet(position: (x: ship.position.x, y: ship.position.y), stepSize: (x: cos(ship.angle) * 0.5, y: sin(ship.angle) * 0.5), angle: ship.angle, spawnedAt: Date())
+            bulletQueue.append(bullet)
+            bulletTicks = 0
+            lock.unlock()
+        }
+        
+        // Check if ship is still in the view
         if Float(ship.position.x) > width {
             ship.position.x = 0.0
         }
         else if ship.position.x < 0.0 {
-            ship.position.x = CGFloat(width)
+            ship.position.x = Float(width)
         }
         if Float(ship.position.y) > height {
             let currYPos = Float(ship.position.y)
-            ship.position.y -= CGFloat(currYPos)
+            ship.position.y -= Float(currYPos)
         }
         else if ship.position.y < 0.0 {
-            ship.position.y += CGFloat(height)
+            ship.position.y += Float(height)
         }
         
+        //Update the acceleration for the ship
         ship.acceleration.x = ship.thrusterOn ? sin(ship.angle) * 70 : -ship.velocity.x * 0.5
         ship.acceleration.y = ship.thrusterOn ? -cos(ship.angle) * 70: -ship.velocity.y * 0.5
         
-        ship.velocity.x += ship.acceleration.x * CGFloat(elapsed)
-        ship.position.x += ship.velocity.x * CGFloat(elapsed)
-        ship.velocity.y += ship.acceleration.y * CGFloat(elapsed)
-        ship.position.y += ship.velocity.y * CGFloat(elapsed)
+        //Update the velocity and position of the ship
+        ship.velocity.x += ship.acceleration.x * Float(elapsed)
+        ship.position.x += ship.velocity.x * Float(elapsed)
+        ship.velocity.y += ship.acceleration.y * Float(elapsed)
+        ship.position.y += ship.velocity.y * Float(elapsed)
         
+        //Update the positions of all the asteroids in the model
         for (size, asteroidList) in asteroids {
             for i in 0..<asteroidList.count {
                 // check in here for whether the x or y position is off the screen so that it can be repositioned before updating velocity
@@ -134,18 +159,27 @@ class Asteroids {
                     }
                 }
                 
-//                let cosAngle = cos((asteroids[size]?[i].angle)!)
                 let stepX = asteroids[size]?[i].stepSize.x
-//                asteroids[size]?[i].velocity.x += Float(stepX!)// make this second constant a random property for x & y for each asteroid
-//                let velocityX = asteroids[size]?[i].velocity.x
                 asteroids[size]?[i].position.x += Float(stepX!)//Float((velocityX)! * Float(elapsed))
-//                let sinAngle = sin((asteroids[size]?[i].angle)!)
                 let stepY = asteroids[size]?[i].stepSize.y
-                asteroids[size]?[i].velocity.y += Float(stepY!)
-//                let velocityY = asteroids[size]?[i].velocity.y
                 asteroids[size]?[i].position.y += Float(stepY!)//Float((velocityY)! * Float(elapsed))
             }
         }
+        
+//        cleanUpBullets()
+    }
+    
+    func cleanUpBullets() {
+        //this will need a lock! gets an index out of bounds range when repeately tapping. bulletQueue being manipulated in two spots.
+        lock.lock()
+        for i in 0..<bulletQueue.count {
+            let now: Date = Date()
+            let elapsed: TimeInterval = now.timeIntervalSince(bulletQueue[i].spawnedAt)
+            if elapsed > 2 {
+                bulletQueue.remove(at: i)
+            }
+        }
+        lock.unlock()
     }
     
     func asteroidCollision() {
@@ -153,13 +187,15 @@ class Asteroids {
             switch size {
                 case "large":
                     for i in 0..<asteroidList.count {
-                        //(x2-x1)^2 + (y1-y2)^2 <= (r1+r2)^2
+                        //Circle-circle collision detection: (x2-x1)^2 + (y1-y2)^2 <= (r1+r2)^2
                         let centerDiffX = pow((Float(ship.position.x) - asteroidList[i].position.x), 2)
                         let centerDiffY = pow((Float(ship.position.y) - asteroidList[i].position.y), 2)
                         let sumRadii = Float(pow((25.0 / 2.0) + 50.0, 2))
 //                        let sumRadii = Float(((1.0 / 25.0) / 2.0) + ((1.0 / 100.0) / 2.0))
                         if centerDiffX + centerDiffY <= sumRadii {
-                            print("collision detected")
+//                            print("collision detected")
+//                            dataSource?.asteroids(shipCollisionDetectedFor: self)
+                            // TODO: - Make delegate to notify view that collision has happened and to remove the ship.
                         }
                     }
                     break
@@ -177,7 +213,7 @@ class Asteroids {
         ship.rotatingRight = isRotatingRight
     }
     
-    func getAngleForShip() -> CGFloat {
+    func getAngleForShip() -> Float {
         return ship.angle
     }
     
@@ -185,7 +221,11 @@ class Asteroids {
         ship.thrusterOn = thrusterOn
     }
     
-    func getShipPosition() -> CGPoint {
+    func fireProjectile(isFiringProjectile: Bool) {
+        ship.firingProjectile = isFiringProjectile
+    }
+    
+    func getShipPosition() -> (x: Float, y: Float) {
         return ship.position
     }
     

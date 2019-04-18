@@ -28,7 +28,7 @@ class GameViewController: UIViewController, GameViewDelegate, AsteroidsDataSourc
         return view as! GameView
     }
     
-    func gameView(getAngleForShipIn gameView: GameView) -> CGFloat {
+    func gameView(getAngleForShipIn gameView: GameView) -> Float {
         return asteroidsGame.getAngleForShip()
     }
     
@@ -44,7 +44,11 @@ class GameViewController: UIViewController, GameViewDelegate, AsteroidsDataSourc
         asteroidsGame.toggleThruster(thrusterOn: thrusterOn)
     }
     
-    func gameView(getPositionForShipIn gameView: GameView) -> CGPoint {
+    func gameView(shootButtonToggled gameView: GameView, fireProjectile: Bool) {
+        asteroidsGame.fireProjectile(isFiringProjectile: fireProjectile)
+    }
+    
+    func gameView(getPositionForShipIn gameView: GameView) -> (x: Float, y: Float) {
         return asteroidsGame.getShipPosition()
     }
     
@@ -68,6 +72,10 @@ class GameViewController: UIViewController, GameViewDelegate, AsteroidsDataSourc
         else {
             lock.unlock()
         }
+    }
+    
+    func asteroids(shipCollisionDetectedFor asteroidsGame: Asteroids) {
+        gameView.removeShip()
     }
     
     override func loadView() {
