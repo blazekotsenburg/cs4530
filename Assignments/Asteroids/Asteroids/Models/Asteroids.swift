@@ -58,7 +58,8 @@ class Asteroids {
                                (x: width * 0.75, y: height * 0.85)]
         
         for i in 0..<numberOfAsteroids {
-            asteroids["large"]?.append(AsteroidObject(velocity: (x: 0.0, y: 0.0), position: asteroidSpawnPoints[i], acceleration: (x: 0.0, y: 0.0)))
+            let randAngle: Float = Float.random(in: 0...180)
+            asteroids["large"]?.append(AsteroidObject(velocity: (x: 0.0, y: 0.0), position: asteroidSpawnPoints[i], acceleration: (x: 0.0, y: 0.0), stepSize: (x: cos(randAngle) * 0.0025, y: sin(randAngle) * 0.0025)))
         }
         
         beginTimer()
@@ -86,6 +87,21 @@ class Asteroids {
             ship.angle -= CGFloat(elapsed) * 2.0
         }
         
+        // check if ship is still in the view
+//        if ship.position.x > 1.0 {
+//            ship.position.x = 0.0
+//        }
+//        else if ship.position.x < 0.0 {
+//            ship.position.x = 1.0
+//        }
+//        if Float(ship.position.y) > height {
+//            let currYPos = Float(ship.position.y)
+//            ship.position.y -= CGFloat(currYPos)
+//        }
+//        else if ship.position.y < 0.0 {
+//            ship.position.y += CGFloat(height)
+//        }
+        
         ship.acceleration.x = ship.thrusterOn ? sin(ship.angle) * 50.0 : -ship.velocity.x * 0.5
         ship.acceleration.y = ship.thrusterOn ? -cos(ship.angle) * 50.0 : -ship.velocity.y * 0.5
         
@@ -96,14 +112,36 @@ class Asteroids {
         
         for (size, asteroidList) in asteroids {
             for i in 0..<asteroidList.count {
-                dataSource?.asteroids(toggleLockFor: self, lockAcquired: true)
-                asteroids[size]?[i].velocity.x += 0.0001
-                let velocityX = asteroids[size]?[i].velocity.x
-                asteroids[size]?[i].position.x += Float((velocityX)! * Float(elapsed))
-                asteroids[size]?[i].velocity.y += 0.0001
-                let velocityY = asteroids[size]?[i].velocity.y
-                asteroids[size]?[i].position.y += Float((velocityY)! * Float(elapsed))
-                dataSource?.asteroids(toggleLockFor: self, lockAcquired: false)
+                // check in here for whether the x or y position is off the screen so that it can be repositioned before updating velocity
+                //TODO: - Respawn asteroids to other side of screen if they run off of the screen
+                if let xPos = asteroids[size]?[i].position.x, let yPos = asteroids[size]?[i].position.y {
+                    // Missing certain edge cases... eventually all asteroids are not spawing in correct spots
+                    if xPos > 1.0 {
+                        asteroids[size]?[i].position.x = 0.0
+                    }
+                    else if xPos < 0.0 {
+                        asteroids[size]?[i].position.x = 1.0
+                    }
+                    if yPos > height {
+                        if let currYPos = asteroids[size]?[i].position.y {
+                            asteroids[size]?[i].position.y -= Float(currYPos)
+                        }
+                    }
+                    else if yPos < 0.0 {
+                        asteroids[size]?[i].position.y += height
+                    }
+                }
+                
+//                let cosAngle = cos((asteroids[size]?[i].angle)!)
+                let stepX = asteroids[size]?[i].stepSize.x
+//                asteroids[size]?[i].velocity.x += Float(stepX!)// make this second constant a random property for x & y for each asteroid
+//                let velocityX = asteroids[size]?[i].velocity.x
+                asteroids[size]?[i].position.x += Float(stepX!)//Float((velocityX)! * Float(elapsed))
+//                let sinAngle = sin((asteroids[size]?[i].angle)!)
+                let stepY = asteroids[size]?[i].stepSize.y
+                asteroids[size]?[i].velocity.y += Float(stepY!)
+//                let velocityY = asteroids[size]?[i].velocity.y
+                asteroids[size]?[i].position.y += Float(stepY!)//Float((velocityY)! * Float(elapsed))
             }
         }
     }

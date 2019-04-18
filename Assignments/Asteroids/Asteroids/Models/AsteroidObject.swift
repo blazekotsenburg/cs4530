@@ -10,4 +10,5 @@ struct AsteroidObject {
     var velocity: (x: Float, y: Float)
     var position: (x: Float, y: Float)
     var acceleration: (x: Float, y: Float)
+    var stepSize: (x: Float, y: Float)
 }

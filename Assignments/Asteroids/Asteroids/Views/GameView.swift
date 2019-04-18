@@ -72,12 +72,6 @@ class GameView: UIView {
         backgroundColor = .black
         shipView.contentMode = .redraw
         addSubview(shipView)
-//        largeAsteroid.contentMode = .redraw
-//        addSubview(largeAsteroid)
-//        mediumAsteroid.contentMode = .redraw
-//        addSubview(mediumAsteroid)
-//        smallAsteroid.contentMode = .redraw
-//        addSubview(smallAsteroid)
         gameLabelStackView.contentMode = .redraw
         addSubview(gameLabelStackView)
         rotateButtonsStackView.contentMode = .redraw
@@ -129,10 +123,11 @@ class GameView: UIView {
         gameLabelStackView.addArrangedSubview(livesLabel)
         
         rotateButtonsStackView.addArrangedSubview(rotateLeftButton)
+        rotateButtonsStackView.addArrangedSubview(shootButton)
         rotateButtonsStackView.addArrangedSubview(rotateRightButton)
         
         controlStackView.addArrangedSubview(thrustButton)
-        controlStackView.addArrangedSubview(shootButton)
+//        controlStackView.addArrangedSubview(shootButton)
         
         gameLabelStackView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 12.0).isActive = true
         gameLabelStackView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 12.0).isActive = true
@@ -246,6 +241,7 @@ class GameView: UIView {
                     asteroidLarge.center = CGPoint(x: x, y: y)
                     asteroidLarge.bounds = CGRect(x: 0.0, y: 0.0, width: 100.0, height: 100.0)
                     asteroidLarge.contentMode = .redraw
+//                    asteroidLarge.transform = CGAffineTransform(rotationAngle: 90.0)
                     addSubview(asteroidLarge)
                 }
             case "medium":
@@ -255,6 +251,8 @@ class GameView: UIView {
                     let y = CGFloat(positionList[atIndex].position.y) * 0.5 * bounds.height
                     asteroidMedium.center = CGPoint(x: x, y: y)
                     asteroidMedium.bounds = CGRect(x: 0.0, y: 0.0, width: 100.0, height: 100.0)
+                    asteroidMedium.contentMode = .redraw
+//                    asteroidMedium.transform = CGAffineTransform(rotationAngle: 2.0)
                     addSubview(asteroidMedium)
                 }
             case "small":
@@ -264,6 +262,8 @@ class GameView: UIView {
                     let y = CGFloat(positionList[atIndex].position.y) * 0.5 * bounds.height
                     asteroidSmall.center = CGPoint(x: x, y: y)
                     asteroidSmall.bounds = CGRect(x: 0.0, y: 0.0, width: 100.0, height: 100.0)
+                    asteroidSmall.contentMode = .redraw
+//                    asteroidSmall.transform = CGAffineTransform(rotationAngle: 2.0)
                     addSubview(asteroidSmall)
                 }
             default:
@@ -335,9 +335,7 @@ class GameView: UIView {
         shipView.center = CGPoint(x: shipPoint.x, y: shipPoint.y)
         shipView.bounds = CGRect(x: 0.0, y: 0.0, width: 25.0, height: 25.0)
         shipView.transform = CGAffineTransform(rotationAngle: delegate.gameView(getAngleForShipIn: self))
-        delegate.gameView(acquireLockFor: self, lockAcquired: true)
         asteroidPositions()
-        delegate.gameView(acquireLockFor: self, lockAcquired: false)
         // -game.width * 0.5 -> game.width * 0.5
         // xview = (xmodel + game.width * 0.5) / game.width * view.bounds.width
         // yview = (ymodel + 1) * 0.5 * height
