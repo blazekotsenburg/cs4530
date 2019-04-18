@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		6706917D225EAED500B46FC6 /* AsteroidSmall.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6706917C225EAED500B46FC6 /* AsteroidSmall.swift */; };
 		670691812266A6FE00B46FC6 /* AsteroidObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 670691802266A6FE00B46FC6 /* AsteroidObject.swift */; };
+		6706918322681ABF00B46FC6 /* BulletView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6706918222681ABF00B46FC6 /* BulletView.swift */; };
 		67A5EA80225581A600B56EB6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67A5EA7F225581A600B56EB6 /* AppDelegate.swift */; };
 		67A5EA82225581A600B56EB6 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67A5EA81225581A600B56EB6 /* MainViewController.swift */; };
 		67A5EA87225581A600B56EB6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 67A5EA86225581A600B56EB6 /* Assets.xcassets */; };
@@ -31,6 +32,7 @@
 		6706917E225EB57500B46FC6 /* earthorbiter.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = earthorbiter.ttf; sourceTree = "<group>"; };
 		6706917F225EB59300B46FC6 /* earthorbiterital.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = earthorbiterital.ttf; sourceTree = "<group>"; };
 		670691802266A6FE00B46FC6 /* AsteroidObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsteroidObject.swift; sourceTree = "<group>"; };
+		6706918222681ABF00B46FC6 /* BulletView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BulletView.swift; sourceTree = "<group>"; };
 		67A5EA7C225581A600B56EB6 /* Asteroids.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Asteroids.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		67A5EA7F225581A600B56EB6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		67A5EA81225581A600B56EB6 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -103,6 +105,7 @@
 				67A5EAA722582C4B00B56EB6 /* AsteroidLarge.swift */,
 				67A5EAA9225830BB00B56EB6 /* AsteroidMedium.swift */,
 				6706917C225EAED500B46FC6 /* AsteroidSmall.swift */,
+				6706918222681ABF00B46FC6 /* BulletView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -210,6 +213,7 @@
 				67A5EAA62256BA7E00B56EB6 /* Asteroids.swift in Sources */,
 				67A5EA972255A31100B56EB6 /* GameViewController.swift in Sources */,
 				67A5EA9F2255A90000B56EB6 /* SpaceShipView.swift in Sources */,
+				6706918322681ABF00B46FC6 /* BulletView.swift in Sources */,
 				67A5EAAA225830BB00B56EB6 /* AsteroidMedium.swift in Sources */,
 				6706917D225EAED500B46FC6 /* AsteroidSmall.swift in Sources */,
 				67A5EAA822582C4B00B56EB6 /* AsteroidLarge.swift in Sources */,

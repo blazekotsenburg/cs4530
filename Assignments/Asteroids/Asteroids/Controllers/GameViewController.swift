@@ -82,12 +82,10 @@ class GameViewController: UIViewController, GameViewDelegate, AsteroidsDataSourc
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        asteroidsGame.setFrameForView(with: gameView.frame)
         gameView.reloadData()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        asteroidsGame.setFrameForView(with: CGRect(x: 0.0, y: 0.0, width: size.width, height: size.height))
         gameView.reloadData()
     }
 }
