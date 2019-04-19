@@ -148,6 +148,15 @@ class GameView: UIView {
         rotateButtonsStackView.widthAnchor.constraint(equalTo: safeAreaLayoutGuide.widthAnchor, multiplier: 0.3).isActive = true
         rotateButtonsStackView.heightAnchor.constraint(equalToConstant: 70.0).isActive = true
         
+        shootButton.topAnchor.constraint(equalTo: rotateButtonsStackView.topAnchor).isActive = true
+        shootButton.bottomAnchor.constraint(equalTo: rotateButtonsStackView.bottomAnchor).isActive = true
+        rotateLeftButton.topAnchor.constraint(equalTo: rotateButtonsStackView.topAnchor).isActive = true
+        rotateLeftButton.bottomAnchor.constraint(equalTo: rotateButtonsStackView.bottomAnchor).isActive = true
+        rotateRightButton.topAnchor.constraint(equalTo: rotateButtonsStackView.topAnchor).isActive = true
+        rotateRightButton.bottomAnchor.constraint(equalTo: rotateButtonsStackView.bottomAnchor).isActive = true
+        thrustButton.topAnchor.constraint(equalTo: controlStackView.topAnchor).isActive = true
+        thrustButton.bottomAnchor.constraint(equalTo: controlStackView.bottomAnchor).isActive = true
+        
         controlStackView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -15.0).isActive = true
         controlStackView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -15.0).isActive = true
         controlStackView.widthAnchor.constraint(equalTo: safeAreaLayoutGuide.widthAnchor, multiplier: 0.3).isActive = true
@@ -173,31 +182,40 @@ class GameView: UIView {
         for (size, positionList) in positions {
             
             if let asteroidList = asteroids[size] {
-                if asteroidList.isEmpty {
+                if asteroidList.count < positionList.count {
                     switch size {
                         case "large":
-                            for i in 0..<positionList.count {
-                                let asteroid: AsteroidLarge = AsteroidLarge()
-                                asteroids[size]?.append(asteroid)
-                                spawnAsteroids(withSize: size, atIndex: i, for: positionList)
-                                addSubview(asteroid)
-                            }
+//                            for i in 0..<positionList.count {
+                            let asteroid: AsteroidLarge = AsteroidLarge()
+                            asteroids[size]?.append(asteroid)
+                            let index: Int = asteroids[size]!.count - 1
+                            spawnAsteroids(withSize: size, atIndex: index, for: positionList)
+                            addSubview(asteroid)
+                            sendSubviewToBack(asteroid)
+                            break
+//                            }
                         case "medium":
-                            for i in 0..<positionList.count {
-                                let asteroid: AsteroidMedium = AsteroidMedium()
-                                asteroids[size]?.append(asteroid)
-                                spawnAsteroids(withSize: size, atIndex: i, for: positionList)
-                                addSubview(asteroid)
-                            }
+//                            for i in 0..<positionList.count {
+                            let asteroid: AsteroidMedium = AsteroidMedium()
+                            asteroids[size]?.append(asteroid)
+                            let index: Int = asteroids[size]!.count - 1
+                            spawnAsteroids(withSize: size, atIndex: index, for: positionList)
+                            addSubview(asteroid)
+                            sendSubviewToBack(asteroid)
+                            break
+//                            }
                         case "small":
-                            for i in 0..<positionList.count {
-                                let asteroid: AsteroidSmall = AsteroidSmall()
-                                asteroids[size]?.append(asteroid)
-                                spawnAsteroids(withSize: size, atIndex: i, for: positionList)
-                                addSubview(asteroid)
-                            }
+//                            for i in 0..<positionList.count {
+                            let asteroid: AsteroidSmall = AsteroidSmall()
+                            asteroids[size]?.append(asteroid)
+                            let index: Int = asteroids[size]!.count - 1
+                            spawnAsteroids(withSize: size, atIndex: index, for: positionList)
+                            addSubview(asteroid)
+                            sendSubviewToBack(asteroid)
+                            break
+//                            }
                         default:
-                            return
+                            break
                         
                     }
                 }
@@ -246,8 +264,6 @@ class GameView: UIView {
         switch withSize {
             case "large":
                 if let asteroidLarge = asteroids[withSize]?[atIndex] as? AsteroidLarge {
-//                    let x = CGFloat(positionList[atIndex].position.x) * bounds.width
-//                    let y = CGFloat(positionList[atIndex].position.y) * 0.5 * bounds.height
                     let x = CGFloat(positionList[atIndex].position.x)
                     let y = CGFloat(positionList[atIndex].position.y)
                     asteroidLarge.center = CGPoint(x: x, y: y)
@@ -258,30 +274,49 @@ class GameView: UIView {
             case "medium":
                 if let asteroidMedium = asteroids[withSize]?[atIndex] as? AsteroidMedium {
                     asteroidMedium.contentMode = .redraw
-//                    let x = CGFloat(positionList[atIndex].position.x) * bounds.width
-//                    let y = CGFloat(positionList[atIndex].position.y) * 0.5 * bounds.height
                     let x = CGFloat(positionList[atIndex].position.x)
                     let y = CGFloat(positionList[atIndex].position.y)
                     asteroidMedium.center = CGPoint(x: x, y: y)
-                    asteroidMedium.bounds = CGRect(x: 0.0, y: 0.0, width: 100.0, height: 100.0)
+                    asteroidMedium.bounds = CGRect(x: 0.0, y: 0.0, width: 50.0, height: 50.0)
                     asteroidMedium.contentMode = .redraw
 //                    asteroidMedium.transform = CGAffineTransform(rotationAngle: 2.0)
                 }
             case "small":
                 if let asteroidSmall = asteroids[withSize]?[atIndex] as? AsteroidSmall {
                     asteroidSmall.contentMode = .redraw
-//                    let x = CGFloat(positionList[atIndex].position.x) * bounds.width
-//                    let y = CGFloat(positionList[atIndex].position.y) * 0.5 * bounds.height
                     let x = CGFloat(positionList[atIndex].position.x)
                     let y = CGFloat(positionList[atIndex].position.y)
                     asteroidSmall.center = CGPoint(x: x, y: y)
-                    asteroidSmall.bounds = CGRect(x: 0.0, y: 0.0, width: 100.0, height: 100.0)
+                    asteroidSmall.bounds = CGRect(x: 0.0, y: 0.0, width: 25.0, height: 25.0)
                     asteroidSmall.contentMode = .redraw
 //                    asteroidSmall.transform = CGAffineTransform(rotationAngle: 2.0)
                 }
             default:
                 return
             }
+    }
+    
+    func removeShip() {
+        shipView.removeFromSuperview()
+    }
+    
+    func removeAsteroid(key: String, index: Int) {
+        switch key {
+        case "large":
+            (asteroids[key]?[index] as? AsteroidLarge)?.removeFromSuperview()
+            asteroids[key]?.remove(at: index)
+            break
+        case "medium":
+            (asteroids[key]?[index] as? AsteroidMedium)?.removeFromSuperview()
+            asteroids[key]?.remove(at: index)
+            break
+        case "small":
+            (asteroids[key]?[index] as? AsteroidSmall)?.removeFromSuperview()
+            asteroids[key]?.remove(at: index)
+            break
+        default:
+            break
+        }
     }
     
     private func beginTimer() {
@@ -376,10 +411,6 @@ class GameView: UIView {
         // -game.width * 0.5 -> game.width * 0.5
         // xview = (xmodel + game.width * 0.5) / game.width * view.bounds.width
         // yview = (ymodel + 1) * 0.5 * height
-    }
-    
-    func removeShip() {
-        shipView.removeFromSuperview()
     }
     
     required init?(coder aDecoder: NSCoder) {

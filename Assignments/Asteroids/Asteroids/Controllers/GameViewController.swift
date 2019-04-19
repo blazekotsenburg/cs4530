@@ -82,6 +82,10 @@ class GameViewController: UIViewController, GameViewDelegate, AsteroidsDataSourc
         gameView.removeShip()
     }
     
+    func asteroids(removeAsteroidWith key: String, at index: Int) {
+        gameView.removeAsteroid(key: key, index: index)
+    }
+    
     override func loadView() {
         view = GameView()
     }

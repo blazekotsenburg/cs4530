@@ -11,6 +11,7 @@ import UIKit
 protocol AsteroidsDataSource {
     func asteroids(toggleLockFor asteroidsGame: Asteroids, lockAcquired: Bool)
     func asteroids(shipCollisionDetectedFor asteroidsGame: Asteroids)
+    func asteroids(removeAsteroidWith key: String, at index: Int)
 }
 
 class Asteroids {
@@ -36,7 +37,6 @@ class Asteroids {
     private var numberOfLives: Int = Int()
     private var score: Int = Int()
     private var gameLoopTimer: Timer = Timer()
-    private var bulletTimer: Timer = Timer()
     private var bulletTicks: Int
     private var ship: Ship
     private var lastDate: Date
@@ -69,7 +69,6 @@ class Asteroids {
         }
         
         beginTimer()
-//        beginBulletTimer()
     }
     
     // make a function to reset the asteroid postions after each level ends.
@@ -81,12 +80,6 @@ class Asteroids {
             let elapsed: TimeInterval = now.timeIntervalSince(self.lastDate)
             self.lastDate = now
             self.executeGameLoop(elapsed: elapsed)
-            self.bulletTicks += 1
-        })
-    }
-    
-    func beginBulletTimer() {
-        bulletTimer = Timer.scheduledTimer(withTimeInterval: 1.0/120.0, repeats: true, block: { _ in
             self.bulletTicks += 1
         })
     }
@@ -106,9 +99,25 @@ class Asteroids {
         
         // Check if the ship is firing and that bullet ticks is greater than 20 (to create gap between each bullet)
         if ship.firingProjectile && bulletTicks >= 20 {
-            let bullet: Bullet = Bullet(position: (x: ship.position.x, y: ship.position.y), stepSize: (x: cos(ship.angle) * 0.5, y: sin(ship.angle) * 0.5), angle: ship.angle, spawnedAt: Date())
+            let bullet: Bullet = Bullet(position: (x: ship.position.x, y: ship.position.y), stepSize: (x: sin(ship.angle) * 1.25, y: -cos(ship.angle) * 1.25), angle: ship.angle, spawnedAt: Date())
             bulletQueue.append(bullet)
             bulletTicks = 0
+        }
+        
+        for i in 0..<bulletQueue.count {
+            if bulletQueue[i].position.x > width {
+                bulletQueue[i].position.x = 0.0
+            }
+            else if bulletQueue[i].position.x < 0.0 {
+                bulletQueue[i].position.x = Float(width)
+            }
+            if bulletQueue[i].position.y > height {
+                let currYPos = bulletQueue[i].position.y
+                bulletQueue[i].position.y -= currYPos
+            }
+            else if bulletQueue[i].position.y < 0.0 {
+                bulletQueue[i].position.y += Float(height)
+            }
         }
         
         // Check if ship is still in the view
@@ -165,16 +174,20 @@ class Asteroids {
             }
         }
         
+        for i in 0..<bulletQueue.count {
+            bulletQueue[i].position.x += bulletQueue[i].stepSize.x
+            bulletQueue[i].position.y += bulletQueue[i].stepSize.y
+        }
+        
+        bulletCollision()
         cleanUpBullets()
     }
     
     func cleanUpBullets() {
-        //this will need a lock! gets an index out of bounds range when repeately tapping. bulletQueue being manipulated in two spots.
         var indexesToRemove: [Int] = []
         for i in 0..<bulletQueue.count {
             let now: Date = Date()
             let elapsed: TimeInterval = now.timeIntervalSince(bulletQueue[i].spawnedAt)
-            print(elapsed)
             if elapsed > 2 {
                 indexesToRemove.append(i)
             }
@@ -232,6 +245,73 @@ class Asteroids {
                 default:
                     break
             }
+        }
+    }
+    
+    func bulletCollision() {
+        
+        var removeAsteroidIndexes: [(key: String, index: Int)] = []
+        var removeBulletIndexes: [Int] = []
+        for (size, asteroidList) in asteroids {
+            if !bulletQueue.isEmpty && !asteroidList.isEmpty {
+                for i in 0..<bulletQueue.count {
+                    for j in 0..<asteroidList.count {
+                        let centerDiffX = pow(bulletQueue[i].position.x - asteroidList[j].position.x, 2)
+                        let centerDiffY = pow(bulletQueue[i].position.y - asteroidList[j].position.y, 2)
+                        
+                        let asteroidRadius: Float
+                        let bulletRadius: Float = 2.5
+                        let nextAsteroid: String
+                        
+                        switch size {
+                            case "large":
+                                asteroidRadius = 50.0
+                                nextAsteroid = "medium"
+                                break
+                            case "medium":
+                                asteroidRadius = 25.0
+                                nextAsteroid = "small"
+                                break
+                            default:
+                                asteroidRadius = 12.5
+                                nextAsteroid = ""
+                                break
+                        }
+                        
+                        let sumRadii = pow(bulletRadius + asteroidRadius, 2)
+                        
+                        if centerDiffX + centerDiffY <= sumRadii {
+                            dataSource?.asteroids(removeAsteroidWith: size, at: j)
+                            removeAsteroidIndexes.append((key: size, index: j))
+                            removeBulletIndexes.append(i)
+                            
+                            switch nextAsteroid {
+                                case "medium":
+                                    for _ in 0..<2 {
+                                        let randAngle: Float = Float.random(in: 0...180)
+                                        asteroids["medium"]?.append(AsteroidObject(velocity: (x: 0.0, y: 0.0), position: asteroidList[j].position, acceleration: (x: 0.0, y: 0.0), stepSize: (x: cos(randAngle) * 0.45, y: sin(randAngle) * 0.45)))
+                                    }
+                                    break
+                                case "small":
+                                    for _ in 0..<2 {
+                                        let randAngle: Float = Float.random(in: 0...180)
+                                        asteroids["small"]?.append(AsteroidObject(velocity: (x: 0.0, y: 0.0), position: asteroidList[j].position, acceleration: (x: 0.0, y: 0.0), stepSize: (x: cos(randAngle) * 0.65, y: sin(randAngle) * 0.65)))
+                                    }
+                                    break
+                                default:
+                                    break
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        for index in removeBulletIndexes {
+            bulletQueue.remove(at: index)
+        }
+        for (key, index) in removeAsteroidIndexes {
+            asteroids[key]?.remove(at: index)
         }
     }
     
