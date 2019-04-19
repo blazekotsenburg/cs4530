@@ -34,12 +34,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
-        // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-        // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+        if var topController = UIApplication.shared.keyWindow?.rootViewController {
+            while let presentedViewController = topController.presentedViewController {
+                topController = presentedViewController
+            }
+            
+            if type(of: topController) == GameViewController.self {
+                print("entered background")
+                let docDirectory = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+                do {
+                    try (topController as? GameViewController)?.asteroidsGame!.save(to: docDirectory.appendingPathComponent(Constants.asteroidsFile))
+                    (topController as? GameViewController)?.togglePause(pauseGame: true)
+                } catch let error where error is Asteroids.Error {
+                    print(error)
+                } catch {
+                    print(error)
+                }
+            }
+        }
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+        
+        if var topController = UIApplication.shared.keyWindow?.rootViewController {
+            while let presentedViewController = topController.presentedViewController {
+                topController = presentedViewController
+            }
+
+            if type(of: topController) == GameViewController.self {
+                (topController as? GameViewController)?.togglePause(pauseGame: false)
+            }
+        }
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {

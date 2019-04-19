@@ -98,6 +98,10 @@ class MainView: UIView {
         }
     }
     
+    func setGameButtonText(with text: String) {
+        gameButton.setTitle(text, for: .normal)
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

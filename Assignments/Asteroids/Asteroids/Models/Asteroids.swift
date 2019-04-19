@@ -9,7 +9,6 @@
 import UIKit
 
 protocol AsteroidsDataSource {
-    func asteroids(toggleLockFor asteroidsGame: Asteroids, lockAcquired: Bool)
     func asteroids(shipCollisionDetectedFor asteroidsGame: Asteroids)
     func asteroids(removeAsteroidWith key: String, at index: Int)
     func asteroids(updateScoreWith newScore: Int)
@@ -90,6 +89,7 @@ class Asteroids: Codable {
     private var asteroidSpawnPoints: [(x: Float, y: Float)] = []// use this to reassign positions to asteroids after each level
     private var asteroids: [String: [AsteroidObject]] = ["large":[], "medium": [], "small": []]
     private var bulletQueue: [Bullet]
+    private var gamePaused: Bool = false
     
     var dataSource: AsteroidsDataSource?
     
@@ -98,6 +98,8 @@ class Asteroids: Codable {
         //Properties for ship
         case ship
         //Properties for model itself
+        case width
+        case height
         case numberOfLives
         case score
         case level
@@ -129,7 +131,6 @@ class Asteroids: Codable {
                                (x: width * 0.35, y: height * 0.05)]
         
         spawnAsteroids()
-        beginTimer()
     }
     
     required init(from decoder: Decoder) throws {
@@ -137,31 +138,33 @@ class Asteroids: Codable {
         ship = try values.decode(Ship.self, forKey: .ship)
         numberOfLives = try values.decode(Int.self, forKey: .numberOfLives)
         score = try values.decode(Int.self, forKey: .score)
+        width = try values.decode(Float.self, forKey: .width)
+        height = try values.decode(Float.self, forKey: .height)
         level = try values.decode(Int.self, forKey: .level)
         asteroids = try values.decode([String: [AsteroidObject]].self, forKey: .asteroids)
         bulletQueue = try values.decode([Bullet].self, forKey: .bulletQueue)
+        gamePaused = false
     }
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        //Try to encode all properties related to the ship
-//        try container.encode(ship.angle, forKey: .shipAngle)
-//        try container.encode(ship.velocity.x, forKey: .shipVelocityX)
-//        try container.encode(ship.velocity.y, forKey: .shipVelocityY)
-//        try container.encode(ship.acceleration.x, forKey: .shipAccelerationX)
-//        try container.encode(ship.acceleration.y, forKey: .shipAccelerationY)
-//        try container.encode(ship.position.x, forKey: .shipPositionX)
-//        try container.encode(ship.position.y, forKey: .shipPositionY)
-//        try container.encode(ship.respawnShieldOn, forKey: .shipRespawnShield)
-//        try container.encode(ship.respawnShieldBegin, forKey: .shipRespawnShieldBegin) // this will probably crash
         try container.encode(ship, forKey: .ship)
-        
-        //Try to encode all properties related to the model itself
         try container.encode(numberOfLives, forKey: .numberOfLives)
         try container.encode(score, forKey: .score)
+        try container.encode(width, forKey: .width)
+        try container.encode(height, forKey: .height)
         try container.encode(level, forKey: .level)
         try container.encode(asteroids, forKey: .asteroids)
         try container.encode(bulletQueue, forKey: .bulletQueue)
+    }
+    
+    func save(to url: URL) throws {
+        guard let jsonData = try? JSONEncoder().encode(self) else {
+            throw Asteroids.Error.encoding
+        }
+        guard (try? jsonData.write(to: url)) != nil else {
+            throw Asteroids.Error.writing
+        }
     }
     
     private func spawnAsteroids() {
@@ -175,12 +178,15 @@ class Asteroids: Codable {
     // loop through large key of dictionary and then append another large asteroid to the end with new position.
     
     func beginTimer() {
+        lastDate = Date()
         gameLoopTimer = Timer.scheduledTimer(withTimeInterval: 1.0/120.0, repeats: true, block: { _ in
-            let now: Date = Date()
-            let elapsed: TimeInterval = now.timeIntervalSince(self.lastDate)
-            self.lastDate = now
-            self.executeGameLoop(elapsed: elapsed)
-            self.bulletTicks += 1
+            if !self.gamePaused {
+                let now: Date = Date()
+                let elapsed: TimeInterval = now.timeIntervalSince(self.lastDate)
+                self.lastDate = now
+                self.executeGameLoop(elapsed: elapsed)
+                self.bulletTicks += 1
+            }
         })
     }
     
@@ -519,6 +525,14 @@ class Asteroids: Codable {
     
     func getAsteroidPositions() -> [String: [AsteroidObject]] {
         return asteroids // consider making this only send back positions
+    }
+    
+    func toggleGameState(gamePaused: Bool) {
+        self.gamePaused = gamePaused
+    }
+    
+    func isGamePaused() -> Bool {
+        return gamePaused
     }
     
     func getBulletPositions() -> [(x: Float, y: Float)] {

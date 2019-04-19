@@ -10,14 +10,13 @@ import UIKit
 
 class GameViewController: UIViewController, GameViewDelegate, AsteroidsDataSource {
     
-    private var asteroidsGame: Asteroids
-    private var lock: NSLock
-    
+//    var asteroidsGame: Asteroids = Asteroids(width: Float(UIScreen.main.bounds.width), height: Float(UIScreen.main.bounds.height))
+    var asteroidsGame: Asteroids?
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
 //        asteroidsGame = Asteroids(width: 1.0, height: Float(UIScreen.main.bounds.width / UIScreen.main.bounds.height))
-        asteroidsGame = Asteroids(width: Float(UIScreen.main.bounds.width), height: Float(UIScreen.main.bounds.height))
-        lock = NSLock()
+//        asteroidsGame = Asteroids(width: Float(UIScreen.main.bounds.width), height: Float(UIScreen.main.bounds.height))
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        asteroidsGame?.dataSource = self
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -29,53 +28,35 @@ class GameViewController: UIViewController, GameViewDelegate, AsteroidsDataSourc
     }
     
     func gameView(getAngleForShipIn gameView: GameView) -> Float {
-        return asteroidsGame.getAngleForShip()
+        return asteroidsGame!.getAngleForShip()
     }
     
     func gameView(rotateLeftPressed gameView: GameView, rotating: Bool) {
-        asteroidsGame.rotateShipLeft(isRotatingLeft: rotating)
+        asteroidsGame!.rotateShipLeft(isRotatingLeft: rotating)
     }
     
     func gameView(rotateRightPressed gameView: GameView, rotating: Bool) {
-        asteroidsGame.rotateShipRight(isRotatingRight: rotating)
+        asteroidsGame!.rotateShipRight(isRotatingRight: rotating)
     }
     
     func gameView(thrusterPressed gameView: GameView, thrusterOn: Bool) {
-        asteroidsGame.toggleThruster(thrusterOn: thrusterOn)
+        asteroidsGame!.toggleThruster(thrusterOn: thrusterOn)
     }
     
     func gameView(shootButtonToggled gameView: GameView, fireProjectile: Bool) {
-        asteroidsGame.fireProjectile(isFiringProjectile: fireProjectile)
+        asteroidsGame!.fireProjectile(isFiringProjectile: fireProjectile)
     }
     
     func gameView(getPositionForShipIn gameView: GameView) -> (x: Float, y: Float) {
-        return asteroidsGame.getShipPosition()
+        return asteroidsGame!.getShipPosition()
     }
     
     func gameView(getAsteroidPositionsIn gameView: GameView) -> [String: [AsteroidObject]] {
-        return asteroidsGame.getAsteroidPositions()
+        return asteroidsGame!.getAsteroidPositions()
     }
     
     func gameView(getBulletPositionsIn gameView: GameView) -> [(x: Float, y: Float)] {
-        return asteroidsGame.getBulletPositions()
-    }
-    
-    func gameView(acquireLockFor gameView: GameView, lockAcquired: Bool) {
-        if lockAcquired {
-            lock.lock()
-        }
-        else {
-            lock.unlock()
-        }
-    }
-    
-    func asteroids(toggleLockFor asteroidsGame: Asteroids, lockAcquired: Bool) {
-        if lockAcquired {
-            lock.lock()
-        }
-        else {
-            lock.unlock()
-        }
+        return asteroidsGame!.getBulletPositions()
     }
     
     func asteroids(shipCollisionDetectedFor asteroidsGame: Asteroids) {
@@ -94,6 +75,10 @@ class GameViewController: UIViewController, GameViewDelegate, AsteroidsDataSourc
         gameView.setLivesLabel(with: livesString)
     }
     
+    func togglePause(pauseGame: Bool) {
+        
+    }
+    
     override func loadView() {
         view = GameView()
     }
@@ -101,16 +86,34 @@ class GameViewController: UIViewController, GameViewDelegate, AsteroidsDataSourc
     override func viewDidLoad() {
         super.viewDidLoad()
         gameView.delegate = self
-        asteroidsGame.dataSource = self
+        asteroidsGame!.dataSource = self
 //        gameView.reloadData()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        asteroidsGame?.beginTimer()
         gameView.reloadData()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         gameView.reloadData()
+    }
+    
+    func saveGameState() {
+        let docDirectory = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+        do {
+            try asteroidsGame!.save(to: docDirectory.appendingPathComponent(Constants.asteroidsFile))
+        } catch let error where error is Asteroids.Error {
+            print(error)
+        } catch {
+            print(error)
+        }
+    }
+    
+    func loadSavedGame() {
+        let docDirectory = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+        let jsonData = try! Data(contentsOf: docDirectory.appendingPathComponent(Constants.asteroidsFile))
+        asteroidsGame = try! JSONDecoder().decode(Asteroids.self, from: jsonData)
     }
 }

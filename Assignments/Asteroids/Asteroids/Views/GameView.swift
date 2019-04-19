@@ -17,7 +17,6 @@ protocol GameViewDelegate {
     func gameView(getPositionForShipIn gameView: GameView) -> (x: Float, y: Float)
     func gameView(getAsteroidPositionsIn gameView: GameView) -> [String: [AsteroidObject]]
     func gameView(getBulletPositionsIn gameView: GameView) -> [(x: Float, y: Float)]
-    func gameView(acquireLockFor gameView: GameView, lockAcquired: Bool)
 }
 
 class GameView: UIView {

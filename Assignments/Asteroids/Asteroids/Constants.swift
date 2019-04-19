@@ -7,5 +7,5 @@
 //
 
 enum Constants {
-    static let battleShipListFile = "asteroidsFile.json"
+    static let asteroidsFile = "asteroidsFile.json"
 }
