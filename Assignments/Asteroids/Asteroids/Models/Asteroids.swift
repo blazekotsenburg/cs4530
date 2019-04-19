@@ -12,63 +12,163 @@ protocol AsteroidsDataSource {
     func asteroids(toggleLockFor asteroidsGame: Asteroids, lockAcquired: Bool)
     func asteroids(shipCollisionDetectedFor asteroidsGame: Asteroids)
     func asteroids(removeAsteroidWith key: String, at index: Int)
+    func asteroids(updateScoreWith newScore: Int)
+    func asteroids(updateLivesWith livesString: String)
 }
 
-class Asteroids {
+class Asteroids: Codable {
     
-    struct Ship {
+    struct Ship: Codable {
         var angle: Float
-        var velocity: (x: Float, y: Float) //might need a vector
+        var velocity: (x: Float, y: Float)
         var acceleration: (x: Float, y: Float)
         var position: (x: Float, y: Float)
-        var thrusterOn: Bool
-        var rotatingLeft: Bool
-        var rotatingRight: Bool
-        var firingProjectile: Bool
+        var thrusterOn: Bool = false
+        var rotatingLeft: Bool = false
+        var rotatingRight: Bool = false
+        var firingProjectile: Bool = false
+        var respawnShieldOn: Bool
+        var respawnShieldBegin: Date = Date()
+        
+        enum CodingKeys: CodingKey {
+            case angle
+            case velocity
+            case acceleration
+            case position
+            case respawnShieldOn
+//            case respawnShieldBegin
+        }
+        
+        init(angle: Float, velocity: (x: Float, y: Float), acceleration: (x: Float, y: Float), position: (x: Float, y: Float), thrusterOn: Bool, rotatingLeft: Bool, rotatingRight: Bool, firingProjectile: Bool, respawnShieldOn: Bool, respawnShieldBegin: Date) {
+            self.angle = angle
+            self.velocity = velocity
+            self.acceleration = acceleration
+            self.position = position
+            self.thrusterOn = thrusterOn
+            self.rotatingLeft = rotatingLeft
+            self.rotatingRight = rotatingRight
+            self.firingProjectile = firingProjectile
+            self.respawnShieldOn = respawnShieldOn
+            self.respawnShieldBegin = respawnShieldBegin
+        }
+        
+        init(from decoder: Decoder) throws {
+            let values = try decoder.container(keyedBy: CodingKeys.self)
+            angle = try values.decode(Float.self, forKey: .angle)
+            let velocityArray = try values.decode([Float].self, forKey: .velocity)
+            velocity = (x: velocityArray[0], y: velocityArray[1])
+            let positionArray = try values.decode([Float].self, forKey: .position)
+            position = (x: positionArray[0], y: positionArray[1])
+            let accelerationArray = try values.decode([Float].self, forKey: .acceleration)
+            acceleration = (x: accelerationArray[0], y: accelerationArray[1])
+            respawnShieldOn = try values.decode(Bool.self, forKey: .respawnShieldOn)
+        }
+        
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(angle, forKey: .angle)
+            try container.encode([velocity.x, velocity.y], forKey: .velocity)
+            try container.encode([position.x, position.y], forKey: .position)
+            try container.encode([acceleration.x, acceleration.y], forKey: .acceleration)
+            try container.encode(respawnShieldOn, forKey: .respawnShieldOn)
+            // this may need to be another elapsed time or something
+//            try container.encode(respawnShieldBegin, forKey: .respawnShieldBegin)
+        }
     }
-    
-//    struct AsteroidObject {
-//        var velocity: (x: Float, y: Float)
-//        var position: (x: Float, y: Float)
-//        var acceleration: (x: Float, y: Float)
-//    }
+
     var lock: NSLock = NSLock()
     private var initialFrame: CGRect = CGRect()
-    private var numberOfLives: Int = Int()
-    private var score: Int = Int()
+    private var numberOfLives: Int = 3
+    private var score: Int = 0
     private var gameLoopTimer: Timer = Timer()
-    private var bulletTicks: Int
+    private var bulletTicks: Int = 0
     private var ship: Ship
-    private var lastDate: Date
-    var width: Float
-    var height: Float
-    private var numberOfAsteroids: Int = 4
-    private var asteroidSpawnPoints: [(x: Float, y: Float)] // use this to reassign positions to asteroids after each level
+    private var lastDate: Date = Date()
+    var width: Float = 0.0
+    var height: Float = 0.0
+    private var level: Int = 4
+    private var asteroidSpawnPoints: [(x: Float, y: Float)] = []// use this to reassign positions to asteroids after each level
     private var asteroids: [String: [AsteroidObject]] = ["large":[], "medium": [], "small": []]
     private var bulletQueue: [Bullet]
     
     var dataSource: AsteroidsDataSource?
     
+    //MARK: - CodingKey enum
+    enum CodingKeys: CodingKey {
+        //Properties for ship
+        case ship
+        //Properties for model itself
+        case numberOfLives
+        case score
+        case level
+        case asteroids
+        case bulletQueue
+    }
+    
+    //MARK: - Error enum
+    enum Error: Swift.Error {
+        case encoding
+        case writing
+    }
+    
     init(width: Float, height: Float) {
         self.width = width
         self.height = height
-        lastDate = Date()
-        bulletQueue = []
-        bulletTicks = 0
-        ship = Ship(angle: 0.0, velocity: (0.0, 0.0), acceleration: (x: 0.0, y: 0.0), position: (x: self.width * 0.5, y: self.height * 0.5), thrusterOn: false, rotatingLeft: false, rotatingRight: false, firingProjectile: false)
+        self.lastDate = Date()
+        self.bulletQueue = []
+        self.bulletTicks = 0
+        //this will need to be handled in some other way for initialization
+        self.ship = Ship(angle: 0.0, velocity: (x: 0.0, y: 0.0), acceleration: (x: 0.0, y: 0.0), position: (x: self.width * 0.5, y: self.height * 0.5), thrusterOn: false, rotatingLeft: false, rotatingRight: false, firingProjectile: false, respawnShieldOn: false, respawnShieldBegin: Date())
         // this coordinate system is different than the one in gameView. now need to translate coordinate system.
         // will also need to initialize asteroids dictionary differently here. asteroidSpawnPoints won't be queried every time now.
-        asteroidSpawnPoints = [(x: width * 0.1, y: height * 0.1),
+        self.asteroidSpawnPoints = [(x: width * 0.1, y: height * 0.1),
                                (x: width * 0.8, y: height * 0.2),
                                (x: width * 0.25, y: height * 0.9),
-                               (x: width * 0.75, y: height * 0.85)]
+                               (x: width * 0.75, y: height * 0.85),
+                               (x: width * 0.5, y: height * 0.95),
+                               (x: width * 0.35, y: height * 0.05)]
         
-        for i in 0..<numberOfAsteroids {
-            let randAngle: Float = Float.random(in: 0...180)
-            asteroids["large"]?.append(AsteroidObject(velocity: (x: 0.0, y: 0.0), position: asteroidSpawnPoints[i], acceleration: (x: 0.0, y: 0.0), stepSize: (x: cos(randAngle) * 0.25, y: sin(randAngle) * 0.25)))
-        }
-        
+        spawnAsteroids()
         beginTimer()
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        ship = try values.decode(Ship.self, forKey: .ship)
+        numberOfLives = try values.decode(Int.self, forKey: .numberOfLives)
+        score = try values.decode(Int.self, forKey: .score)
+        level = try values.decode(Int.self, forKey: .level)
+        asteroids = try values.decode([String: [AsteroidObject]].self, forKey: .asteroids)
+        bulletQueue = try values.decode([Bullet].self, forKey: .bulletQueue)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        //Try to encode all properties related to the ship
+//        try container.encode(ship.angle, forKey: .shipAngle)
+//        try container.encode(ship.velocity.x, forKey: .shipVelocityX)
+//        try container.encode(ship.velocity.y, forKey: .shipVelocityY)
+//        try container.encode(ship.acceleration.x, forKey: .shipAccelerationX)
+//        try container.encode(ship.acceleration.y, forKey: .shipAccelerationY)
+//        try container.encode(ship.position.x, forKey: .shipPositionX)
+//        try container.encode(ship.position.y, forKey: .shipPositionY)
+//        try container.encode(ship.respawnShieldOn, forKey: .shipRespawnShield)
+//        try container.encode(ship.respawnShieldBegin, forKey: .shipRespawnShieldBegin) // this will probably crash
+        try container.encode(ship, forKey: .ship)
+        
+        //Try to encode all properties related to the model itself
+        try container.encode(numberOfLives, forKey: .numberOfLives)
+        try container.encode(score, forKey: .score)
+        try container.encode(level, forKey: .level)
+        try container.encode(asteroids, forKey: .asteroids)
+        try container.encode(bulletQueue, forKey: .bulletQueue)
+    }
+    
+    private func spawnAsteroids() {
+        for i in 0..<level {
+            let randAngle: Float = Float.random(in: 0...180)
+            asteroids["large"]?.append(AsteroidObject(velocity: (x: Float(0.0), y: Float(0.0)), position: asteroidSpawnPoints[i], acceleration: (x: Float(0.0), y: Float(0.0)), stepSize: (x: cos(randAngle) * 0.25, y: sin(randAngle) * 0.25)))
+        }
     }
     
     // make a function to reset the asteroid postions after each level ends.
@@ -86,8 +186,25 @@ class Asteroids {
     
     private func executeGameLoop(elapsed: TimeInterval) {
         
-        //TODO: - Check for collisions between objects
-        asteroidCollision()
+        if let asteroidLarge = asteroids["large"], let asteroidMedium = asteroids["medium"], let asteroidSmall = asteroids["small"] {
+            if asteroidLarge.isEmpty && asteroidMedium.isEmpty && asteroidSmall.isEmpty {
+                if numberOfLives > 0 && level <= 6{
+                    level += 1
+                    spawnAsteroids()
+                }
+            }
+        }
+        
+        if ship.respawnShieldOn {
+            let now: Date = Date()
+            let elapsed: TimeInterval = now.timeIntervalSince(ship.respawnShieldBegin)
+            if elapsed > 3.0 {
+                ship.respawnShieldOn = false
+            }
+        }
+        else {
+            asteroidCollision()
+        }
         
         // Check if the ship is supposed to rotate left or right
         if ship.rotatingRight {
@@ -206,11 +323,29 @@ class Asteroids {
                         let centerDiffX = pow((Float(ship.position.x) - asteroidList[i].position.x), 2)
                         let centerDiffY = pow((Float(ship.position.y) - asteroidList[i].position.y), 2)
                         let sumRadii = Float(pow((25.0 / 2.0) + 50.0, 2))
-//                        let sumRadii = Float(((1.0 / 25.0) / 2.0) + ((1.0 / 100.0) / 2.0))
+                        
                         if centerDiffX + centerDiffY <= sumRadii {
-//                            print("collision detected")
-//                            dataSource?.asteroids(shipCollisionDetectedFor: self)
-                            // TODO: - Make delegate to notify view that collision has happened and to remove the ship.
+                            numberOfLives -= 1
+                            if numberOfLives == 2 {
+                                dataSource?.asteroids(updateLivesWith: "♥︎ ♥︎")
+                            }
+                            else if numberOfLives == 1 {
+                                dataSource?.asteroids(updateLivesWith: "♥︎")
+                            }
+                            else {
+                                dataSource?.asteroids(updateLivesWith: "")
+                            }
+                            
+                            ship.position = (x: width / 2.0, y: height / 2.0)
+                            ship.acceleration = (x: 0.0, y: 0.0)
+                            ship.velocity = (x: 0.0, y: 0.0)
+                            ship.angle = 0.0
+                            ship.rotatingLeft = false
+                            ship.rotatingRight = false
+                            ship.thrusterOn = false
+                            ship.firingProjectile = false
+                            ship.respawnShieldOn = true
+                            ship.respawnShieldBegin = Date()
                         }
                     }
                     break
@@ -220,11 +355,29 @@ class Asteroids {
                         let centerDiffX = pow((Float(ship.position.x) - asteroidList[i].position.x), 2)
                         let centerDiffY = pow((Float(ship.position.y) - asteroidList[i].position.y), 2)
                         let sumRadii = Float(pow((25.0 / 2.0) + 50.0, 2))
-                        //                        let sumRadii = Float(((1.0 / 25.0) / 2.0) + ((1.0 / 100.0) / 2.0))
+                        
                         if centerDiffX + centerDiffY <= sumRadii {
-                            //                            print("collision detected")
-                            //                            dataSource?.asteroids(shipCollisionDetectedFor: self)
-                            // TODO: - Make delegate to notify view that collision has happened and to remove the ship.
+                            numberOfLives -= 1
+                            if numberOfLives == 2 {
+                                dataSource?.asteroids(updateLivesWith: "♥︎ ♥︎")
+                            }
+                            else if numberOfLives == 1 {
+                                dataSource?.asteroids(updateLivesWith: "♥︎")
+                            }
+                            else {
+                                dataSource?.asteroids(updateLivesWith: "")
+                            }
+                            
+                            ship.position = (x: width / 2.0, y: height / 2.0)
+                            ship.acceleration = (x: 0.0, y: 0.0)
+                            ship.velocity = (x: 0.0, y: 0.0)
+                            ship.angle = 0.0
+                            ship.rotatingLeft = false
+                            ship.rotatingRight = false
+                            ship.thrusterOn = false
+                            ship.firingProjectile = false
+                            ship.respawnShieldOn = true
+                            ship.respawnShieldBegin = Date()
                         }
                     }
                     break
@@ -234,11 +387,29 @@ class Asteroids {
                         let centerDiffX = pow((Float(ship.position.x) - asteroidList[i].position.x), 2)
                         let centerDiffY = pow((Float(ship.position.y) - asteroidList[i].position.y), 2)
                         let sumRadii = Float(pow((25.0 / 2.0) + 50.0, 2))
-                        //                        let sumRadii = Float(((1.0 / 25.0) / 2.0) + ((1.0 / 100.0) / 2.0))
+                        
                         if centerDiffX + centerDiffY <= sumRadii {
-                            //                            print("collision detected")
-                            //                            dataSource?.asteroids(shipCollisionDetectedFor: self)
-                            // TODO: - Make delegate to notify view that collision has happened and to remove the ship.
+                            numberOfLives -= 1
+                            if numberOfLives == 2 {
+                                dataSource?.asteroids(updateLivesWith: "♥︎ ♥︎")
+                            }
+                            else if numberOfLives == 1 {
+                                dataSource?.asteroids(updateLivesWith: "♥︎")
+                            }
+                            else {
+                                dataSource?.asteroids(updateLivesWith: "")
+                            }
+                            
+                            ship.position = (x: width / 2.0, y: height / 2.0)
+                            ship.acceleration = (x: 0.0, y: 0.0)
+                            ship.velocity = (x: 0.0, y: 0.0)
+                            ship.angle = 0.0
+                            ship.rotatingLeft = false
+                            ship.rotatingRight = false
+                            ship.thrusterOn = false
+                            ship.firingProjectile = false
+                            ship.respawnShieldOn = true
+                            ship.respawnShieldBegin = Date()
                         }
                     }
                     break
@@ -262,19 +433,23 @@ class Asteroids {
                         let asteroidRadius: Float
                         let bulletRadius: Float = 2.5
                         let nextAsteroid: String
+                        var addToScore: Int = 0
                         
                         switch size {
                             case "large":
                                 asteroidRadius = 50.0
                                 nextAsteroid = "medium"
+                                addToScore += 20
                                 break
                             case "medium":
                                 asteroidRadius = 25.0
                                 nextAsteroid = "small"
+                                addToScore += 50
                                 break
                             default:
                                 asteroidRadius = 12.5
                                 nextAsteroid = ""
+                                addToScore += 100
                                 break
                         }
                         
@@ -284,6 +459,9 @@ class Asteroids {
                             dataSource?.asteroids(removeAsteroidWith: size, at: j)
                             removeAsteroidIndexes.append((key: size, index: j))
                             removeBulletIndexes.append(i)
+                            
+                            score += addToScore
+                            dataSource?.asteroids(updateScoreWith: score)
                             
                             switch nextAsteroid {
                                 case "medium":
@@ -340,8 +518,7 @@ class Asteroids {
     }
     
     func getAsteroidPositions() -> [String: [AsteroidObject]] {
-        //this function needs to pass back all of the asteroid positions, not just the spawn points.
-        return asteroids // returns the entire asteroids dictionary back to the gameView
+        return asteroids // consider making this only send back positions
     }
     
     func getBulletPositions() -> [(x: Float, y: Float)] {

@@ -40,7 +40,8 @@ class AsteroidSmall: UIView {
         path.addLine(to: CGPoint(x: bounds.width * 0.25, y: 0.0))
         path.lineWidth = 2.0
         path.lineCapStyle = .round
-        UIColor.white.setStroke()
+//        UIColor.white.setStroke()
+        UIColor(red: 0.91, green: 1.0, blue: 0.18, alpha: 1.0).setStroke()
         path.stroke()
         path.close()
     }

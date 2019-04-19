@@ -9,13 +9,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Asteroids/Views/GameView.swift"
-            timestampString = "577334197.364029"
+            filePath = "Asteroids/Models/Asteroids.swift"
+            timestampString = "577398030.447394"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "248"
-            endingLineNumber = "248"
-            landmarkName = "bulletPositions()"
+            startingLineNumber = "199"
+            endingLineNumber = "199"
+            landmarkName = "executeGameLoop(elapsed:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

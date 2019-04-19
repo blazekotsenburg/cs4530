@@ -100,7 +100,7 @@ class GameView: UIView {
         controlStackView.distribution = .fillEqually
         controlStackView.spacing = 10.0
         
-        scoreLabel.text = "00000"
+        scoreLabel.text = "00"
         scoreLabel.font = UIFont(name: "EarthOrbiter", size: 24.0)
         scoreLabel.textColor = .green
         
@@ -294,6 +294,14 @@ class GameView: UIView {
             default:
                 return
             }
+    }
+    
+    func setScoreLabel(with score: String) {
+        scoreLabel.text = score
+    }
+    
+    func setLivesLabel(with livesString: String) {
+        livesLabel.text = livesString
     }
     
     func removeShip() {
