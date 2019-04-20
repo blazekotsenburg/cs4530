@@ -13,6 +13,7 @@ protocol AsteroidsDataSource {
     func asteroids(removeAsteroidWith key: String, at index: Int)
     func asteroids(updateScoreWith newScore: Int)
     func asteroids(updateLivesWith livesString: String)
+    func asteroids(gameOverWith score: Int)
 }
 
 class Asteroids: Codable {
@@ -191,6 +192,10 @@ class Asteroids: Codable {
     }
     
     private func executeGameLoop(elapsed: TimeInterval) {
+        
+        if numberOfLives <= 0 {
+            dataSource?.asteroids(gameOverWith: score)
+        }
         
         if let asteroidLarge = asteroids["large"], let asteroidMedium = asteroids["medium"], let asteroidSmall = asteroids["small"] {
             if asteroidLarge.isEmpty && asteroidMedium.isEmpty && asteroidSmall.isEmpty {

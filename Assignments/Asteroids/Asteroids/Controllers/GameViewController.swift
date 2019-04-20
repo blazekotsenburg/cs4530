@@ -19,6 +19,10 @@ class GameViewController: UIViewController, GameViewDelegate, AsteroidsDataSourc
         asteroidsGame?.dataSource = self
     }
     
+    override func loadView() {
+        view = GameView()
+    }
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -75,12 +79,13 @@ class GameViewController: UIViewController, GameViewDelegate, AsteroidsDataSourc
         gameView.setLivesLabel(with: livesString)
     }
     
-    func togglePause(pauseGame: Bool) {
-        
+    func asteroids(gameOverWith: Int) {
+        let gameOverViewController: GameOverViewController = GameOverViewController()
+        present(gameOverViewController, animated: true, completion: nil)
     }
     
-    override func loadView() {
-        view = GameView()
+    func togglePause(pauseGame: Bool) {
+        asteroidsGame?.toggleGameState(gamePaused: pauseGame)
     }
     
     override func viewDidLoad() {

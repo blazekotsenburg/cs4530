@@ -28,6 +28,7 @@ class MainViewController: UIViewController, MainViewDelegate {
 //        if gameViewController.asteroidsGame.isGamePaused() {
 //            gameViewController.asteroidsGame.toggleGameState(gamePaused: false)
 //        }
+        UserDefaults.standard.set(true, forKey: "gameExists")
         present(gameViewController, animated: true, completion: nil)
     }
     
@@ -46,12 +47,19 @@ class MainViewController: UIViewController, MainViewDelegate {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        
+        if UserDefaults.standard.bool(forKey: "gameExists") {
+            mainView.setGameButtonText(with: "Resume")
+        }
+        
         if !UserDefaults.standard.bool(forKey: "hasLoggedInBefore") {
             UserDefaults.standard.set(true, forKey: "hasLoggedInBefore")
             saveGameState()
         }
         else {
-            loadSavedGame()
+            if UserDefaults.standard.bool(forKey: "gameExists") {
+                loadSavedGame()
+            }
         }
         
         mainView.reloadData()
@@ -72,7 +80,6 @@ class MainViewController: UIViewController, MainViewDelegate {
         let docDirectory = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
         let jsonData = try! Data(contentsOf: docDirectory.appendingPathComponent(Constants.asteroidsFile))
         asteroidsGame = try! JSONDecoder().decode(Asteroids.self, from: jsonData)
-        mainView.setGameButtonText(with: "Resume")
     }
 }
 
