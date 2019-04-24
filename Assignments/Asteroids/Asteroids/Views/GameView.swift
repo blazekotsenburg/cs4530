@@ -369,6 +369,8 @@ class GameView: UIView {
         if let button = sender as? UIButton {
             if button == thrustButton {
                 guard let delegate = delegate else { return }
+                shipView.thrustersOn = true
+                shipView.reloadData()
                 delegate.gameView(thrusterPressed: self, thrusterOn: true)
             }
         }
@@ -378,6 +380,8 @@ class GameView: UIView {
         if let button = sender as? UIButton {
             if button == thrustButton {
                 guard let delegate = delegate else { return }
+                shipView.thrustersOn = false
+                shipView.reloadData()
                 delegate.gameView(thrusterPressed: self, thrusterOn: false)
             }
         }
@@ -413,6 +417,7 @@ class GameView: UIView {
         shipView.center = CGPoint(x: CGFloat(shipPoint.x), y: CGFloat(shipPoint.y))
         shipView.bounds = CGRect(x: 0.0, y: 0.0, width: 25.0, height: 25.0)
         shipView.transform = CGAffineTransform(rotationAngle: CGFloat(delegate.gameView(getAngleForShipIn: self)))
+        shipView.reloadData()
         asteroidPositions()
         bulletPositions()
         
