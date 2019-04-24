@@ -167,9 +167,6 @@ class GameView: UIView {
         controlStackView.heightAnchor.constraint(equalToConstant: 70.0).isActive = true
         
         rotateButtonsStackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:[rotateLeft][shootButton][rotateRight]", options: [], metrics: nil, views: buttonViews))
-//        rotateButtonsStackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[rotateLeft]", options: [], metrics: nil, views: buttonViews))
-//        rotateButtonsStackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[shootButton]", options: [], metrics: nil, views: buttonViews))
-//        rotateButtonsStackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "V:[rotateRight]", options: [], metrics: nil, views: buttonViews))
         
         gameLabelStackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[scoreLabel]-|", options: [], metrics: nil, views: labelViews))
         gameLabelStackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[livesLabel]-|", options: [], metrics: nil, views: labelViews))
@@ -311,19 +308,19 @@ class GameView: UIView {
     func removeAsteroid(key: String, index: Int) {
         switch key {
         case "large":
-            let i = (index == asteroids[key]?.count) ? index - 1: index
-            (asteroids[key]?[i] as? AsteroidLarge)?.removeFromSuperview()
-            asteroids[key]?.remove(at: i)
+//            let i = (index == asteroids[key]?.count) ? index - 1: index
+            (asteroids[key]?[index] as? AsteroidLarge)?.removeFromSuperview()
+            asteroids[key]?.remove(at: index)
             break
         case "medium":
-            let i = (index == asteroids[key]?.count) ? index - 1: index
-            (asteroids[key]?[i] as? AsteroidMedium)?.removeFromSuperview()
-            asteroids[key]?.remove(at: i)
+//            let i = (index == asteroids[key]?.count) ? index - 1: index
+            (asteroids[key]?[index] as? AsteroidMedium)?.removeFromSuperview()
+            asteroids[key]?.remove(at: index)
             break
         case "small":
-            let i = (index == asteroids[key]?.count) ? index - 1: index
-            (asteroids[key]?[i] as? AsteroidSmall)?.removeFromSuperview()
-            asteroids[key]?.remove(at: i)
+//            let i = (index == asteroids[key]?.count) ? index - 1: index
+            (asteroids[key]?[index] as? AsteroidSmall)?.removeFromSuperview()
+            asteroids[key]?.remove(at: index)
             break
         default:
             break

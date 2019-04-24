@@ -55,6 +55,7 @@ class MainViewController: UIViewController, MainViewDelegate {
         }
         else {
             mainView.setGameButtonText(with: "New Game")
+            asteroidsGame = Asteroids(width: Float(UIScreen.main.bounds.width), height: Float(UIScreen.main.bounds.height))
         }
         
         if !UserDefaults.standard.bool(forKey: "hasLoggedInBefore") {

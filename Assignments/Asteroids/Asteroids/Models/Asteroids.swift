@@ -153,6 +153,12 @@ class Asteroids: Codable {
         gamePaused = false
         asteroidIds = try values.decode(Set<Int>.self, forKey: .asteroidIds)
         bulletIds = try values.decode(Set<Int>.self, forKey: .bulletIds)
+        asteroidSpawnPoints = [(x: width * 0.1, y: height * 0.1),
+            (x: width * 0.8, y: height * 0.2),
+            (x: width * 0.25, y: height * 0.9),
+            (x: width * 0.75, y: height * 0.85),
+            (x: width * 0.5, y: height * 0.95),
+            (x: width * 0.35, y: height * 0.05)]
     }
     
     func encode(to encoder: Encoder) throws {
@@ -196,6 +202,19 @@ class Asteroids: Codable {
     
     func beginTimer() {
         lastDate = Date()
+        if numberOfLives == 3 {
+            dataSource?.asteroids(updateLivesWith: "♥︎ ♥︎ ♥︎")
+        }
+        else if numberOfLives == 2 {
+            dataSource?.asteroids(updateLivesWith: "♥︎ ♥︎")
+        }
+        else if numberOfLives == 1 {
+            dataSource?.asteroids(updateLivesWith: "♥︎")
+        }
+        else {
+            dataSource?.asteroids(updateLivesWith: "")
+        }
+        dataSource?.asteroids(updateScoreWith: score)
         gameLoopTimer = Timer.scheduledTimer(withTimeInterval: 1.0/120.0, repeats: true, block: { gameLoopTimer in
             if !self.gamePaused {
                 let now: Date = Date()
@@ -486,15 +505,19 @@ class Asteroids: Codable {
                         let sumRadii = pow(bulletRadius + asteroidRadius, 2)
                         
                         if centerDiffX + centerDiffY <= sumRadii {
-                            dataSource?.asteroids(removeAsteroidWith: size, at: asteroid.offset)
                             
-                            let bulletIndex = bulletQueue.firstIndex(of: bullet.element)
-                            bulletIds.remove(bullet.element.id)
-                            bulletQueue.remove(at: bulletIndex!) // this through index out of range for bullet queue = nil
-
-                            let asteroidIndex = asteroids[size]?.firstIndex(of: asteroid.element)
-                            asteroidIds.remove(asteroid.element.id)
-                            asteroids[size]?.remove(at: asteroidIndex!)
+                            if bulletQueue.contains(bullet.element) {
+                                let bulletIndex = bulletQueue.firstIndex(of: bullet.element)
+                                bulletIds.remove(bullet.element.id)
+                                bulletQueue.remove(at: bulletIndex!) // this through index out of range for bullet queue = nil
+                            }
+                            
+                            if asteroids[size]!.contains(asteroid.element) {
+                                let asteroidIndex = asteroids[size]?.firstIndex(of: asteroid.element)
+                                asteroidIds.remove(asteroid.element.id)
+                                asteroids[size]?.remove(at: asteroidIndex!)
+                                dataSource?.asteroids(removeAsteroidWith: size, at: asteroidIndex!)
+                            }
                             
                             score += addToScore
                             dataSource?.asteroids(updateScoreWith: score)
