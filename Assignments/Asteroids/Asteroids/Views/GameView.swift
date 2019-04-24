@@ -66,6 +66,11 @@ class GameView: UIView {
         bullets = []
         super.init(frame: frame)
         
+        let backgroundImage = UIImageView(frame: UIScreen.main.bounds)
+        backgroundImage.image = UIImage(named: "galaxy_background")
+        backgroundImage.contentMode = UIView.ContentMode.scaleAspectFill
+        insertSubview(backgroundImage, at: 0)
+        
         gameLabelStackView.translatesAutoresizingMaskIntoConstraints = false
         rotateButtonsStackView.translatesAutoresizingMaskIntoConstraints = false
         controlStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -190,7 +195,6 @@ class GameView: UIView {
                             let index: Int = asteroids[size]!.count - 1
                             spawnAsteroids(withSize: size, atIndex: index, for: positionList)
                             addSubview(asteroid)
-                            sendSubviewToBack(asteroid)
                             break
 //                            }
                         case "medium":
@@ -200,7 +204,6 @@ class GameView: UIView {
                             let index: Int = asteroids[size]!.count - 1
                             spawnAsteroids(withSize: size, atIndex: index, for: positionList)
                             addSubview(asteroid)
-                            sendSubviewToBack(asteroid)
                             break
 //                            }
                         case "small":
@@ -210,7 +213,6 @@ class GameView: UIView {
                             let index: Int = asteroids[size]!.count - 1
                             spawnAsteroids(withSize: size, atIndex: index, for: positionList)
                             addSubview(asteroid)
-                            sendSubviewToBack(asteroid)
                             break
 //                            }
                         default:
@@ -255,7 +257,6 @@ class GameView: UIView {
                     bullets[i].bounds = CGRect(x: 0.0, y: 0.0, width: 5.0, height: 5.0)
                 }
             break
-            
         }
     }
     
@@ -310,16 +311,19 @@ class GameView: UIView {
     func removeAsteroid(key: String, index: Int) {
         switch key {
         case "large":
-            (asteroids[key]?[index] as? AsteroidLarge)?.removeFromSuperview()
-            asteroids[key]?.remove(at: index)
+            let i = (index == asteroids[key]?.count) ? index - 1: index
+            (asteroids[key]?[i] as? AsteroidLarge)?.removeFromSuperview()
+            asteroids[key]?.remove(at: i)
             break
         case "medium":
-            (asteroids[key]?[index] as? AsteroidMedium)?.removeFromSuperview()
-            asteroids[key]?.remove(at: index)
+            let i = (index == asteroids[key]?.count) ? index - 1: index
+            (asteroids[key]?[i] as? AsteroidMedium)?.removeFromSuperview()
+            asteroids[key]?.remove(at: i)
             break
         case "small":
-            (asteroids[key]?[index] as? AsteroidSmall)?.removeFromSuperview()
-            asteroids[key]?.remove(at: index)
+            let i = (index == asteroids[key]?.count) ? index - 1: index
+            (asteroids[key]?[i] as? AsteroidSmall)?.removeFromSuperview()
+            asteroids[key]?.remove(at: i)
             break
         default:
             break
@@ -415,6 +419,9 @@ class GameView: UIView {
         asteroidPositions()
         bulletPositions()
         
+        bringSubviewToFront(controlStackView)
+        bringSubviewToFront(rotateButtonsStackView)
+        bringSubviewToFront(gameLabelStackView)
         // -game.width * 0.5 -> game.width * 0.5
         // xview = (xmodel + game.width * 0.5) / game.width * view.bounds.width
         // yview = (ymodel + 1) * 0.5 * height

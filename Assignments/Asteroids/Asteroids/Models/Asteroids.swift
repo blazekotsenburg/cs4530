@@ -90,6 +90,8 @@ class Asteroids: Codable {
     private var asteroidSpawnPoints: [(x: Float, y: Float)] = []// use this to reassign positions to asteroids after each level
     private var asteroids: [String: [AsteroidObject]] = ["large":[], "medium": [], "small": []]
     private var bulletQueue: [Bullet]
+    private var asteroidIds: Set<Int>
+    private var bulletIds: Set<Int>
     private var gamePaused: Bool = false
     
     var dataSource: AsteroidsDataSource?
@@ -106,6 +108,8 @@ class Asteroids: Codable {
         case level
         case asteroids
         case bulletQueue
+        case asteroidIds
+        case bulletIds
     }
     
     //MARK: - Error enum
@@ -120,11 +124,13 @@ class Asteroids: Codable {
         self.lastDate = Date()
         self.bulletQueue = []
         self.bulletTicks = 0
+        self.asteroidIds = Set<Int>()
+        self.bulletIds = Set<Int>()
         //this will need to be handled in some other way for initialization
         self.ship = Ship(angle: 0.0, velocity: (x: 0.0, y: 0.0), acceleration: (x: 0.0, y: 0.0), position: (x: self.width * 0.5, y: self.height * 0.5), thrusterOn: false, rotatingLeft: false, rotatingRight: false, firingProjectile: false, respawnShieldOn: false, respawnShieldBegin: Date())
         // this coordinate system is different than the one in gameView. now need to translate coordinate system.
         // will also need to initialize asteroids dictionary differently here. asteroidSpawnPoints won't be queried every time now.
-        self.asteroidSpawnPoints = [(x: width * 0.1, y: height * 0.1),
+        self.asteroidSpawnPoints = [(x: width * 0.1, y: height * 0.1), // this needs to be codable as well
                                (x: width * 0.8, y: height * 0.2),
                                (x: width * 0.25, y: height * 0.9),
                                (x: width * 0.75, y: height * 0.85),
@@ -145,6 +151,8 @@ class Asteroids: Codable {
         asteroids = try values.decode([String: [AsteroidObject]].self, forKey: .asteroids)
         bulletQueue = try values.decode([Bullet].self, forKey: .bulletQueue)
         gamePaused = false
+        asteroidIds = try values.decode(Set<Int>.self, forKey: .asteroidIds)
+        bulletIds = try values.decode(Set<Int>.self, forKey: .bulletIds)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -157,6 +165,8 @@ class Asteroids: Codable {
         try container.encode(level, forKey: .level)
         try container.encode(asteroids, forKey: .asteroids)
         try container.encode(bulletQueue, forKey: .bulletQueue)
+        try container.encode(asteroidIds, forKey: .asteroidIds)
+        try container.encode(bulletIds, forKey: .bulletIds)
     }
     
     func save(to url: URL) throws {
@@ -169,9 +179,15 @@ class Asteroids: Codable {
     }
     
     private func spawnAsteroids() {
+        //TODO: - Make asteroidSpawnPoints codable!
         for i in 0..<level {
             let randAngle: Float = Float.random(in: 0...180)
-            asteroids["large"]?.append(AsteroidObject(velocity: (x: Float(0.0), y: Float(0.0)), position: asteroidSpawnPoints[i], acceleration: (x: Float(0.0), y: Float(0.0)), stepSize: (x: cos(randAngle) * 0.25, y: sin(randAngle) * 0.25)))
+            var id: Int = Int.random(in: 0...999)
+            while asteroidIds.contains(id) {
+                id = Int.random(in: 0...999)
+            }
+            asteroidIds.insert(id)
+            asteroids["large"]?.append(AsteroidObject(velocity: (x: Float(0.0), y: Float(0.0)), position: asteroidSpawnPoints[i], acceleration: (x: Float(0.0), y: Float(0.0)), stepSize: (x: cos(randAngle) * 0.25, y: sin(randAngle) * 0.25), id: id))
         }
     }
     
@@ -180,11 +196,17 @@ class Asteroids: Codable {
     
     func beginTimer() {
         lastDate = Date()
-        gameLoopTimer = Timer.scheduledTimer(withTimeInterval: 1.0/120.0, repeats: true, block: { _ in
+        gameLoopTimer = Timer.scheduledTimer(withTimeInterval: 1.0/120.0, repeats: true, block: { gameLoopTimer in
             if !self.gamePaused {
                 let now: Date = Date()
                 let elapsed: TimeInterval = now.timeIntervalSince(self.lastDate)
                 self.lastDate = now
+                
+                if self.numberOfLives <= 0 {
+                    gameLoopTimer.invalidate()
+                    self.dataSource?.asteroids(gameOverWith: self.score)
+                }
+                
                 self.executeGameLoop(elapsed: elapsed)
                 self.bulletTicks += 1
             }
@@ -192,10 +214,6 @@ class Asteroids: Codable {
     }
     
     private func executeGameLoop(elapsed: TimeInterval) {
-        
-        if numberOfLives <= 0 {
-            dataSource?.asteroids(gameOverWith: score)
-        }
         
         if let asteroidLarge = asteroids["large"], let asteroidMedium = asteroids["medium"], let asteroidSmall = asteroids["small"] {
             if asteroidLarge.isEmpty && asteroidMedium.isEmpty && asteroidSmall.isEmpty {
@@ -227,7 +245,12 @@ class Asteroids: Codable {
         
         // Check if the ship is firing and that bullet ticks is greater than 20 (to create gap between each bullet)
         if ship.firingProjectile && bulletTicks >= 20 {
-            let bullet: Bullet = Bullet(position: (x: ship.position.x, y: ship.position.y), stepSize: (x: sin(ship.angle) * 1.25, y: -cos(ship.angle) * 1.25), angle: ship.angle, spawnedAt: Date())
+            var id: Int = Int.random(in: 0...999)
+            while asteroidIds.contains(id) {
+                id = Int.random(in: 0...999)
+            }
+            let bullet: Bullet = Bullet(position: (x: ship.position.x, y: ship.position.y), stepSize: (x: sin(ship.angle) * 1.25, y: -cos(ship.angle) * 1.25), angle: ship.angle, spawnedAt: Date(), id: id)
+            bulletIds.insert(id)
             bulletQueue.append(bullet)
             bulletTicks = 0
         }
@@ -312,16 +335,14 @@ class Asteroids: Codable {
     }
     
     func cleanUpBullets() {
-        var indexesToRemove: [Int] = []
-        for i in 0..<bulletQueue.count {
+        for bullet in bulletQueue.enumerated() {
             let now: Date = Date()
-            let elapsed: TimeInterval = now.timeIntervalSince(bulletQueue[i].spawnedAt)
+            let index = bulletQueue.firstIndex(of: bullet.element)
+            let elapsed: TimeInterval = now.timeIntervalSince(bulletQueue[index!].spawnedAt)
             if elapsed > 2 {
-                indexesToRemove.append(i)
+                //need to remove at firstIndexOf like asteroids
+                bulletQueue.remove(at: index!)
             }
-        }
-        for index in indexesToRemove {
-            bulletQueue.remove(at: index)
         }
     }
     
@@ -397,7 +418,7 @@ class Asteroids: Codable {
                         //Circle-circle collision detection: (x2-x1)^2 + (y1-y2)^2 <= (r1+r2)^2
                         let centerDiffX = pow((Float(ship.position.x) - asteroidList[i].position.x), 2)
                         let centerDiffY = pow((Float(ship.position.y) - asteroidList[i].position.y), 2)
-                        let sumRadii = Float(pow((25.0 / 2.0) + 50.0, 2))
+                        let sumRadii = Float(pow((25.0 / 2.0) + (25.0 / 2.0), 2))
                         
                         if centerDiffX + centerDiffY <= sumRadii {
                             numberOfLives -= 1
@@ -432,14 +453,12 @@ class Asteroids: Codable {
     
     func bulletCollision() {
         
-        var removeAsteroidIndexes: [(key: String, index: Int)] = []
-        var removeBulletIndexes: [Int] = []
         for (size, asteroidList) in asteroids {
             if !bulletQueue.isEmpty && !asteroidList.isEmpty {
-                for i in 0..<bulletQueue.count {
-                    for j in 0..<asteroidList.count {
-                        let centerDiffX = pow(bulletQueue[i].position.x - asteroidList[j].position.x, 2)
-                        let centerDiffY = pow(bulletQueue[i].position.y - asteroidList[j].position.y, 2)
+                for bullet in bulletQueue.enumerated() {
+                    for asteroid in asteroidList.enumerated() {
+                        let centerDiffX = pow(bullet.element.position.x - asteroid.element.position.x, 2)
+                        let centerDiffY = pow(bullet.element.position.y - asteroid.element.position.y, 2)
                         
                         let asteroidRadius: Float
                         let bulletRadius: Float = 2.5
@@ -467,9 +486,15 @@ class Asteroids: Codable {
                         let sumRadii = pow(bulletRadius + asteroidRadius, 2)
                         
                         if centerDiffX + centerDiffY <= sumRadii {
-                            dataSource?.asteroids(removeAsteroidWith: size, at: j)
-                            removeAsteroidIndexes.append((key: size, index: j))
-                            removeBulletIndexes.append(i)
+                            dataSource?.asteroids(removeAsteroidWith: size, at: asteroid.offset)
+                            
+                            let bulletIndex = bulletQueue.firstIndex(of: bullet.element)
+                            bulletIds.remove(bullet.element.id)
+                            bulletQueue.remove(at: bulletIndex!) // this through index out of range for bullet queue = nil
+
+                            let asteroidIndex = asteroids[size]?.firstIndex(of: asteroid.element)
+                            asteroidIds.remove(asteroid.element.id)
+                            asteroids[size]?.remove(at: asteroidIndex!)
                             
                             score += addToScore
                             dataSource?.asteroids(updateScoreWith: score)
@@ -478,13 +503,21 @@ class Asteroids: Codable {
                                 case "medium":
                                     for _ in 0..<2 {
                                         let randAngle: Float = Float.random(in: 0...180)
-                                        asteroids["medium"]?.append(AsteroidObject(velocity: (x: 0.0, y: 0.0), position: asteroidList[j].position, acceleration: (x: 0.0, y: 0.0), stepSize: (x: cos(randAngle) * 0.45, y: sin(randAngle) * 0.45)))
+                                        var id: Int = Int.random(in: 0...999)
+                                        while asteroidIds.contains(id) {
+                                            id = Int.random(in: 0...999)
+                                        }
+                                        asteroids["medium"]?.append(AsteroidObject(velocity: (x: 0.0, y: 0.0), position: asteroid.element.position, acceleration: (x: 0.0, y: 0.0), stepSize: (x: cos(randAngle) * 0.45, y: sin(randAngle) * 0.45), id: id))
                                     }
                                     break
                                 case "small":
                                     for _ in 0..<2 {
                                         let randAngle: Float = Float.random(in: 0...180)
-                                        asteroids["small"]?.append(AsteroidObject(velocity: (x: 0.0, y: 0.0), position: asteroidList[j].position, acceleration: (x: 0.0, y: 0.0), stepSize: (x: cos(randAngle) * 0.65, y: sin(randAngle) * 0.65)))
+                                        var id: Int = Int.random(in: 0...999)
+                                        while asteroidIds.contains(id) {
+                                            id = Int.random(in: 0...999)
+                                        }
+                                        asteroids["small"]?.append(AsteroidObject(velocity: (x: 0.0, y: 0.0), position: asteroid.element.position, acceleration: (x: 0.0, y: 0.0), stepSize: (x: cos(randAngle) * 0.65, y: sin(randAngle) * 0.65), id: id))
                                     }
                                     break
                                 default:
@@ -494,13 +527,6 @@ class Asteroids: Codable {
                     }
                 }
             }
-        }
-        
-        for index in removeBulletIndexes {
-            bulletQueue.remove(at: index)
-        }
-        for (key, index) in removeAsteroidIndexes {
-            asteroids[key]?.remove(at: index)
         }
     }
     

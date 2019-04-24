@@ -24,10 +24,15 @@ class HighScoresView: UIView {
         backButton = UIButton()
         super.init(frame: frame)
         
-        backgroundColor = .black
+        let backgroundImage = UIImageView(frame: UIScreen.main.bounds)
+        backgroundImage.image = UIImage(named: "galaxy_background")
+        backgroundImage.contentMode = UIView.ContentMode.scaleAspectFill
+        insertSubview(backgroundImage, at: 0)
         
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.register(TableViewCell.self, forCellReuseIdentifier: String(describing: TableViewCell.self))
+        tableView.backgroundColor = UIColor(red: 0.25, green: 0.25, blue: 0.333, alpha: 0.7)
+        tableView.layer.cornerRadius = 5.0
         
         backButton.setTitle("←", for: .normal)
         backButton.titleLabel?.textColor = .white
@@ -46,10 +51,15 @@ class HighScoresView: UIView {
     }
     
     override func draw(_ rect: CGRect) {
-        tableView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 30.0).isActive = true
-        tableView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 60.0).isActive = true
-        tableView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -30.0).isActive = true
-        tableView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -60.0).isActive = true
+//        tableView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 30.0).isActive = true
+//        tableView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 60.0).isActive = true
+//        tableView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -30.0).isActive = true
+//        tableView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -60.0).isActive = true
+        
+        tableView.widthAnchor.constraint(equalTo: safeAreaLayoutGuide.widthAnchor, multiplier: 0.5).isActive = true
+        tableView.heightAnchor.constraint(equalTo: safeAreaLayoutGuide.heightAnchor, multiplier: 0.85).isActive = true
+        tableView.centerXAnchor.constraint(equalTo: safeAreaLayoutGuide.centerXAnchor).isActive = true
+        tableView.centerYAnchor.constraint(equalTo: safeAreaLayoutGuide.centerYAnchor).isActive = true
         
         backButton.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 15.0).isActive = true
         backButton.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 15.0).isActive = true

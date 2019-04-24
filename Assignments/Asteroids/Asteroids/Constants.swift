@@ -8,4 +8,5 @@
 
 enum Constants {
     static let asteroidsFile = "asteroidsFile.json"
+    static let highScoresFile = "highScoresFile.json"
 }

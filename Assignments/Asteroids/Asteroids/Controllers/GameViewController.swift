@@ -80,7 +80,9 @@ class GameViewController: UIViewController, GameViewDelegate, AsteroidsDataSourc
     }
     
     func asteroids(gameOverWith: Int) {
+        gameView.timer.invalidate()
         let gameOverViewController: GameOverViewController = GameOverViewController()
+        gameOverViewController.score = gameOverWith
         present(gameOverViewController, animated: true, completion: nil)
     }
     

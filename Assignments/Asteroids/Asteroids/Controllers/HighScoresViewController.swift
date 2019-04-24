@@ -10,8 +10,20 @@ import UIKit
 
 class HighScoresViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, HighScoresViewDelegate {
     
+    private var highScores: [HighScores] = []
+    
     var highScoresView: HighScoresView {
         return view as! HighScoresView
+    }
+    
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+//        highScores = (UserDefaults.standard.array(forKey: "highScores") as! [(name: String, score: Int)])
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        highScores = loadSavedScores()
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     override func loadView() {
@@ -23,6 +35,11 @@ class HighScoresViewController: UIViewController, UITableViewDelegate, UITableVi
         highScoresView.delegate = self
         highScoresView.tableView.delegate = self
         highScoresView.tableView.dataSource = self
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        highScoresView.tableView.reloadData()
     }
     
     func highScoresView(backButtonPressedFor highScoresView: HighScoresView) {
@@ -42,10 +59,10 @@ class HighScoresViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let color = UIColor(red: 0.25, green: 0.25, blue: 0.333, alpha: 1.0)
-        cell.textLabel?.font = UIFont(name: "Avenir", size: 20)
+        let color = UIColor.clear
+        cell.textLabel?.font = UIFont(name: "EarthOrbiter", size: 20)
         cell.textLabel?.textColor = UIColor(red: 0.19, green: 0.83, blue: 0.52, alpha: 1.0)
-        cell.detailTextLabel?.font = UIFont(name: "Avenir", size: 14)
+        cell.detailTextLabel?.font = UIFont(name: "EarthOrbiter", size: 14)
         cell.backgroundColor = color
         let placement: String
         switch(indexPath.row) {
@@ -62,11 +79,30 @@ class HighScoresViewController: UIViewController, UITableViewDelegate, UITableVi
                 placement = "th"
                 break
         }
-        cell.textLabel?.text = "\(indexPath.row)\(placement)"
-        cell.detailTextLabel?.text = "N/A"
+        if !highScores.isEmpty {
+            if highScores.count - 1 >= indexPath.row {
+                cell.textLabel?.text = "\(indexPath.row + 1)\(placement) \(highScores[indexPath.row].name)"
+                cell.detailTextLabel?.text = highScores[indexPath.row].score.description
+            }
+            else {
+                cell.textLabel?.text = "\(indexPath.row + 1)\(placement)"
+                cell.detailTextLabel?.text = "N/A"
+            }
+        }
+        else {
+            cell.textLabel?.text = "\(indexPath.row + 1)\(placement)"
+            cell.detailTextLabel?.text = "N/A"
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return tableView.frame.height / 10.0
+    }
+    
+    func loadSavedScores() -> [HighScores] {
+        let docDirectory = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+        let jsonData = try! Data(contentsOf: docDirectory.appendingPathComponent(Constants.highScoresFile))
+        let highScores = try! JSONDecoder().decode([HighScores].self, from: jsonData)
+        return highScores
     }
 }

@@ -32,13 +32,13 @@ class MainView: UIView {
         super.init(frame: frame)
         
         let backgroundImage = UIImageView(frame: UIScreen.main.bounds)
-        backgroundImage.image = UIImage(named: "star_bckgnd")
+        backgroundImage.image = UIImage(named: "galaxy_background")
         backgroundImage.contentMode = UIView.ContentMode.scaleAspectFill
         insertSubview(backgroundImage, at: 0)
         
         logoLabel.text = "ASTEROIDS"
         logoLabel.font = UIFont(name: "EarthOrbiter", size: 56.0)
-        logoLabel.textColor = UIColor.white
+        logoLabel.textColor = UIColor(red: 1.0, green: 0.47, blue: 0.74, alpha: 1.0)
         logoLabel.textAlignment = .center
         logoLabel.translatesAutoresizingMaskIntoConstraints = false
         logoLabel.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width).isActive = true
@@ -61,15 +61,15 @@ class MainView: UIView {
         
         //For all earth orbiter fonts view: https://www.dafont.com/earth-orbiter.font
         gameButton.setTitle("New Game", for: .normal)
-        gameButton.titleLabel?.font = UIFont(name: "EarthOrbiter", size: 18.0)
+        gameButton.titleLabel?.font = UIFont(name: "EarthOrbiter", size: 20.0)
         gameButton.backgroundColor = .black
-        gameButton.layer.borderColor = UIColor.white.cgColor
+        gameButton.layer.borderColor = UIColor.cyan.cgColor
         gameButton.layer.borderWidth = 2.0
         
         highScoreButton.setTitle("High Scores", for: .normal)
-        highScoreButton.titleLabel?.font = UIFont(name: "EarthOrbiter", size: 18.0)
+        highScoreButton.titleLabel?.font = UIFont(name: "EarthOrbiter", size: 20.0)
         highScoreButton.backgroundColor = .black
-        highScoreButton.layer.borderColor = UIColor.white.cgColor
+        highScoreButton.layer.borderColor = UIColor.cyan.cgColor
         highScoreButton.layer.borderWidth = 2.0
     }
     

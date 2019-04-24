@@ -8,17 +8,25 @@
 
 import Foundation
 
-struct Bullet: Codable {
+struct Bullet: Codable, Equatable {
+    
     var position: (x: Float, y: Float)
     var stepSize: (x: Float, y: Float)
     var angle: Float
     var spawnedAt: Date = Date()
+    var id: Int
     
-    init(position: (x: Float, y: Float), stepSize: (x: Float, y: Float), angle: Float, spawnedAt: Date) {
+    init(position: (x: Float, y: Float), stepSize: (x: Float, y: Float), angle: Float, spawnedAt: Date, id: Int) {
         self.position = position
         self.stepSize = stepSize
         self.angle = angle
         self.spawnedAt = spawnedAt
+        self.id = id
+    }
+    
+    //MARK: - Overload operators
+    static func == (lhs: Bullet, rhs: Bullet) -> Bool {
+        return lhs.id == rhs.id
     }
     
     //MARK: - Error enum
@@ -31,6 +39,7 @@ struct Bullet: Codable {
         case position
         case stepSize
         case angle
+        case id
 //        case spawnedAt
     }
     
@@ -41,6 +50,7 @@ struct Bullet: Codable {
         let stepSizeArray = try values.decode([Float].self, forKey: .stepSize)
         stepSize = (x: stepSizeArray[0], y: stepSizeArray[1])
         angle = try values.decode(Float.self, forKey: .angle)
+        id = try values.decode(Int.self, forKey: .id)
 //        spawnedAt = try values.decode(Date.self, forKey: .spawnedAt)
     }
     
@@ -49,6 +59,7 @@ struct Bullet: Codable {
         try container.encode([position.x, position.y], forKey: .position)
         try container.encode([stepSize.x, stepSize.y], forKey: .stepSize)
         try container.encode(angle, forKey: .angle)
+        try container.encode(id, forKey: .id)
     }
 }
 

@@ -8,17 +8,25 @@
 
 import Foundation
 
-struct AsteroidObject: Codable {
+struct AsteroidObject: Codable, Equatable {
+    
+    //MARK: - Overload operators
+    static func == (lhs: AsteroidObject, rhs: AsteroidObject) -> Bool {
+        return lhs.id == rhs.id
+    }
+    
     var velocity: (x: Float, y: Float)
     var position: (x: Float, y: Float)
     var acceleration: (x: Float, y: Float)
     var stepSize: (x: Float, y: Float)
+    var id: Int
     
-    init(velocity: (x: Float, y: Float), position: (x: Float, y: Float), acceleration: (x: Float, y: Float), stepSize: (x: Float, y: Float)) {
+    init(velocity: (x: Float, y: Float), position: (x: Float, y: Float), acceleration: (x: Float, y: Float), stepSize: (x: Float, y: Float), id: Int) {
         self.velocity = velocity
         self.position = position
         self.acceleration = acceleration
         self.stepSize = stepSize
+        self.id = id
     }
     
     enum CodingKeys: CodingKey {
@@ -26,6 +34,7 @@ struct AsteroidObject: Codable {
         case position
         case acceleration
         case stepSize
+        case id
     }
     
     //MARK: - Error enum
@@ -44,6 +53,7 @@ struct AsteroidObject: Codable {
         acceleration = (x: accelerationArray[0], y: accelerationArray[1])
         let stepSizeArray = try values.decode([Float].self, forKey: .stepSize)
         stepSize = (x: stepSizeArray[0], y: stepSizeArray[1])
+        id = try values.decode(Int.self, forKey: .id)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -52,6 +62,7 @@ struct AsteroidObject: Codable {
         try container.encode([position.x, position.y], forKey: .position)
         try container.encode([acceleration.x, acceleration.y], forKey: .acceleration)
         try container.encode([stepSize.x, stepSize.y], forKey: .stepSize)
+        try container.encode(id, forKey: .id)
     }
 }
 
