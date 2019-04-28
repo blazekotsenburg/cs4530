@@ -80,7 +80,7 @@ class Asteroids: Codable {
     private var initialFrame: CGRect = CGRect()
     private var numberOfLives: Int = 3
     private var score: Int = 0
-    private var gameLoopTimer: Timer = Timer()
+    var gameLoopTimer: Timer = Timer()
     private var bulletTicks: Int = 0
     private var ship: Ship
     private var lastDate: Date = Date()
@@ -185,20 +185,16 @@ class Asteroids: Codable {
     }
     
     private func spawnAsteroids() {
-        //TODO: - Make asteroidSpawnPoints codable!
         for i in 0..<level {
-            let randAngle: Float = Float.random(in: 0...180)
+            let randAngle: Float = Float.random(in: -180...180)
             var id: Int = Int.random(in: 0...999)
             while asteroidIds.contains(id) {
                 id = Int.random(in: 0...999)
             }
             asteroidIds.insert(id)
-            asteroids["large"]?.append(AsteroidObject(velocity: (x: Float(0.0), y: Float(0.0)), position: asteroidSpawnPoints[i], acceleration: (x: Float(0.0), y: Float(0.0)), stepSize: (x: cos(randAngle) * 0.25, y: sin(randAngle) * 0.25), id: id))
+            asteroids["large"]?.append(AsteroidObject(velocity: (x: Float(0.0), y: Float(0.0)), position: asteroidSpawnPoints[i], acceleration: (x: Float(0.0), y: Float(0.0)), angle: randAngle, stepSize: (x: cos(randAngle) * 0.25, y: sin(randAngle) * 0.25), id: id))
         }
     }
-    
-    // make a function to reset the asteroid postions after each level ends.
-    // loop through large key of dictionary and then append another large asteroid to the end with new position.
     
     func beginTimer() {
         lastDate = Date()
@@ -341,6 +337,8 @@ class Asteroids: Codable {
                 asteroids[size]?[i].position.x += Float(stepX!)//Float((velocityX)! * Float(elapsed))
                 let stepY = asteroids[size]?[i].stepSize.y
                 asteroids[size]?[i].position.y += Float(stepY!)//Float((velocityY)! * Float(elapsed))
+                let direction: Float = asteroids[size]![i].angle < Float(0.0) ? -1.0 : 1.0
+                asteroids[size]?[i].angle += Float(elapsed) * 0.75 * direction
             }
         }
         
@@ -405,7 +403,7 @@ class Asteroids: Codable {
                         //Circle-circle collision detection: (x2-x1)^2 + (y1-y2)^2 <= (r1+r2)^2
                         let centerDiffX = pow((Float(ship.position.x) - asteroidList[i].position.x), 2)
                         let centerDiffY = pow((Float(ship.position.y) - asteroidList[i].position.y), 2)
-                        let sumRadii = Float(pow((25.0 / 2.0) + 50.0, 2))
+                        let sumRadii = Float(pow((25.0 / 2.0) + 22.0, 2))
                         
                         if centerDiffX + centerDiffY <= sumRadii {
                             numberOfLives -= 1
@@ -525,22 +523,22 @@ class Asteroids: Codable {
                             switch nextAsteroid {
                                 case "medium":
                                     for _ in 0..<2 {
-                                        let randAngle: Float = Float.random(in: 0...180)
+                                        let randAngle: Float = Float.random(in: -180...180)
                                         var id: Int = Int.random(in: 0...999)
                                         while asteroidIds.contains(id) {
                                             id = Int.random(in: 0...999)
                                         }
-                                        asteroids["medium"]?.append(AsteroidObject(velocity: (x: 0.0, y: 0.0), position: asteroid.element.position, acceleration: (x: 0.0, y: 0.0), stepSize: (x: cos(randAngle) * 0.45, y: sin(randAngle) * 0.45), id: id))
+                                        asteroids["medium"]?.append(AsteroidObject(velocity: (x: 0.0, y: 0.0), position: asteroid.element.position, acceleration: (x: 0.0, y: 0.0), angle: randAngle, stepSize: (x: cos(randAngle) * 0.45, y: sin(randAngle) * 0.45), id: id))
                                     }
                                     break
                                 case "small":
                                     for _ in 0..<2 {
-                                        let randAngle: Float = Float.random(in: 0...180)
+                                        let randAngle: Float = Float.random(in: -180...180)
                                         var id: Int = Int.random(in: 0...999)
                                         while asteroidIds.contains(id) {
                                             id = Int.random(in: 0...999)
                                         }
-                                        asteroids["small"]?.append(AsteroidObject(velocity: (x: 0.0, y: 0.0), position: asteroid.element.position, acceleration: (x: 0.0, y: 0.0), stepSize: (x: cos(randAngle) * 0.65, y: sin(randAngle) * 0.65), id: id))
+                                        asteroids["small"]?.append(AsteroidObject(velocity: (x: 0.0, y: 0.0), position: asteroid.element.position, acceleration: (x: 0.0, y: 0.0), angle: randAngle, stepSize: (x: cos(randAngle) * 0.65, y: sin(randAngle) * 0.65), id: id))
                                     }
                                     break
                                 default:
@@ -595,5 +593,13 @@ class Asteroids: Codable {
             positions.append(bullet.position)
         }
         return positions
+    }
+    
+    func angleForAsteroid(key: String, index: Int) -> Float {
+        guard let asteroidList = asteroids[key] else { return 0.0 }
+        if index <= asteroidList.count {
+            return asteroidList[index].angle
+        }
+        return 0.0
     }
 }

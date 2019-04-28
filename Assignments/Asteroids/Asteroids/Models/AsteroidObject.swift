@@ -18,13 +18,15 @@ struct AsteroidObject: Codable, Equatable {
     var velocity: (x: Float, y: Float)
     var position: (x: Float, y: Float)
     var acceleration: (x: Float, y: Float)
+    var angle: Float
     var stepSize: (x: Float, y: Float)
     var id: Int
     
-    init(velocity: (x: Float, y: Float), position: (x: Float, y: Float), acceleration: (x: Float, y: Float), stepSize: (x: Float, y: Float), id: Int) {
+    init(velocity: (x: Float, y: Float), position: (x: Float, y: Float), acceleration: (x: Float, y: Float), angle: Float, stepSize: (x: Float, y: Float), id: Int) {
         self.velocity = velocity
         self.position = position
         self.acceleration = acceleration
+        self.angle = angle
         self.stepSize = stepSize
         self.id = id
     }
@@ -33,6 +35,7 @@ struct AsteroidObject: Codable, Equatable {
         case velocity
         case position
         case acceleration
+        case angle
         case stepSize
         case id
     }
@@ -51,6 +54,7 @@ struct AsteroidObject: Codable, Equatable {
         position = (x: positionArray[0], y: positionArray[1])
         let accelerationArray = try values.decode([Float].self, forKey: .acceleration)
         acceleration = (x: accelerationArray[0], y: accelerationArray[1])
+        angle = try values.decode(Float.self, forKey: .angle)
         let stepSizeArray = try values.decode([Float].self, forKey: .stepSize)
         stepSize = (x: stepSizeArray[0], y: stepSizeArray[1])
         id = try values.decode(Int.self, forKey: .id)
@@ -61,6 +65,7 @@ struct AsteroidObject: Codable, Equatable {
         try container.encode([velocity.x, velocity.y], forKey: .velocity)
         try container.encode([position.x, position.y], forKey: .position)
         try container.encode([acceleration.x, acceleration.y], forKey: .acceleration)
+        try container.encode(angle, forKey: .angle)
         try container.encode([stepSize.x, stepSize.y], forKey: .stepSize)
         try container.encode(id, forKey: .id)
     }

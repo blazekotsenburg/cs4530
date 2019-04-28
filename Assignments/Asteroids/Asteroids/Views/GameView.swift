@@ -17,6 +17,8 @@ protocol GameViewDelegate {
     func gameView(getPositionForShipIn gameView: GameView) -> (x: Float, y: Float)
     func gameView(getAsteroidPositionsIn gameView: GameView) -> [String: [AsteroidObject]]
     func gameView(getBulletPositionsIn gameView: GameView) -> [(x: Float, y: Float)]
+    func gameView(homeButtonPressed: GameView)
+    func gameView(getAngleForAsteroiFor key: String, at index: Int) -> Float
 }
 
 class GameView: UIView {
@@ -34,6 +36,7 @@ class GameView: UIView {
     private var rotateRightButton: UIButton
     private var thrustButton: UIButton
     private var shootButton: UIButton
+    private var returnHomeButton: UIButton
     private var labelViews: [String: Any]
     private var buttonViews: [String: Any]
     private var controlViews: [String: Any]
@@ -59,6 +62,7 @@ class GameView: UIView {
         rotateRightButton = UIButton()
         thrustButton = UIButton()
         shootButton = UIButton()
+        returnHomeButton = UIButton()
         labelViews = ["scoreLabel": scoreLabel, "livesLabel": livesLabel]
         buttonViews = ["rotateLeft": rotateLeftButton, "rotateRight": rotateRightButton, "shootButton": shootButton]
         controlViews = ["thrustButton": thrustButton, "shootButton": shootButton]
@@ -79,6 +83,7 @@ class GameView: UIView {
         rotateLeftButton.translatesAutoresizingMaskIntoConstraints = false
         rotateRightButton.translatesAutoresizingMaskIntoConstraints = false
         shootButton.translatesAutoresizingMaskIntoConstraints = false
+        returnHomeButton.translatesAutoresizingMaskIntoConstraints = false
         
         backgroundColor = .black
         shipView.contentMode = .redraw
@@ -114,23 +119,37 @@ class GameView: UIView {
         
         rotateLeftButton.setTitle("Left", for: .normal)
         rotateLeftButton.titleLabel?.textColor = .black
+        rotateLeftButton.titleLabel?.font = UIFont(name: "EarthOrbiter", size: 20.0)
         rotateLeftButton.addTarget(self, action: #selector(rotateShipLeftPressed), for: .touchDown)
         rotateLeftButton.addTarget(self, action: #selector(rotateShipLeftReleased), for: .touchUpInside)
         
         rotateRightButton.setTitle("Right", for: .normal)
         rotateRightButton.titleLabel?.textColor = .black
+        rotateRightButton.titleLabel?.font = UIFont(name: "EarthOrbiter", size: 20.0)
         rotateRightButton.addTarget(self, action: #selector(rotateShipRightPressed), for: .touchDown)
         rotateRightButton.addTarget(self, action: #selector(rotateShipRightReleased), for: .touchUpInside)
         
         thrustButton.setTitle("Go", for: .normal)
         thrustButton.titleLabel?.textColor = .white
+        thrustButton.titleLabel?.font = UIFont(name: "EarthOrbiter", size: 20.0)
         thrustButton.addTarget(self, action: #selector(thrusterPressed), for: .touchDown)
         thrustButton.addTarget(self, action: #selector(thrusterReleased), for: .touchUpInside)
         
         shootButton.setTitle("Fire", for: .normal)
         shootButton.titleLabel?.textColor = .white
+        shootButton.titleLabel?.font = UIFont(name: "EarthOrbiter", size: 20.0)
         shootButton.addTarget(self, action: #selector(shootButtonPressed), for: .touchDown)
         shootButton.addTarget(self, action: #selector(shootButtonReleased), for: .touchUpInside)
+        
+        returnHomeButton.setTitle("HOME", for: .normal)
+        returnHomeButton.titleLabel?.textColor = .white
+        returnHomeButton.titleLabel?.font = UIFont(name: "EarthOrbiter", size: 20.0)
+        returnHomeButton.addTarget(self, action: #selector(returnHomeButtonPressed), for: .touchUpInside)
+        addSubview(returnHomeButton)
+        returnHomeButton.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -15.0).isActive = true
+        returnHomeButton.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 15.0).isActive = true
+        returnHomeButton.widthAnchor.constraint(equalToConstant: 80.0).isActive = true
+        returnHomeButton.heightAnchor.constraint(equalToConstant: 40.0).isActive = true
         
         gameLabelStackView.addArrangedSubview(scoreLabel)
         gameLabelStackView.addArrangedSubview(livesLabel)
@@ -170,6 +189,13 @@ class GameView: UIView {
         
         gameLabelStackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[scoreLabel]-|", options: [], metrics: nil, views: labelViews))
         gameLabelStackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[livesLabel]-|", options: [], metrics: nil, views: labelViews))
+        
+//        let explosion = ExplosionView()
+//        explosion.center = CGPoint(x: 100.0, y: 100.0)
+//        explosion.bounds = CGRect(x: 0.0, y: 0.0, width: 40.0, height: 40.0)
+//        explosion.contentMode = .redraw
+//        addSubview(explosion)
+//        bringSubviewToFront(explosion)
         
         beginTimer()
         asteroidPositions()
@@ -244,8 +270,11 @@ class GameView: UIView {
             break
             case let x  where x > 0:
                 for i in 0..<abs(difference) {
-                    bullets[i].removeFromSuperview()
-                    bullets.removeFirst()
+                    if i < bullets.count {
+                        bullets[i].removeFromSuperview()
+                        bullets.removeFirst()
+                    }
+                    
                 }
             break
             default:
@@ -266,7 +295,7 @@ class GameView: UIView {
                     asteroidLarge.center = CGPoint(x: x, y: y)
                     asteroidLarge.bounds = CGRect(x: 0.0, y: 0.0, width: 100.0, height: 100.0)
                     asteroidLarge.contentMode = .redraw
-//                    asteroidLarge.transform = CGAffineTransform(rotationAngle: 90.0)
+                    asteroidLarge.transform = CGAffineTransform(rotationAngle: CGFloat((delegate?.gameView(getAngleForAsteroiFor: withSize, at: atIndex))!))
                 }
             case "medium":
                 if let asteroidMedium = asteroids[withSize]?[atIndex] as? AsteroidMedium {
@@ -276,7 +305,7 @@ class GameView: UIView {
                     asteroidMedium.center = CGPoint(x: x, y: y)
                     asteroidMedium.bounds = CGRect(x: 0.0, y: 0.0, width: 50.0, height: 50.0)
                     asteroidMedium.contentMode = .redraw
-//                    asteroidMedium.transform = CGAffineTransform(rotationAngle: 2.0)
+                    asteroidMedium.transform = CGAffineTransform(rotationAngle: CGFloat((delegate?.gameView(getAngleForAsteroiFor: withSize, at: atIndex))!))
                 }
             case "small":
                 if let asteroidSmall = asteroids[withSize]?[atIndex] as? AsteroidSmall {
@@ -286,7 +315,7 @@ class GameView: UIView {
                     asteroidSmall.center = CGPoint(x: x, y: y)
                     asteroidSmall.bounds = CGRect(x: 0.0, y: 0.0, width: 25.0, height: 25.0)
                     asteroidSmall.contentMode = .redraw
-//                    asteroidSmall.transform = CGAffineTransform(rotationAngle: 2.0)
+                    asteroidSmall.transform = CGAffineTransform(rotationAngle: CGFloat((delegate?.gameView(getAngleForAsteroiFor: withSize, at: atIndex))!))
                 }
             default:
                 return
@@ -309,18 +338,24 @@ class GameView: UIView {
         switch key {
         case "large":
 //            let i = (index == asteroids[key]?.count) ? index - 1: index
-            (asteroids[key]?[index] as? AsteroidLarge)?.removeFromSuperview()
-            asteroids[key]?.remove(at: index)
+            if index <= asteroids[key]!.count - 1 {
+                (asteroids[key]?[index] as? AsteroidLarge)?.removeFromSuperview()
+                asteroids[key]?.remove(at: index)
+            }
             break
         case "medium":
 //            let i = (index == asteroids[key]?.count) ? index - 1: index
-            (asteroids[key]?[index] as? AsteroidMedium)?.removeFromSuperview()
-            asteroids[key]?.remove(at: index)
+            if index <= asteroids[key]!.count - 1 {
+                (asteroids[key]?[index] as? AsteroidMedium)?.removeFromSuperview()
+                asteroids[key]?.remove(at: index)
+            }
             break
         case "small":
 //            let i = (index == asteroids[key]?.count) ? index - 1: index
-            (asteroids[key]?[index] as? AsteroidSmall)?.removeFromSuperview()
-            asteroids[key]?.remove(at: index)
+            if index <= asteroids[key]!.count - 1 {
+                (asteroids[key]?[index] as? AsteroidSmall)?.removeFromSuperview()
+                asteroids[key]?.remove(at: index)
+            }
             break
         default:
             break
@@ -401,6 +436,15 @@ class GameView: UIView {
             if button == shootButton {
                 guard let delegate = delegate else { return }
                 delegate.gameView(shootButtonToggled: self, fireProjectile: false)
+            }
+        }
+    }
+    
+    @objc func returnHomeButtonPressed(sender: Any) {
+        if let button = sender as? UIButton {
+            if button == returnHomeButton {
+                guard let delegate = delegate else { return }
+                delegate.gameView(homeButtonPressed: self)
             }
         }
     }

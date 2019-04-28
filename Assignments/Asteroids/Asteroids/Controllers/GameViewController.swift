@@ -10,11 +10,8 @@ import UIKit
 
 class GameViewController: UIViewController, GameViewDelegate, AsteroidsDataSource {
     
-//    var asteroidsGame: Asteroids = Asteroids(width: Float(UIScreen.main.bounds.width), height: Float(UIScreen.main.bounds.height))
     var asteroidsGame: Asteroids?
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-//        asteroidsGame = Asteroids(width: 1.0, height: Float(UIScreen.main.bounds.width / UIScreen.main.bounds.height))
-//        asteroidsGame = Asteroids(width: Float(UIScreen.main.bounds.width), height: Float(UIScreen.main.bounds.height))
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         asteroidsGame?.dataSource = self
     }
@@ -63,6 +60,17 @@ class GameViewController: UIViewController, GameViewDelegate, AsteroidsDataSourc
         return asteroidsGame!.getBulletPositions()
     }
     
+    func gameView(homeButtonPressed: GameView) {
+        saveGameState()
+        gameView.timer.invalidate()
+        asteroidsGame?.gameLoopTimer.invalidate()
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func gameView(getAngleForAsteroiFor key: String, at index: Int) -> Float {
+        return asteroidsGame!.angleForAsteroid(key: key, index: index)
+    }
+    
     func asteroids(shipCollisionDetectedFor asteroidsGame: Asteroids) {
         gameView.removeShip()
     }
@@ -81,6 +89,7 @@ class GameViewController: UIViewController, GameViewDelegate, AsteroidsDataSourc
     
     func asteroids(gameOverWith: Int) {
         gameView.timer.invalidate()
+        asteroidsGame?.gameLoopTimer.invalidate()
         let gameOverViewController: GameOverViewController = GameOverViewController()
         gameOverViewController.score = gameOverWith
         present(gameOverViewController, animated: true, completion: nil)
