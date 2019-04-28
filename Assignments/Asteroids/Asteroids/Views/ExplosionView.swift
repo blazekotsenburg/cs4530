@@ -14,6 +14,7 @@ class ExplosionView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        backgroundColor = .clear
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -21,16 +22,77 @@ class ExplosionView: UIView {
     }
     
     override func draw(_ rect: CGRect) {
-        let context = UIGraphicsGetCurrentContext()
+        
+        var color1: CGColor = UIColor.clear.cgColor
+        var color2: CGColor = UIColor.clear.cgColor
+        var color3: CGColor = UIColor.clear.cgColor
+        var color4: CGColor = UIColor.clear.cgColor
+        
         if toggleColorCounter < 10 {
-            let rect: CGRect = CGRect(x: 0.0, y: 0.0, width: bounds.width * 75, height: bounds.height * 75)
-            context?.addEllipse(in: rect)
-            context?.setStrokeColor(UIColor.cyan.cgColor)
-            context?.setLineWidth(2.0)
+            color1 = UIColor.cyan.cgColor
+            color2 = UIColor.yellow.cgColor
+            color3 = UIColor.red.cgColor
+            color4 = UIColor.green.cgColor
             toggleColorCounter += 1
         }
+        else if toggleColorCounter >= 10 && toggleColorCounter < 20 {
+            color1 = UIColor.green.cgColor
+            color2 = UIColor.cyan.cgColor
+            color3 = UIColor.yellow.cgColor
+            color4 = UIColor.red.cgColor
+            toggleColorCounter += 1
+        }
+        else if toggleColorCounter >= 20 && toggleColorCounter < 30 {
+            color1 = UIColor.red.cgColor
+            color2 = UIColor.green.cgColor
+            color3 = UIColor.cyan.cgColor
+            color4 = UIColor.yellow.cgColor
+            toggleColorCounter += 1
+        }
+        else if toggleColorCounter >= 30 && toggleColorCounter < 40{
+            color1 = UIColor.red.cgColor
+            color2 = UIColor.green.cgColor
+            color3 = UIColor.cyan.cgColor
+            color4 = UIColor.yellow.cgColor
+            toggleColorCounter += 1
+        }
+        else {
+            toggleColorCounter = 0
+        }
         
+        let context = UIGraphicsGetCurrentContext()
+        var rect: CGRect = CGRect(x: 0.0, y: 0.0, width: bounds.width * 0.9, height: bounds.height * 0.9)
+        rect.origin.y = (bounds.height - rect.height) / 2.0
+        rect.origin.x = (bounds.width - rect.width) / 2.0
+        context?.addEllipse(in: rect)
+        context?.setStrokeColor(color1)
+        context?.setLineWidth(3.0)
         context?.drawPath(using: .stroke)
+        
+        var rect2: CGRect = CGRect(x: 0.0, y: 0.0, width: bounds.width * 0.65, height: bounds.height * 0.65)
+        rect2.origin.y = (bounds.height - rect2.height) / 2.0
+        rect2.origin.x = (bounds.width - rect2.width) / 2.0
+        context?.addEllipse(in: rect2)
+        context?.setStrokeColor(color2)
+        context?.setLineWidth(2.0)
+        context?.drawPath(using: .stroke)
+        
+        var rect3: CGRect = CGRect(x: 0.0, y: 0.0, width: bounds.width * 0.45, height: bounds.height * 0.45)
+        rect3.origin.y = (bounds.height - rect3.height) / 2.0
+        rect3.origin.x = (bounds.width - rect3.width) / 2.0
+        context?.addEllipse(in: rect3)
+        context?.setStrokeColor(color3)
+        context?.setLineWidth(2.5)
+        context?.drawPath(using: .stroke)
+        
+        var rect4: CGRect = CGRect(x: 0.0, y: 0.0, width: bounds.width * 0.25, height: bounds.height * 0.25)
+        rect4.origin.y = (bounds.height - rect4.height) / 2.0
+        rect4.origin.x = (bounds.width - rect4.width) / 2.0
+        context?.addEllipse(in: rect4)
+        context?.setStrokeColor(color4)
+        context?.setFillColor(color4)
+        context?.setLineWidth(2.5)
+        context?.drawPath(using: .fill)
     }
     
 //    func updateUI() {

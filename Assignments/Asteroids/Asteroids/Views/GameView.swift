@@ -27,6 +27,7 @@ class GameView: UIView {
     private var largeAsteroid: AsteroidLarge
     private var mediumAsteroid: AsteroidMedium
     private var smallAsteroid: AsteroidSmall
+    private var explosionView: ExplosionView
     private var gameLabelStackView: UIStackView
     private var rotateButtonsStackView: UIStackView
     private var controlStackView: UIStackView
@@ -43,6 +44,8 @@ class GameView: UIView {
     private var asteroids: [String: [Any]]
     private var bullets: [BulletView]
     var currAngle:CGFloat = 0.0
+    private var shipRespawned: Bool
+    private var respawnedAt: Date
     
     var timer: Timer = Timer()
     
@@ -53,6 +56,7 @@ class GameView: UIView {
         largeAsteroid = AsteroidLarge()
         mediumAsteroid = AsteroidMedium()
         smallAsteroid = AsteroidSmall()
+        explosionView = ExplosionView()
         gameLabelStackView = UIStackView()
         rotateButtonsStackView = UIStackView()
         controlStackView = UIStackView()
@@ -68,6 +72,8 @@ class GameView: UIView {
         controlViews = ["thrustButton": thrustButton, "shootButton": shootButton]
         asteroids = ["large": [], "medium": [], "small": []]
         bullets = []
+        shipRespawned = false
+        respawnedAt = Date()
         super.init(frame: frame)
         
         let backgroundImage = UIImageView(frame: UIScreen.main.bounds)
@@ -168,7 +174,7 @@ class GameView: UIView {
         
         rotateButtonsStackView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 15.0).isActive = true
         rotateButtonsStackView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -5.0).isActive = true
-        rotateButtonsStackView.widthAnchor.constraint(equalTo: safeAreaLayoutGuide.widthAnchor, multiplier: 0.3).isActive = true
+        rotateButtonsStackView.widthAnchor.constraint(equalTo: safeAreaLayoutGuide.widthAnchor, multiplier: 0.4).isActive = true
         rotateButtonsStackView.heightAnchor.constraint(equalToConstant: 70.0).isActive = true
         
         shootButton.topAnchor.constraint(equalTo: rotateButtonsStackView.topAnchor).isActive = true
@@ -190,12 +196,13 @@ class GameView: UIView {
         gameLabelStackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[scoreLabel]-|", options: [], metrics: nil, views: labelViews))
         gameLabelStackView.addConstraints(NSLayoutConstraint.constraints(withVisualFormat: "H:|-[livesLabel]-|", options: [], metrics: nil, views: labelViews))
         
-//        let explosion = ExplosionView()
-//        explosion.center = CGPoint(x: 100.0, y: 100.0)
-//        explosion.bounds = CGRect(x: 0.0, y: 0.0, width: 40.0, height: 40.0)
-//        explosion.contentMode = .redraw
-//        addSubview(explosion)
-//        bringSubviewToFront(explosion)
+        explosionView = ExplosionView()
+        explosionView.center = CGPoint(x: 0.0, y: 0.0)
+        explosionView.bounds = CGRect(x: 0.0, y: 0.0, width: 40.0, height: 40.0)
+        explosionView.contentMode = .redraw
+        addSubview(explosionView)
+        bringSubviewToFront(explosionView)
+        explosionView.isHidden = true
         
         beginTimer()
         asteroidPositions()
@@ -331,7 +338,11 @@ class GameView: UIView {
     }
     
     func removeShip() {
-        shipView.removeFromSuperview()
+        explosionView.center = CGPoint(x: shipView.frame.origin.x, y: shipView.frame.origin.y)
+        explosionView.bounds = CGRect(x: 0.0, y: 0.0, width: 40.0, height: 40.0)
+        explosionView.isHidden = false
+        shipRespawned = true
+        respawnedAt = Date()
     }
     
     func removeAsteroid(key: String, index: Int) {
@@ -458,6 +469,19 @@ class GameView: UIView {
 //        let y = CGFloat(shipPoint.y) * 0.5 * bounds.height
         
 //        shipView.center = CGPoint(x: x, y: y)
+        if shipRespawned {
+            let now: Date = Date()
+            let elapsed: TimeInterval = now.timeIntervalSince(respawnedAt)
+//            self.lastDate = now
+            if elapsed < 3.0 {
+                explosionView.setNeedsDisplay()
+            }
+            else {
+                shipRespawned = false
+                explosionView.isHidden = true
+            }
+        }
+        
         shipView.center = CGPoint(x: CGFloat(shipPoint.x), y: CGFloat(shipPoint.y))
         shipView.bounds = CGRect(x: 0.0, y: 0.0, width: 25.0, height: 25.0)
         shipView.transform = CGAffineTransform(rotationAngle: CGFloat(delegate.gameView(getAngleForShipIn: self)))

@@ -77,7 +77,7 @@ class GameOverView: UIView {
         leaderBoardLabel.textColor = .white
         leaderBoardLabel.textAlignment = .center
         
-        playerNameField.placeholder = "eg. Enemy Seas"
+        playerNameField.placeholder = "Enter Name"
         playerNameField.textColor = .black
         playerNameField.font = UIFont(name: "EarthOrbiter", size: 20.0)
         playerNameField.backgroundColor = .lightGray
@@ -89,6 +89,7 @@ class GameOverView: UIView {
         
         saveScoreButton.setTitle("Save", for: .normal)
         saveScoreButton.backgroundColor = .lightGray
+        saveScoreButton.titleLabel?.font = UIFont(name: "EarthOrbiter", size: 20.0)
         saveScoreButton.widthAnchor.constraint(equalTo: playerNameField.widthAnchor).isActive = true
         saveScoreButton.centerXAnchor.constraint(equalTo: stackView.centerXAnchor).isActive = true
         saveScoreButton.addTarget(self, action: #selector(saveGameScore), for: .touchUpInside)

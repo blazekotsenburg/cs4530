@@ -395,6 +395,7 @@ class Asteroids: Codable {
                             ship.firingProjectile = false
                             ship.respawnShieldOn = true
                             ship.respawnShieldBegin = Date()
+                            dataSource?.asteroids(shipCollisionDetectedFor: self)
                         }
                     }
                     break
@@ -427,6 +428,7 @@ class Asteroids: Codable {
                             ship.firingProjectile = false
                             ship.respawnShieldOn = true
                             ship.respawnShieldBegin = Date()
+                            dataSource?.asteroids(shipCollisionDetectedFor: self)
                         }
                     }
                     break
@@ -459,6 +461,7 @@ class Asteroids: Codable {
                             ship.firingProjectile = false
                             ship.respawnShieldOn = true
                             ship.respawnShieldBegin = Date()
+                            dataSource?.asteroids(shipCollisionDetectedFor: self)
                         }
                     }
                     break
