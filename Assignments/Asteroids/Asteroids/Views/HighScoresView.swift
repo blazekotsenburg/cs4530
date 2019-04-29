@@ -34,9 +34,9 @@ class HighScoresView: UIView {
         tableView.backgroundColor = UIColor(red: 0.25, green: 0.25, blue: 0.333, alpha: 0.7)
         tableView.layer.cornerRadius = 5.0
         
-        backButton.setTitle("←", for: .normal)
+        backButton.setTitle("Back", for: .normal)
         backButton.titleLabel?.textColor = .white
-        backButton.titleLabel?.font = UIFont(name: "Avenir", size: 24.0)
+        backButton.titleLabel?.font = UIFont(name: "EarthOrbiter", size: 24.0)
         backButton.addTarget(self, action: #selector(backButtonPressed), for: .touchUpInside)
         backButton.translatesAutoresizingMaskIntoConstraints = false
         
@@ -51,11 +51,6 @@ class HighScoresView: UIView {
     }
     
     override func draw(_ rect: CGRect) {
-//        tableView.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 30.0).isActive = true
-//        tableView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 60.0).isActive = true
-//        tableView.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -30.0).isActive = true
-//        tableView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -60.0).isActive = true
-        
         tableView.widthAnchor.constraint(equalTo: safeAreaLayoutGuide.widthAnchor, multiplier: 0.5).isActive = true
         tableView.heightAnchor.constraint(equalTo: safeAreaLayoutGuide.heightAnchor, multiplier: 0.85).isActive = true
         tableView.centerXAnchor.constraint(equalTo: safeAreaLayoutGuide.centerXAnchor).isActive = true
@@ -63,7 +58,7 @@ class HighScoresView: UIView {
         
         backButton.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 15.0).isActive = true
         backButton.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 15.0).isActive = true
-        backButton.widthAnchor.constraint(equalToConstant: 80.0).isActive = true
+        backButton.widthAnchor.constraint(equalToConstant: 100.0).isActive = true
         backButton.heightAnchor.constraint(equalToConstant: 50.0).isActive = true
     }
     

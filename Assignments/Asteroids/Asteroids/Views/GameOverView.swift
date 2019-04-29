@@ -21,6 +21,7 @@ class GameOverView: UIView {
     private var leaderBoardLabel: UILabel
     private var playerNameField: UITextField
     private var saveScoreButton: UIButton
+    private var playerNameFieldsPresent: Bool
     private var views: [String: Any]
     
     var delegate: GameOverViewDelegate?
@@ -32,6 +33,7 @@ class GameOverView: UIView {
         gameOverLabel = UILabel()
         playerNameField = UITextField()
         saveScoreButton = UIButton()
+        playerNameFieldsPresent = false
         views = ["gameOverLabel": gameOverLabel, "scoreLabel": scoreLabel, "leaderBoardLabel": leaderBoardLabel, "playerNameField": playerNameField]
         super.init(frame: frame)
         
@@ -72,6 +74,7 @@ class GameOverView: UIView {
     }
     
     func setPlayerNameField() {
+        playerNameFieldsPresent = true
         leaderBoardLabel.text = "New LeaderBoard Score:"
         leaderBoardLabel.font = UIFont(name: "EarthOrbiter", size: 24.0)
         leaderBoardLabel.textColor = .white
@@ -107,6 +110,7 @@ class GameOverView: UIView {
     
     @objc func saveGameScore(sender: Any) {
         if let saveButton = sender as? UIButton {
+            if playerNameField.text!.isEmpty { return }
             if saveButton == saveScoreButton {
                 guard let delegate = delegate else { return }
                 delegate.gameOverView(saveGameFor: playerNameField.text ?? "")
@@ -128,6 +132,7 @@ class GameOverView: UIView {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if playerNameFieldsPresent { return }
         guard let delegate = delegate else { return }
         delegate.gameOverViewReturnToMain()
     }

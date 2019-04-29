@@ -373,7 +373,7 @@ class GameView: UIView {
         }
     }
     
-    private func beginTimer() {
+    func beginTimer() {
         timer = Timer.scheduledTimer(withTimeInterval: 1.0/60.0, repeats: true, block: { _ in
             self.updateUI()
         })

@@ -96,7 +96,15 @@ class GameViewController: UIViewController, GameViewDelegate, AsteroidsDataSourc
     }
     
     func togglePause(pauseGame: Bool) {
-        asteroidsGame?.toggleGameState(gamePaused: pauseGame)
+//        asteroidsGame?.toggleGameState(gamePaused: pauseGame)
+        if pauseGame {
+            asteroidsGame?.gameLoopTimer.invalidate()
+            gameView.timer.invalidate()
+        }
+        else {
+            gameView.beginTimer()
+            asteroidsGame?.beginTimer()
+        }
     }
     
     override func viewDidLoad() {
